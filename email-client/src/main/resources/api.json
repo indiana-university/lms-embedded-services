@@ -1,0 +1,84 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "4.0.0-SNAPSHOT",
+    "title" : "email api"
+  },
+  "host" : "lms-email-impl:8080",
+  "basePath" : "/",
+  "tags" : [ {
+    "name" : "email"
+  } ],
+  "schemes" : [ "http", "https" ],
+  "paths" : {
+    "/email/" : {
+      "get" : {
+        "tags" : [ "email" ],
+        "operationId" : "sendEmail",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/EmailDetails"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "EmailDetails" : {
+      "type" : "object",
+      "properties" : {
+        "recipients" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "subject" : {
+          "type" : "string"
+        },
+        "body" : {
+          "type" : "string"
+        },
+        "emailServiceAttachmentList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EmailServiceAttachment"
+          }
+        },
+        "enableHtml" : {
+          "type" : "boolean"
+        },
+        "priority" : {
+          "type" : "string",
+          "enum" : [ "LOW", "NORMAL", "HIGH" ]
+        },
+        "digitallySign" : {
+          "type" : "boolean"
+        },
+        "from" : {
+          "type" : "string"
+        }
+      }
+    },
+    "EmailServiceAttachment" : {
+      "type" : "object",
+      "properties" : {
+        "filename" : {
+          "type" : "string"
+        },
+        "url" : {
+          "type" : "string",
+          "format" : "url"
+        }
+      }
+    }
+  }
+}

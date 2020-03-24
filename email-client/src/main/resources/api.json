@@ -11,8 +11,22 @@
   } ],
   "schemes" : [ "http", "https" ],
   "paths" : {
-    "/email/" : {
+    "/email/header" : {
       "get" : {
+        "tags" : [ "email" ],
+        "operationId" : "getStandardHeader",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/email/send" : {
+      "post" : {
         "tags" : [ "email" ],
         "operationId" : "sendEmail",
         "parameters" : [ {

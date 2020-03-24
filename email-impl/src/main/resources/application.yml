@@ -1,13 +1,35 @@
 spring:
   application:
     name: lms-email-impl
+  mail:
+    host: mail-relay.iu.edu
+    port: 465
+    username: lmssmtp
+    properties:
+      mail:
+        smpt:
+          auth: true
+          #          starttls:
+          #            enable: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
   profiles:
     active: redis
   session:
     store-type: none
+server:
+  servlet:
+    session:
+      cookie:
+        name: LMSSESSION
 lmsemail:
   enabled: false
   defaultFrom: essnorep@iu.edu
+  env: ${app.env}
+logging:
+  level:
+    edu.iu.uits.lms.email: DEBUG
 ---
 
 spring:
@@ -18,20 +40,6 @@ spring:
 ---
 
 spring:
-  profiles: email
-  mail:
-    host: mail-relay.iu.edu
-    port: 465
-    username: lmssmtp
-    password: ${spring.mail.password}
-    properties:
-      mail:
-        smpt:
-          auth: true
-          #          starttls:
-          #            enable: true
-          socketFactory:
-            port: 465
-            class: javax.net.ssl.SSLSocketFactory
+  profiles: emailEnabled
 lmsemail:
   enabled: true

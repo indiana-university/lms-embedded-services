@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.email;
+package edu.iu.uits.lms.email.config;
 
 import lombok.Getter;
 import lombok.Setter;

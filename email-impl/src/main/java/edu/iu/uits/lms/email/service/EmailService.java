@@ -1,6 +1,6 @@
 package edu.iu.uits.lms.email.service;
 
-import edu.iu.uits.lms.email.EmailServiceConfig;
+import edu.iu.uits.lms.email.config.EmailServiceConfig;
 import edu.iu.uits.lms.email.model.EmailDetails;
 import edu.iu.uits.lms.email.model.EmailServiceAttachment;
 import edu.iu.uits.lms.email.model.Priority;
@@ -13,11 +13,13 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,8 +54,14 @@ public class EmailService {
    @Autowired
    private SignedEmailService signedEmailService;
 
-   @GetMapping("/")
-   @PreAuthorize("#oauth2.hasScope('email.send')")
+   @GetMapping("/header")
+   @PreAuthorize("#oauth2.hasScope('email:send')")
+   public String getStandardHeader() {
+      return "[LMS " + emailServiceConfig.getEnv().toUpperCase() + " Notifications]";
+   }
+
+   @PostMapping("/send")
+   @PreAuthorize("#oauth2.hasScope('email:send')")
    public void sendEmail(@RequestBody EmailDetails emailDetails) throws LmsEmailTooBigException, MessagingException {
       String subject = emailDetails.getSubject();
       String body = emailDetails.getBody();
@@ -66,6 +74,10 @@ public class EmailService {
 
       if (from == null) {
          from = emailServiceConfig.getDefaultFrom();
+      }
+
+      if (priority == null) {
+         priority = Priority.NORMAL;
       }
 
       if (!emailServiceConfig.isEnabled()) {
@@ -176,7 +188,7 @@ public class EmailService {
     * @throws LmsEmailTooBigException Exception thrown when the email body is too big to send
     */
    private void sendUnsignedEmail(String[] recipients, String subject, String body, List<EmailServiceAttachment> emailServiceAttachmentList,
-                                  boolean enableHtml, Priority priority, String from) throws LmsEmailTooBigException, MessagingException {
+                                  boolean enableHtml, Priority priority, String from) throws LmsEmailTooBigException, MessagingException, MailException {
       log.warn("Sending unsigned email");
 
 

@@ -36,6 +36,12 @@
           "schema" : {
             "$ref" : "#/definitions/EmailDetails"
           }
+        }, {
+          "name" : "digitallySign",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : true
         } ],
         "responses" : {
           "default" : {
@@ -73,9 +79,6 @@
         "priority" : {
           "type" : "string",
           "enum" : [ "LOW", "NORMAL", "HIGH" ]
-        },
-        "digitallySign" : {
-          "type" : "boolean"
         },
         "from" : {
           "type" : "string"

@@ -9,7 +9,7 @@ import edu.iu.uits.lms.email.model.sis.Message;
 import edu.iu.uits.lms.email.model.sis.Recipient;
 import edu.iu.uits.lms.email.model.sis.Result;
 import io.swagger.annotations.Api;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.activation.URLDataSource;
@@ -33,7 +34,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/email")
-@Log4j
+@Slf4j
 @Api(tags = "email")
 public class EmailService {
 
@@ -62,13 +63,13 @@ public class EmailService {
 
    @PostMapping("/send")
    @PreAuthorize("#oauth2.hasScope('email:send')")
-   public void sendEmail(@RequestBody EmailDetails emailDetails) throws LmsEmailTooBigException, MessagingException {
+   public void sendEmail(@RequestBody EmailDetails emailDetails,
+                         @RequestParam(name = "digitallySign", required = false, defaultValue = "true") boolean digitallySign) throws LmsEmailTooBigException, MessagingException {
       String subject = emailDetails.getSubject();
       String body = emailDetails.getBody();
       String[] recipients = emailDetails.getRecipients();
       List<EmailServiceAttachment> emailServiceAttachmentList = emailDetails.getEmailServiceAttachmentList();
       boolean enableHtml = emailDetails.isEnableHtml();
-      boolean digitallySign = emailDetails.isDigitallySign();
       Priority priority = emailDetails.getPriority();
       String from = emailDetails.getFrom();
 
@@ -95,31 +96,27 @@ public class EmailService {
          body += "\nThe message body exceeded " + BODY_MAX_LENGTH + " characters and this message was truncated!";
       }
 
-//      if (featureAccessService.isFeatureEnabledForAccount("email.digitalSigning", propertiesService.getAccountId())) {
-         int count = 0;
-         int maxTries = 3;
-         while (true) {
-            try {
-               Result result = sendSignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, digitallySign, from);
-               if (!result.isSuccess() && ++count == maxTries) {
-                  sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from);
-                  break;
-               } else if (result.isSuccess()) {
-                  break;
-               } else {
-                  log.warn("Retry attempt #" + count + " for the SIS Email Signing Service");
-               }
-            } catch (IOException e) {
-               log.error("Bad email!", e);
-               if (++count == maxTries) {
-                  sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from);
-                  break;
-               }
+      int count = 0;
+      int maxTries = 3;
+      while (true) {
+         try {
+            Result result = sendSignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, digitallySign, from);
+            if (!result.isSuccess() && ++count == maxTries) {
+               sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from);
+               break;
+            } else if (result.isSuccess()) {
+               break;
+            } else {
+               log.warn("Retry attempt #" + count + " for the SIS Email Signing Service");
+            }
+         } catch (IOException e) {
+            log.error("Bad email!", e);
+            if (++count == maxTries) {
+               sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from);
+               break;
             }
          }
-//      } else {
-//         sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from);
-//      }
+      }
    }
 
    /**

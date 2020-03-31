@@ -12,6 +12,5 @@ public class EmailDetails {
    private List<EmailServiceAttachment> emailServiceAttachmentList;
    private boolean enableHtml;
    private Priority priority = Priority.NORMAL;
-   private boolean digitallySign;
    private String from;
 }

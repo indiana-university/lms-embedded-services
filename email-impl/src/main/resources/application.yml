@@ -27,9 +27,6 @@ lmsemail:
   enabled: false
   defaultFrom: essnorep@iu.edu
   env: ${app.env}
-logging:
-  level:
-    edu.iu.uits.lms.email: DEBUG
 ---
 
 spring:

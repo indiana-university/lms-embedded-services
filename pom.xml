@@ -8,9 +8,8 @@
 
     <parent>
         <artifactId>lms2Wow</artifactId>
-        <!--        <relativePath>../pom.xml</relativePath>-->
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.0.2</version>
     </parent>
 
     <modules>

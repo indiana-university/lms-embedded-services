@@ -41,7 +41,7 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>common-configuration</artifactId>
-            <version>${project.version}</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -63,7 +63,7 @@
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
                 <configuration>
-                    <inputSpec>${project.basedir}/src/main/resources/api.json</inputSpec>
+                    <inputSpec>${project.build.directory}/generated-resources/swagger/api.json</inputSpec>
                     <language>java</language>
                     <library>resttemplate</library>
                     <invokerPackage>email.client.generated</invokerPackage>
@@ -90,7 +90,7 @@
                                     <type>json</type>
                                     <version>${project.version}</version>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/generated-resources/swagger</outputDirectory>
                                     <destFileName>api.json</destFileName>
                                     <includes>**/*.json</includes>
                                 </artifactItem>

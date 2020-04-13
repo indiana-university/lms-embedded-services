@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class EmailServiceConfig {
    private boolean enabled;
+   private boolean signingEnabled;
    private String defaultFrom;
    private String env;
 }

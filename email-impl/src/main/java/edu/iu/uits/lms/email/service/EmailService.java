@@ -100,7 +100,11 @@ public class EmailService {
       int maxTries = 3;
       while (true) {
          try {
-            Result result = sendSignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, digitallySign, from);
+            Result result = new Result();
+            //Only call if signing is enabled
+            if (emailServiceConfig.isSigningEnabled()) {
+               result = sendSignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, digitallySign, from);
+            }
             if (!result.isSuccess() && ++count == maxTries) {
                sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from);
                break;

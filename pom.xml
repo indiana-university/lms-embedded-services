@@ -4,12 +4,13 @@
     <artifactId>lms-email-parent</artifactId>
     <packaging>pom</packaging>
     <name>lms-email-parent</name>
-    <version>4.0.1</version>
+    <version>4.0.2</version>
 
     <parent>
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.2</version>
+        <version>4.0.4</version>
+        <relativePath />
     </parent>
 
     <modules>

@@ -1,0 +1,18 @@
+
+bootstrapSecret: "protected-properties-2020-07-10"
+
+image:
+  repository: registry-snd.docker.iu.edu/lms/email_service
+
+imagePullSecrets:
+    - name: registry-sand-cred
+
+env:
+  - name: APP_ENV
+    value: snd
+
+ingress:
+  enabled: true
+  hosts:
+    - host: "lms-email-service-snd.apps-snd.iu.edu"
+      paths: []

@@ -13,6 +13,8 @@ import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.common.AuthenticationScheme;
 
+import java.util.Collections;
+
 @EnableConfigurationProperties(OAuthConfig.class)
 public class EmailClientConfig {
 
@@ -33,6 +35,7 @@ public class EmailClientConfig {
       resourceDetails.setPassword(oAuthConfig.getClientPassword());
       resourceDetails.setAccessTokenUri(oAuthConfig.getAccessTokenUri());
       resourceDetails.setClientAuthenticationScheme(AuthenticationScheme.form);
+      resourceDetails.setScope(Collections.singletonList("email:send"));
 
       AccessTokenRequest atr = new DefaultAccessTokenRequest();
       DefaultOAuth2ClientContext clientContext = new DefaultOAuth2ClientContext(atr);

@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableResourceServer
 @PropertySource(value = {"classpath:env.properties",
       "${app.fullFilePath}/email.properties",
+      "${app.fullFilePath}/oauth.properties",
       "${app.fullFilePath}/security.properties"}, ignoreResourceNotFound = true)
 public class ClientApplication {
 

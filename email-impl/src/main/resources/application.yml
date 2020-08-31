@@ -10,6 +10,11 @@ spring:
       smtp:
         auth: true
         starttls.enable: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
 lmsemail:
   enabled: false
   signingEnabled: false

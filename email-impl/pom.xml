@@ -102,8 +102,8 @@
                         <apiSource>
                             <springmvc>true</springmvc>
                             <schemes>http,https</schemes>
-                            <host>lms-email-impl:8080</host>
-                            <basePath>/</basePath>
+                            <host>localhost:8080</host>
+                            <basePath>/remote/email-services</basePath>
                             <locations>
                                 <location>edu.iu.uits.lms.email</location>
                             </locations>

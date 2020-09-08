@@ -3,7 +3,7 @@
     <parent>
         <artifactId>lms-email-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.5</version>
+        <version>4.0.6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -102,8 +102,8 @@
                         <apiSource>
                             <springmvc>true</springmvc>
                             <schemes>http,https</schemes>
-                            <host>lms-email-impl:8080</host>
-                            <basePath>/</basePath>
+                            <host>localhost:8080</host>
+                            <basePath>/remote/email-services</basePath>
                             <locations>
                                 <location>edu.iu.uits.lms.email</location>
                             </locations>

@@ -5,6 +5,7 @@ import edu.iu.uits.lms.common.oauth.OpenResourceOwnerPasswordResourceDetails;
 import email.client.generated.ApiClient;
 import email.client.generated.api.EmailApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
@@ -18,12 +19,17 @@ import java.util.Collections;
 @EnableConfigurationProperties(OAuthConfig.class)
 public class EmailClientConfig {
 
+   @Value("${lms.service.email.url.${app.env}}")
+   private String baseServiceUrl;
+
    @Autowired
    private OAuthConfig oAuthConfig;
 
    @Bean
    public EmailApi emailApi() {
-      return new EmailApi(new ApiClient(emailRestTemplate()));
+      ApiClient api = new ApiClient(emailRestTemplate());
+      api.setBasePath(baseServiceUrl);
+      return new EmailApi(api);
    }
 
    @Bean(name = "emailRestTemplate")

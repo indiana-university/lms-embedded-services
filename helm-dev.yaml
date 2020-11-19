@@ -18,3 +18,5 @@ service:
       targetPort: 5005
       protocol: TCP
       name: remote-debug
+
+developmentMode: true

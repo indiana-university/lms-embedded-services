@@ -3,7 +3,7 @@
     <parent>
         <artifactId>lms-email-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.8</version>
+        <version>4.0.9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,6 +13,8 @@
 
     <properties>
         <docker_repository_name>email_service</docker_repository_name>
+        <helm_service_name>lms-email-impl</helm_service_name>
+        <helm_files_directory>/..</helm_files_directory>
     </properties>
 
     <dependencies>
@@ -187,6 +189,20 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>helm-deploy</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

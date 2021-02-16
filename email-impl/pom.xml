@@ -3,7 +3,7 @@
     <parent>
         <artifactId>lms-email-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.11</version>
+        <version>4.0.12</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -15,6 +15,9 @@
         <docker_repository_name>email_service</docker_repository_name>
         <helm_service_name>lms-email-impl</helm_service_name>
         <helm_files_directory>/..</helm_files_directory>
+        <commons-io.version>2.8.0</commons-io.version>
+        <iu-util.version>6.1.45</iu-util.version>
+        <jjwt-api.version>0.11.2</jjwt-api.version>
     </properties>
 
     <dependencies>
@@ -49,6 +52,10 @@
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>
@@ -63,12 +70,12 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
+            <version>${commons-io.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.ess</groupId>
             <artifactId>iu-util</artifactId>
-            <version>6.1.37</version>
+            <version>${iu-util.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>edu.iu.ess</groupId>
@@ -84,7 +91,7 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.11.2</version>
+            <version>${jjwt-api.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -10,7 +10,7 @@
 
     <artifactId>variable-replacement-service</artifactId>
     <packaging>jar</packaging>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>4.0.1</version>
 
     <properties>
         <common-configuration.version>4.0.13</common-configuration.version>

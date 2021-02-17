@@ -3,7 +3,7 @@
     <parent>
         <groupId>edu.iu.uits.lms</groupId>
         <artifactId>lms2Wow</artifactId>
-        <version>4.0.10</version>
+        <version>4.0.11</version>
         <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,18 +13,13 @@
     <version>4.0.1-SNAPSHOT</version>
 
     <properties>
-        <common-configuration.version>4.0.12</common-configuration.version>
+        <common-configuration.version>4.0.13</common-configuration.version>
         <commons-lang3.version>3.11</commons-lang3.version>
-        <lms-canvas-client.version>4.0.20</lms-canvas-client.version>
-        <lms-iuonly-client.version>4.0.4</lms-iuonly-client.version>
+        <lms-canvas-client.version>4.0.21</lms-canvas-client.version>
+        <lms-iuonly-client.version>4.0.5</lms-iuonly-client.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.security.oauth</groupId>
-            <artifactId>spring-security-oauth2</artifactId>
-            <version>${spring-security-oauth2.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
@@ -52,6 +47,11 @@
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-iuonly-client</artifactId>
             <version>${lms-iuonly-client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-oauth2</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

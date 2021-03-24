@@ -148,6 +148,7 @@ public class EmailService {
          for (EmailServiceAttachment attachment : emailServiceAttachmentList) {
             if (attachment.getFilename() != null && attachment.getUrl() != null) {
                URLDataSource attachmentDataSource = new URLDataSource(attachment.getUrl());
+               log.debug("{} ({})", attachment.getFilename(), attachment.getUrl());
                byte[] bytes = IOUtils.toByteArray(attachment.getUrl());
 
                Attachment att = new Attachment(Attachment.TYPE.binary, attachmentDataSource.getContentType(),

@@ -1,5 +1,5 @@
 namespace: default
-bootstrapSecret: "properties-2021-06-29"
+bootstrapSecret: "properties-2021-06-07"
 
 image:
   repository: localhost:5000/email_service
@@ -19,4 +19,9 @@ service:
       protocol: TCP
       name: remote-debug
 
+activeProfiles: "emailEnabled,emailSigningEnabled,dev"
+
 developmentMode: true
+
+vault:
+  enabled: false

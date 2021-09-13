@@ -1,7 +1,7 @@
 
 projectedSecret:
   - secret:
-      name: "properties-2021-06-29"
+      name: "properties-2021-06-07"
 
 image:
   tag: latest
@@ -14,3 +14,9 @@ ingress:
   hosts:
     - host: "lms-email-service-reg.apps-test.iu.edu"
       paths: []
+
+activeProfiles: "emailEnabled,emailSigningEnabled,reg"
+
+serviceAccountName: lms-email-impl-reg
+
+cluster: es-test

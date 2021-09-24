@@ -1,0 +1,124 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.4</version>
+        <relativePath /> <!-- lookup parent from repository -->
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>edu.iu.uits.lms</groupId>
+    <artifactId>lms-canvas-lti-framework</artifactId>
+    <packaging>jar</packaging>
+    <version>5.0.0-SNAPSHOT</version>
+    <name>LMS Canvas LTI Framework Services</name>
+<!--    <url>http://maven.apache.org</url>-->
+    <inceptionYear>2015</inceptionYear>
+
+    <organization>
+        <name>Indiana University</name>
+        <url>https://iu.edu</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>BSD 3-Clause License</name>
+            <url>https://opensource.org/licenses/BSD-3-Clause</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <properties>
+        <basiclti-util.version>21.1</basiclti-util.version>
+        <hibernate5-ddl-maven-plugin.version>2.3.0</hibernate5-ddl-maven-plugin.version>
+        <httpclient.version>4.5.13</httpclient.version>
+        <java.version>11</java.version>
+        <jdk.source>11</jdk.source>
+        <jdk.target>11</jdk.target>
+        <lms-canvas-common-configuration.version>5.0.0-SNAPSHOT</lms-canvas-common-configuration.version>
+        <plugins.license.version>2.0.0</plugins.license.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.sakaiproject.basiclti</groupId>
+            <artifactId>basiclti-util</artifactId>
+            <version>${basiclti-util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>edu.iu.uits.lms</groupId>
+            <artifactId>lms-canvas-common-configuration</artifactId>
+            <version>${lms-canvas-common-configuration.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>de.jpdigital</groupId>
+                <artifactId>hibernate54-ddl-maven-plugin</artifactId>
+                <version>${hibernate5-ddl-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>gen-ddl</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dialects>
+                        <param>h2</param>
+                        <param>postgresql9</param>
+                    </dialects>
+                    <packages>
+                        <param>edu.iu.uits.lms.lti</param>
+                    </packages>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${plugins.license.version}</version>
+                <configuration>
+                    <licenseName>bsd_3</licenseName>
+                    <failOnMissingHeader>true</failOnMissingHeader>
+                    <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

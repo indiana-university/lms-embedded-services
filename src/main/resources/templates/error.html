@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<!--
+  #%L
+  LMS Canvas LTI Framework Services
+  %%
+  Copyright (C) 2015 - 2021 Indiana University
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  
+  3. Neither the name of the Indiana University nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <link th:href="@{|${@serverConfig.rivetPath}/rivet-bundle.min.css|}" rel="stylesheet" type="text/css" />
+    <link th:href="@{|${@serverConfig.rivetPath}/rivet-collapsible.min.css|}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div>
+    <div class="rvt-container" role="main">
+        <h1 class="rvt-ts-26">An application error has occurred</h1>
+        <span th:if="${message != null and #strings.length(message) > 0}">
+            <span id="errorMessage" th:text="${message}">Error message</span>
+        </span>
+        <span th:unless="${message != null and #strings.length(message) > 0}">
+            <span id="errorMessage">Your session with this tool has timed out.</span>
+        </span>
+        <span>To access the tool, reload this page or relaunch the tool from Canvas. If the error persists, contact the <a href='https://kb.iu.edu/d/abxl' target='_blank'>UITS Support Center</a> for assistance.</span>
+        <div th:if="${message != null and #strings.length(message) > 0}" class="rvt-collapsible rvt-collapsible--panel rvt-m-top-xs">
+            <h3 class="rvt-collapsible__title">
+                <button id="stackTrace-label" data-collapsible="stackTrace" aria-expanded="false">
+                    <svg role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M5.5,15a1,1,0,0,1-.77-1.64L9.2,8,4.73,2.64A1,1,0,0,1,6.27,1.36L11.13,7.2a1.25,1.25,0,0,1,0,1.61L6.27,14.64A1,1,0,0,1,5.5,15ZM9.6,8.48h0Zm0-1h0Z"></path>
+                    </svg>
+                    <span>Stack trace</span>
+                </button>
+            </h3>
+            <div class="rvt-collapsible__content rvt-p-top-sm" id="stackTrace" aria-hidden="true" aria-labelledby="stackTrace-label">
+                <pre th:text="${error}"> ERROR! </pre>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container rvt-m-top-lg">
+    <div id="footer" th:text="${@serverInfo}"></div>
+</footer>
+
+<script type="text/javascript" th:src="@{|${@serverConfig.rivetPath}/rivet-collapsible.min.js|}"></script>
+<script type="text/javascript">Collapsible.init();</script>
+</body>
+</html>

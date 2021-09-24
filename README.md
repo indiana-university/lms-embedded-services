@@ -1,6 +1,6 @@
 # LMS Canvas Services
 
-When this library is added to a project it allows for redis connection details to be setup.
+When this library is added to a project it allows for Canvas services to be autowired.
 
 ## Installation
 ### From Maven

@@ -44,7 +44,7 @@ import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import redis.clients.jedis.JedisPoolConfig;
 
-@Profile("redis")
+@Profile({"redis-session", "redis-cache"})
 @EnableConfigurationProperties(RedisProperties.class)
 @PropertySource(value = {"classpath:redis.properties",
       "${app.fullFilePath}/redis.properties",

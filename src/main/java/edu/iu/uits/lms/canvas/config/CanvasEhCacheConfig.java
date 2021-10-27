@@ -40,6 +40,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
@@ -52,10 +53,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by chmaurer on 9/19/17.
  */
+@Profile("ehcache")
 @Configuration
 @EnableCaching
 @Slf4j
-public class CanvasCacheConfig {
+public class CanvasEhCacheConfig {
 
     @Bean(name = "CanvasServicesCacheManager")
     public CacheManager canvasCacheManager() {
@@ -86,28 +88,27 @@ public class CanvasCacheConfig {
 
 
         final MutableConfiguration<Object, Object> mutableLongConfiguration =
-                new MutableConfiguration<Object, Object>()
-                        .setTypes(Object.class, Object.class)
-                        .setStoreByValue(false)
-                        .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, ttl)))
-                        .setManagementEnabled(true)
-                        .setStatisticsEnabled(true);
+              new MutableConfiguration<Object, Object>()
+                    .setTypes(Object.class, Object.class)
+                    .setStoreByValue(false)
+                    .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, ttl)))
+                    .setManagementEnabled(true)
+                    .setStatisticsEnabled(true);
 
         final MutableConfiguration<Object, Object> mutableMediumAccessedConfiguration =
-                new MutableConfiguration<Object, Object>()
-                        .setTypes(Object.class, Object.class)
-                        .setStoreByValue(false)
-                        .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, courseServiceTtl)))
-                        .setManagementEnabled(true)
-                        .setStatisticsEnabled(true);
+              new MutableConfiguration<Object, Object>()
+                    .setTypes(Object.class, Object.class)
+                    .setStoreByValue(false)
+                    .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, courseServiceTtl)))
+                    .setManagementEnabled(true)
+                    .setStatisticsEnabled(true);
 
         final CachingProvider provider = Caching.getCachingProvider(CacheConstants.EHCACHE_PROVIDER_TYPE);
 
         final javax.cache.CacheManager cacheManager = provider.getCacheManager();
 
-        createCacheIfMissing(cacheManager, CacheConstants.COURSE_SECTIONS_CACHE_NAME, mutableMediumAccessedConfiguration);
-        createCacheIfMissing(cacheManager,CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, mutableMediumAccessedConfiguration);
-        createCacheIfMissing(cacheManager, "parentAccounts", mutableLongConfiguration);
+        createCacheIfMissing(cacheManager, CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, mutableMediumAccessedConfiguration);
+        createCacheIfMissing(cacheManager, CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, mutableLongConfiguration);
 
         return new JCacheCacheManager(cacheManager);
     }

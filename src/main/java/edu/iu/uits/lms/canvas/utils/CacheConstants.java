@@ -40,9 +40,9 @@ public class CacheConstants {
      */
     public static final String EHCACHE_PROVIDER_TYPE = "org.ehcache.jsr107.EhcacheCachingProvider";
 
-    public static final String COURSE_SECTIONS_CACHE_NAME = "CourseSections";
-
     public static final String ENROLLMENT_TERMS_CACHE_NAME = "EnrollmentTerms";
+
+    public static final String PARENT_ACCOUNTS_CACHE_NAME = "parentAccounts";
 
     private CacheConstants() {
         throw new IllegalStateException("Utility class");

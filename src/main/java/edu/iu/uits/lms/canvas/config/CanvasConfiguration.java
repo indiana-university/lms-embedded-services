@@ -49,4 +49,5 @@ public class CanvasConfiguration {
     private String baseApiUrl;
     private String token;
     private String accountId;
+    private String env;
 }

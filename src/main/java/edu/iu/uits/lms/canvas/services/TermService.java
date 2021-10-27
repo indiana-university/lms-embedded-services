@@ -68,7 +68,7 @@ public class TermService extends SpringBaseService {
 	 * Get the list of enrollment term objects from canvas
 	 * @return List of CanvasTerm objects
 	 */
-   @Cacheable(value = CacheConstants.ENROLLMENT_TERMS_CACHE_NAME)
+   @Cacheable(value = CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, cacheManager = "CanvasServicesCacheManager")
 	public List<CanvasTerm> getEnrollmentTerms() {
 		URI uri = TERMS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), canvasConfiguration.getAccountId());
 		log.debug("{}", uri);

@@ -40,7 +40,9 @@ import edu.iu.uits.lms.canvas.model.CanvasRole;
 import edu.iu.uits.lms.canvas.model.Saml;
 import edu.iu.uits.lms.canvas.model.SsoSettings;
 import edu.iu.uits.lms.canvas.model.SsoSettingsWrapper;
+import edu.iu.uits.lms.canvas.utils.CacheConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -114,6 +116,7 @@ public class AccountService extends SpringBaseService {
      * @param accountId Account id
      * @return a list of the parent {@link Account}s for the given accountId
      */
+    @Cacheable(value = CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, cacheManager = "CanvasServicesCacheManager")
     public List<Account> getParentAccounts(String accountId) {
         List<Account> parentAccounts = new ArrayList<>();
         Account account = getAccount(accountId);

@@ -10,7 +10,7 @@
     <groupId>edu.iu.uits.lms</groupId>
     <artifactId>lms-canvas-redis-config</artifactId>
     <packaging>jar</packaging>
-    <version>5.0.1-SNAPSHOT</version>
+    <version>5.0.1</version>
     <inceptionYear>2015</inceptionYear>
 
     <organization>
@@ -57,7 +57,7 @@
         <connection>scm:git:https://github.com/indiana-university/lms-canvas-redis-config.git</connection>
         <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-redis-config.git</developerConnection>
         <url>https://github.com/indiana-university/lms-canvas-redis-config</url>
-        <tag>HEAD</tag>
+        <tag>lms-canvas-redis-config-5.0.1</tag>
     </scm>
 
     <properties>

@@ -61,7 +61,9 @@ public class CourseHelper {
    }
 
    /**
+    * Is the course locked?
     *
+    * @param course Course to check for being locked
     * @param includeStartDate set to true if you want to include course start date in the logic to determine if this course
     *                         is locked. If false, will not check to see if the course has started; it will just return
     *                         whether the course has ended.

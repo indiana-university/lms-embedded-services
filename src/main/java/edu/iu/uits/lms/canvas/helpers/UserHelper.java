@@ -40,6 +40,7 @@ public class UserHelper {
 
    /**
     * Format and set all the name fields
+    * @param user User
     * @param firstName First name
     * @param lastName Last name
     */
@@ -51,6 +52,7 @@ public class UserHelper {
 
    /**
     * Check of the formatted name parts all match the original
+    * @param user User
     * @param firstName First name
     * @param lastName Last name
     * @return True if all name parts match, false otherwise

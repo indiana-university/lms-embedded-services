@@ -78,11 +78,11 @@ public class CanvasDateFormatUtil {
     }
 
     /**
+     * Convert a string into a Date
      *
-     * @param dateString
-     * @param format
+     * @param dateString String representation of a date
+     * @param format Format of the date string
      * @return Date representation of the given dateString formatted using the given {@link DateTimeFormatter}.
-     *
      */
     public static Date string2Date(String dateString, DateTimeFormatter format) {
         if (dateString != null) {
@@ -106,8 +106,9 @@ public class CanvasDateFormatUtil {
     }
 
     /**
+     * Convert a string into a Date (no time component)
      *
-     * @param dateString
+     * @param dateString String representation of a date
      * @return Date representation of the given dateString. Uses {@link DateTimeFormatter}.ISO_ZONED_DATE_TIME
      * format for parsing the string. Time is truncated to midnight. Date returned based on UTC.
      */
@@ -125,7 +126,7 @@ public class CanvasDateFormatUtil {
 
     /**
      *
-     * @param daysDiff
+     * @param daysDiff Days difference from now (can be positive or negative)
      * @return a {@link OffsetDateTime} based on the current date adjusted daysDiff. A positive daysDiff will be in the future;
      * if daysDiff is negative, will be in the past.
      */

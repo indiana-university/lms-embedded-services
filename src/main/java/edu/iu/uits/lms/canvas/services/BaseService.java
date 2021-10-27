@@ -33,7 +33,7 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
-//import com.instructure.CanvasConstants;
+import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 
 public class BaseService {
 
@@ -42,7 +42,7 @@ public class BaseService {
 
    /**
     *
-    * @param id
+    * @param id id
     * @param fieldName optional. Leave null if you want to use the internal id of the object. Otherwise,
     * you may pass the field name of an alternate id for use in the API calls. See {@link CanvasConstants} API_FIELD
     * for options

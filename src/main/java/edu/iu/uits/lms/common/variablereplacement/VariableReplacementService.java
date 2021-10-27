@@ -37,17 +37,16 @@ public interface VariableReplacementService {
 
    /**
     *
-    * @param macroVariableMapper
-    * @param inputString
-    * @return
+    * @param macroVariableMapper MacroVariableMapper to use
+    * @param inputString Input string, containing variables to be replaced
+    * @return Result string after variables have been replaced
     */
    String performMacroVariableReplacement(MacroVariableMapper macroVariableMapper, String inputString);
 
    /**
     *
-    * @param macroVariableMapper
-    * @param roles
-    * @return
+    * @param macroVariableMapper MacroVariableMapper to use
+    * @param roles Roles
     */
    void setupMapper(MacroVariableMapper macroVariableMapper, String[] roles);
 }

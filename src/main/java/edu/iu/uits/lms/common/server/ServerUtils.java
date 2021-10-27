@@ -46,7 +46,7 @@ public class ServerUtils {
 
     /**
      * Figure out what this node's hostname is.
-     * @return
+     * @return The server's host name
      */
     public static String getServerHostName()
     {

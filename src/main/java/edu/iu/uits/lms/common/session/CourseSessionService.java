@@ -49,7 +49,7 @@ public class CourseSessionService {
 
    /**
     * Add an attribute to the session for a course
-    * @param session
+    * @param session HttpSession
     * @param courseId CourseId key to use since the session could be reused for a different course launch.
     * @param key Key within the course context
     * @param value Value to set
@@ -67,10 +67,11 @@ public class CourseSessionService {
 
    /**
     * Get an attribute from the session for a course
-    * @param session
+    * @param session HttpSession
     * @param courseId CourseId key to use since the session could be reused for a different course launch.
     * @param key Key within the course context
     * @param clazz Return type
+    * @param <T> Return type Class
     * @return The object from the session, or null if not found
     */
    public <T> T getAttributeFromSession(HttpSession session, String courseId, String key, Class<T> clazz) {
@@ -86,9 +87,10 @@ public class CourseSessionService {
 
    /**
     * Remove an attribute from the session for a course
-    * @param session
+    * @param session HttpSession
     * @param courseId CourseId key to use since the session could be reused for a different course launch
     * @param key Key within the course context
+    * @param <T> Return type Class
     * @return The object from the session, or null if not found
     */
    public <T> T removeAttributeFromSession(HttpSession session, String courseId, String key) {

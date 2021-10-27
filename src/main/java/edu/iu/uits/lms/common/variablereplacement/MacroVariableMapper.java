@@ -116,6 +116,8 @@ public class MacroVariableMapper implements Serializable {
 
     /**
      * Lookup value for requested macro name
+     * @param macroName Macro name
+     * @return Return the result for the passed in input variable
      */
     protected String getMacroValue(String macroName) {
         String output = null;
@@ -165,7 +167,8 @@ public class MacroVariableMapper implements Serializable {
 
     /**
      * Determine if the input url contains any macros that need expanding
-     * @return
+     * @param inputString Input string
+     * @return Boolean indicating if the string contains any variables
      */
     public static boolean containsMacros(String inputString) {
         return inputString.contains("${");

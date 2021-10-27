@@ -57,7 +57,7 @@ public class LmsCorsInterceptor extends HandlerInterceptorAdapter {
      * @param allowedOrigin  * for everywhere or something like https://iu.instructure.com
      * @param methodList List of HttpMethods - Example: HttpMethod.GET, HttpMethod.POST,...
      * @param miscHeaderMap Optional (null is fine) Map of headers to add
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException Throws exception for missing required parameters
      */
     public LmsCorsInterceptor(String matchUri, String allowedOrigin, List<HttpMethod> methodList, Map<String, String> miscHeaderMap) throws IllegalArgumentException {
         super();

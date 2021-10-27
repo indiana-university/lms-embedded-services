@@ -93,6 +93,9 @@ public class CookieFilter implements Filter {
     * @return True if the pattern does not match the flagged "bad" patterns
     */
    private boolean isOkUserAgent(String userAgent) {
+      if(userAgent == null) {
+         return true;
+      }
       Matcher matcher = pattern.matcher(userAgent);
       boolean isBad = matcher.matches();
       return !isBad;

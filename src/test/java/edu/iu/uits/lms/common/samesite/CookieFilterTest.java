@@ -169,6 +169,36 @@ public class CookieFilterTest {
       Assertions.assertFalse(cookie.getSecure());
    }
 
+   @Test
+   public void testNullUserAgent() throws Exception {
+      MockHttpServletRequest mockSecureRequest = new MockHttpServletRequest();
+      mockSecureRequest.setMethod("POST");
+      mockSecureRequest.setSecure(true);
+      mockSecureRequest.setServletPath("/secure");
+//      mockSecureRequest.addHeader(HttpHeaders.USER_AGENT, "asdf");
+      mockRedirectChain.doFilter(mockSecureRequest, response);
+      Assertions.assertTrue(mockRedirectChain.getResponse() instanceof MockHttpServletResponse);
+
+      testExpectedHeadersInResponse("None",(MockHttpServletResponse)mockRedirectChain.getResponse(),
+            Collections.singletonList(cookieNameToFilter),
+            Collections.singletonList("randoCookie"),2, true);
+   }
+
+   @Test
+   public void testEmptyUserAgent() throws Exception {
+      MockHttpServletRequest mockSecureRequest = new MockHttpServletRequest();
+      mockSecureRequest.setMethod("POST");
+      mockSecureRequest.setSecure(true);
+      mockSecureRequest.setServletPath("/secure");
+      mockSecureRequest.addHeader(HttpHeaders.USER_AGENT, "");
+      mockRedirectChain.doFilter(mockSecureRequest, response);
+      Assertions.assertTrue(mockRedirectChain.getResponse() instanceof MockHttpServletResponse);
+
+      testExpectedHeadersInResponse("None",(MockHttpServletResponse)mockRedirectChain.getResponse(),
+            Collections.singletonList(cookieNameToFilter),
+            Collections.singletonList("randoCookie"),2, true);
+   }
+
    /**
     * Test the Set-Cookie headers in the response contain the {@literal SameSite=<sameSiteValue>} attribute if they are named
     * in the {@code cookiesWithSamesite} list, and do not if named in the {@code cookiesWithoutSameSite} list.

@@ -44,15 +44,16 @@ public abstract class RedirectableLtiController extends LtiController {
    public static final String CUSTOM_REDIRECT_URL_PROP = "custom_redirect_url";
 
    /**
-    *
-    * @return
+    * Get the VariableReplacementService
+    * @return VariableReplacementService
     */
    protected abstract VariableReplacementService getVariableReplacementService();
 
    /**
-    *
-    * @param inputUrl
-    * @return
+    * Do any variable replacement in the inputUrl
+    * @param inputUrl Input url, potentially containing variables
+    * @param launchParams Map of launch parameters
+    * @return New url with variables replaced
     */
    protected String performMacroVariableReplacement(String inputUrl, Map<String, String> launchParams) {
       MacroVariableMapper macroVariableMapper = new MacroVariableMapper();

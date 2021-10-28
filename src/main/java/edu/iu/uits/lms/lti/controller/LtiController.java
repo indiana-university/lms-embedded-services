@@ -116,8 +116,8 @@ public abstract class LtiController {
 
     /**
      * Get the necessary parameters to pass along to the launch
-     * @param payload
-     * @param claims
+     * @param payload Map of request parameters
+     * @param claims Claims from the jwt token (lti 1.3)
      * @return Map of parameters that are needed by the launch
      */
     protected abstract Map<String, String> getParametersForLaunch(Map<String, String> payload, Claims claims);
@@ -193,7 +193,7 @@ public abstract class LtiController {
     /**
      * How will the launch url be executed?
      * Intended to be overridden by an implementing class.
-     * @return
+     * @return Launch mode
      */
     protected LAUNCH_MODE launchMode() {
         return LAUNCH_MODE.NORMAL;
@@ -202,8 +202,9 @@ public abstract class LtiController {
     /**
      * Run any steps necessary to occur before the launch of the tool
      * Intended to be overridden by an implementing class.
-     * @param launchParams
-     * @param request
+     * @param launchParams Map of launch parameters
+     * @param request HttpServletRequest
+     * @param response  HttpServletResponse
      */
     protected void preLaunchSetup(Map<String, String> launchParams, HttpServletRequest request, HttpServletResponse response) {
 
@@ -211,11 +212,10 @@ public abstract class LtiController {
 
     /**
      * Extract the parameters from the request and dump them into a map
-     * @param request
-     * @return
-     * @throws IOException
+     * @param request HttpServletRequest
+     * @return Map of request parameters
      */
-    private Map<String, String> extractPayloadFromRequest(HttpServletRequest request) throws IOException {
+    private Map<String, String> extractPayloadFromRequest(HttpServletRequest request) {
         Map<String, String> payload = new HashMap<String, String>();
 
         for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements(); ) {
@@ -232,7 +232,8 @@ public abstract class LtiController {
     /**
      * Ensure that this is a proper lti request and it is authorized
      * @param payload Map of the request parameters
-     * @throws LTIException
+     * @return Claims from the jwt token (lti 1.3)
+     * @throws LTIException Exceptions for various launch problems
      */
     protected Claims validateAndAuthorize(Map<String, Object> payload) throws LTIException {
         //check parameters
@@ -272,7 +273,6 @@ public abstract class LtiController {
             baseString = OAuthSignatureMethod.getBaseString(oam);
         } catch (Exception e) {
             log.error("ERROR: " + e.getLocalizedMessage() + e);
-            baseString = null;
         }
         log.debug("BaseString: " + baseString);
         try {
@@ -287,9 +287,10 @@ public abstract class LtiController {
 
     /**
      * Given a list of user roles, return the internal equivalent role
-     * @param userRoles
-     * @param instructorRoles
-     * @return
+     * Can be overridden by an implementing class if the role needs are different.
+     * @param userRoles List of user roles coming from the lti launch
+     * @param instructorRoles List of roles deemed as "Instructor" equivalents
+     * @return Return the appropriate authority
      */
     protected String returnEquivalentAuthority(List<String> userRoles, List<String> instructorRoles) {
         for (String instructorRole : instructorRoles) {

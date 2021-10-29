@@ -46,8 +46,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 @Profile({"redis-session", "redis-cache"})
 @EnableConfigurationProperties(RedisProperties.class)
-@PropertySource(value = {"classpath:redis.properties",
-      "${app.fullFilePath}/redis.properties",
+@PropertySource(value = {"${app.fullFilePath}/redis.properties",
       "${app.fullFilePath}/security.properties"}, ignoreResourceNotFound = true)
 public class RedisConfiguration {
    @Autowired

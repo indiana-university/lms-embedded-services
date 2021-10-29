@@ -119,9 +119,6 @@
                     <licenseName>bsd_3</licenseName>
                     <failOnMissingHeader>true</failOnMissingHeader>
                     <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
-                    <excludes>
-                        <exclude>**/redis.properties</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

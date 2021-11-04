@@ -36,11 +36,20 @@ package edu.iu.uits.lms.lti.service;
 import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Service
+@RestController
+@RequestMapping({"/restlti"})
 public class LtiAuthorizationServiceImpl extends BaseService {
 
     @Autowired
@@ -50,11 +59,18 @@ public class LtiAuthorizationServiceImpl extends BaseService {
         return ltiAuthorizationRepository.findByKeyContextActive(consumerKey, context);
     }
 
-    public LmsLtiAuthz findById(Long id) {
+    @GetMapping(value = "/authz/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public LmsLtiAuthz findById(@PathVariable("id") Long id) {
         return ltiAuthorizationRepository.findById(id).orElse(null);
     }
 
-    public List<LmsLtiAuthz> getAuthzs(boolean includeSecrets) {
+    @GetMapping(value = "/authz/all", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public List<LmsLtiAuthz> getAuthzNoSecrets() {
+        return getAuthzs(false);
+    }
+
+    @GetMapping(value = "/authz/all/{includesecrets}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public List<LmsLtiAuthz> getAuthzs(@PathVariable("includesecrets") boolean includeSecrets) {
         List<LmsLtiAuthz> results = (List<LmsLtiAuthz>)ltiAuthorizationRepository.findAll();
 
         if (!includeSecrets) {
@@ -63,7 +79,8 @@ public class LtiAuthorizationServiceImpl extends BaseService {
         return results;
     }
 
-    public LmsLtiAuthz updateAuthz(Long id, LmsLtiAuthz lmsLtiAuthz) {
+    @PutMapping(value = "/authz/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public LmsLtiAuthz updateAuthz(@PathVariable("id") Long id, @RequestBody LmsLtiAuthz lmsLtiAuthz) {
         LmsLtiAuthz updatedAuthz = ltiAuthorizationRepository.findById(id).orElse(null);
 
         if (lmsLtiAuthz.getConsumerKey() != null) {
@@ -80,11 +97,13 @@ public class LtiAuthorizationServiceImpl extends BaseService {
         return ltiAuthorizationRepository.save(updatedAuthz);
     }
 
-    public LmsLtiAuthz createAuthz(LmsLtiAuthz lmsLtiAuthz) {
+    @PostMapping(value = "/authz", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public LmsLtiAuthz createAuthz(@RequestBody LmsLtiAuthz lmsLtiAuthz) {
         return ltiAuthorizationRepository.save(lmsLtiAuthz);
     }
 
-    public String deleteAuthz(Long id) {
+    @DeleteMapping(value = "/authz/{id}")
+    public String deleteAuthz(@PathVariable("id") Long id) {
         ltiAuthorizationRepository.deleteById(id);
         return "Delete success.";
     }

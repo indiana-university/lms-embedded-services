@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping({"/restlti"})
+@RequestMapping({"/rest/lti"})
 public class LtiAuthorizationServiceImpl extends BaseService {
 
     @Autowired

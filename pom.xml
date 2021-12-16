@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>edu.iu.uits.lms</groupId>
-        <artifactId>lms2Wow</artifactId>
-        <version>4.0.11</version>
-        <relativePath />
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.4</version>
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>variable-replacement-service</artifactId>
+    <groupId>edu.iu.uits.lms</groupId>
+    <artifactId>lms-iu-variable-replacement-service</artifactId>
     <packaging>jar</packaging>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
 
     <properties>
-        <common-configuration.version>4.0.13</common-configuration.version>
-        <commons-lang3.version>3.11</commons-lang3.version>
-        <lms-canvas-client.version>4.0.21</lms-canvas-client.version>
-        <lms-iuonly-client.version>4.0.5</lms-iuonly-client.version>
+        <common-configuration.version>5.0.2-SNAPSHOT</common-configuration.version>
+        <lms-canvas-services.version>5.0.1</lms-canvas-services.version>
+        <lms-iuonly-impl.version>5.0.0-SNAPSHOT</lms-iuonly-impl.version>
     </properties>
 
     <dependencies>
@@ -29,41 +29,21 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
-        </dependency>
-        <dependency>
             <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>common-configuration</artifactId>
+            <artifactId>lms-canvas-common-configuration</artifactId>
             <version>${common-configuration.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>lms-canvas-client</artifactId>
-            <version>${lms-canvas-client.version}</version>
+            <artifactId>lms-canvas-services</artifactId>
+            <version>${lms-canvas-services.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>lms-iuonly-client</artifactId>
-            <version>${lms-iuonly-client.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-oauth2</artifactId>
-            <scope>provided</scope>
+            <artifactId>lms-iuonly-impl</artifactId>
+            <version>${lms-iuonly-impl.version}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
-    </build>
 
 </project>

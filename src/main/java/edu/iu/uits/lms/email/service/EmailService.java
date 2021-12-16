@@ -8,7 +8,6 @@ import edu.iu.uits.lms.email.model.sis.Attachment;
 import edu.iu.uits.lms.email.model.sis.Message;
 import edu.iu.uits.lms.email.model.sis.Recipient;
 import edu.iu.uits.lms.email.model.sis.Result;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -16,14 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.activation.URLDataSource;
 import javax.mail.MessagingException;
@@ -32,10 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
-@RequestMapping("/email")
+@Service
 @Slf4j
-@Api(tags = "email")
 public class EmailService {
 
    private static final int SUBJECT_MAX_LENGTH = 500;
@@ -55,16 +46,11 @@ public class EmailService {
    @Autowired
    private SignedEmailService signedEmailService;
 
-   @GetMapping("/header")
-   @PreAuthorize("#oauth2.hasScope('email:send')")
    public String getStandardHeader() {
       return "[LMS " + emailServiceConfig.getEnv().toUpperCase() + " Notifications]";
    }
 
-   @PostMapping("/send")
-   @PreAuthorize("#oauth2.hasScope('email:send')")
-   public void sendEmail(@RequestBody EmailDetails emailDetails,
-                         @RequestParam(name = "digitallySign", required = false, defaultValue = "true") boolean digitallySign) throws LmsEmailTooBigException, MessagingException {
+   public void sendEmail(EmailDetails emailDetails, boolean digitallySign) throws LmsEmailTooBigException, MessagingException {
       String subject = emailDetails.getSubject();
       String body = emailDetails.getBody();
       String[] recipients = emailDetails.getRecipients();

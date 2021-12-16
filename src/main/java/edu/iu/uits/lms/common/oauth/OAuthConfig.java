@@ -36,12 +36,8 @@ package edu.iu.uits.lms.common.oauth;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
 
 @ConfigurationProperties(prefix = "oauth.tokenprovider")
-@PropertySource(value = {"classpath:env.properties",
-      "${app.fullFilePath}/oauth.properties",
-      "${app.fullFilePath}/security.properties"}, ignoreResourceNotFound = true)
 @Getter
 @Setter
 public class OAuthConfig {

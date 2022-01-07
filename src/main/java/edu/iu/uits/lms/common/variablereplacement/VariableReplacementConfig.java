@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.common.server;
+package edu.iu.uits.lms.common.variablereplacement;
 
 /*-
  * #%L
  * lms-canvas-common-configuration
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,26 +33,24 @@ package edu.iu.uits.lms.common.server;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 
-/**
- * A spring controlled bean that will be injected
- * with properties about the repository state at build time.
- * This information is supplied by a plugin - <b>pl.project13.maven.git-commit-id-plugin</b>
- */
-@Configuration
-@ConfigurationProperties
-@Getter
-@Setter
-public class GitRepositoryState {
+@Slf4j
+public class VariableReplacementConfig {
 
-    @Value("${git.branch}")
-    private String branch;
+   @ConditionalOnMissingBean
+   @Bean
+   public RoleResolver roleResolver() {
+      log.debug("Registering DefaultRoleResolverImpl bean");
+      return new DefaultRoleResolverImpl();
+   }
 
-    @Value("${git.commit.id.abbrev}")
-    private String commitIdAbbrev;
+   @ConditionalOnMissingBean
+   @Bean
+   public VariableReplacementService variableReplacementService() {
+      log.debug("Registering DefaultVariableReplacementServiceImpl bean");
+      return new DefaultVariableReplacementServiceImpl();
+   }
 }

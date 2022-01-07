@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.common.server;
+package edu.iu.uits.lms.common.variablereplacement;
 
 /*-
  * #%L
  * lms-canvas-common-configuration
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,26 +33,45 @@ package edu.iu.uits.lms.common.server;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * A spring controlled bean that will be injected
- * with properties about the repository state at build time.
- * This information is supplied by a plugin - <b>pl.project13.maven.git-commit-id-plugin</b>
+ * Created by chmaurer on 1/23/15.
  */
-@Configuration
-@ConfigurationProperties
-@Getter
-@Setter
-public class GitRepositoryState {
+@Service
+public class DefaultRoleResolverImpl implements RoleResolver {
 
-    @Value("${git.branch}")
-    private String branch;
+    private static final String[] orderedRoles = {"Instructor","urn:lti:role:ims/lis/TeachingAssistant","ContentDeveloper","Learner","urn:lti:instrole:ims/lis/Observer"};
 
-    @Value("${git.commit.id.abbrev}")
-    private String commitIdAbbrev;
+    @Override
+    public String returnHighestRole(List<String> userRoles) {
+        for (String orderedRole : orderedRoles) {
+            if (userRoles.contains(orderedRole))
+                return orderedRole;
+        }
+        return null;
+    }
+
+    @Override
+    public String returnLowestRole(List<String> userRoles) {
+        for (int i = orderedRoles.length-1; i>=0; i--) {
+            if (userRoles.contains(orderedRoles[i]))
+                return orderedRoles[i];
+        }
+        return null;
+    }
+
+
+    @Override
+    public String returnHighestRole(String[] userRoles) {
+        return returnHighestRole(Arrays.asList(userRoles));
+    }
+
+    @Override
+    public String returnLowestRole(String[] userRoles) {
+        return returnLowestRole(Arrays.asList(userRoles));
+    }
 }

@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.common.server;
+package edu.iu.uits.lms.common.variablereplacement;
 
 /*-
  * #%L
  * lms-canvas-common-configuration
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,26 +33,29 @@ package edu.iu.uits.lms.common.server;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- * A spring controlled bean that will be injected
- * with properties about the repository state at build time.
- * This information is supplied by a plugin - <b>pl.project13.maven.git-commit-id-plugin</b>
- */
-@Configuration
-@ConfigurationProperties
-@Getter
-@Setter
-public class GitRepositoryState {
+@Service
+public class DefaultVariableReplacementServiceImpl extends AbstractVariableReplacementService {
 
-    @Value("${git.branch}")
-    private String branch;
+    @Autowired
+    private RoleResolver roleResolver;
 
-    @Value("${git.commit.id.abbrev}")
-    private String commitIdAbbrev;
+   @Override
+   public void setupMapper(MacroVariableMapper macroVariableMapper, String[] roles) {
+      String userRole = roleResolver.returnHighestRole(roles);
+      macroVariableMapper.setUserRole(userRole);
+
+      /*
+      There are still things that need to be implemented by a custom service
+      The following still need to be resolved:
+      sisCourseId
+      sisTermId
+      classNumber
+      sisCampus
+       */
+
+   }
+
 }

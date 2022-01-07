@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.common.server;
+package edu.iu.uits.lms.common.variablereplacement;
 
 /*-
  * #%L
  * lms-canvas-common-configuration
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,26 +33,25 @@ package edu.iu.uits.lms.common.server;
  * #L%
  */
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A spring controlled bean that will be injected
- * with properties about the repository state at build time.
- * This information is supplied by a plugin - <b>pl.project13.maven.git-commit-id-plugin</b>
+ * Add this annotation to an {@code @Configuration} class to expose the
+ * {@link VariableReplacementService} as a bean.
+ * @since 4.0.0
  */
-@Configuration
-@ConfigurationProperties
-@Getter
-@Setter
-public class GitRepositoryState {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Import(VariableReplacementConfig.class)
+@Configuration(proxyBeanMethods = false)
+public @interface EnableVariableReplacementService {
 
-    @Value("${git.branch}")
-    private String branch;
-
-    @Value("${git.commit.id.abbrev}")
-    private String commitIdAbbrev;
 }

@@ -15,7 +15,7 @@ public class DefaultVariableReplacementServiceImpl extends AbstractVariableRepla
       macroVariableMapper.setUserRole(userRole);
 
       /*
-      There are still things that need to be implemented by a costom service
+      There are still things that need to be implemented by a custom service
       The following still need to be resolved:
       sisCourseId
       sisTermId

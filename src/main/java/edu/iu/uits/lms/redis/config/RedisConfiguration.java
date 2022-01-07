@@ -38,7 +38,6 @@ import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -46,8 +45,6 @@ import redis.clients.jedis.JedisPoolConfig;
 
 @Profile({"redis-session", "redis-cache"})
 @EnableConfigurationProperties(RedisProperties.class)
-@PropertySource(value = {"${app.fullFilePath}/redis.properties",
-      "${app.fullFilePath}/security.properties"}, ignoreResourceNotFound = true)
 public class RedisConfiguration {
    @Autowired
    private RedisProperties redisProperties;

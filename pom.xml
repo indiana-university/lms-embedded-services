@@ -14,8 +14,8 @@
     <version>5.0.0-SNAPSHOT</version>
 
     <properties>
-        <common-configuration.version>5.0.2-SNAPSHOT</common-configuration.version>
-        <lms-canvas-services.version>5.0.1</lms-canvas-services.version>
+        <common-configuration.version>5.0.2</common-configuration.version>
+        <lms-canvas-services.version>5.0.2</lms-canvas-services.version>
         <lms-iuonly-impl.version>5.0.0-SNAPSHOT</lms-iuonly-impl.version>
     </properties>
 

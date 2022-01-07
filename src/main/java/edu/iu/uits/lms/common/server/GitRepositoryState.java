@@ -38,7 +38,6 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 /**
  * A spring controlled bean that will be injected
@@ -47,7 +46,6 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @ConfigurationProperties
-@PropertySource(value = {"classpath:git.properties"}, ignoreResourceNotFound = true)
 @Getter
 @Setter
 public class GitRepositoryState {

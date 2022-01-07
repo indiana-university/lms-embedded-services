@@ -71,13 +71,18 @@ public class ImportService extends SpringBaseService {
 
 
     /**
-     * Use to send a csv file to Canvas. File path should be defined and assumes is a .csv file
+     * Use to send a csv file to Canvas.
      *
-     * @param filePath Path to csv file
+     * @param file file
      * @return The id of the import
      */
-    public String sendCsvToCanvas(String filePath) {
-        return sendFileToCanvas(readArchive(filePath), "instructure_csv", "csv");
+    public String sendCsvToCanvas(MultipartFile file) {
+        try {
+            return sendFileToCanvas(file.getBytes(), "instructure_csv", "csv");
+        } catch (IOException e) {
+            log.error("unable to send file to canvas", e);
+        }
+        return null;
     }
 
     /**

@@ -33,18 +33,62 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
 
-@EntityScan(basePackageClasses = LmsLtiAuthz.class)
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
+
 @ComponentScan(basePackages = "edu.iu.uits.lms.lti",
       excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
             classes = {GlobalErrorHandlerConfig.class, ApplicationErrorController.class}))
-@EnableJpaRepositories(basePackageClasses = LtiAuthorizationRepository.class)
+@EnableJpaRepositories(entityManagerFactoryRef = "ltiEntityMgrFactory",
+      transactionManagerRef = "ltiTransactionMgr",
+      basePackageClasses = LtiAuthorizationRepository.class)
+@Slf4j
 public class LtiClientConfig {
+
+   @ConditionalOnMissingBean
+   @Bean
+   @ConfigurationProperties(prefix = "spring.datasource")
+   @Primary
+   public DataSource dataSource() {
+      log.info("dataSource()");
+      return DataSourceBuilder.create().build();
+   }
+
+   @Bean(name = "ltiEntityMgrFactory")
+   public LocalContainerEntityManagerFactoryBean ltiEntityMgrFactory(
+         final EntityManagerFactoryBuilder builder,
+         final DataSource dataSource) {
+      // dynamically setting up the hibernate properties for each of the datasource.
+      final Map<String, String> properties = new HashMap<>();
+      return builder
+            .dataSource(dataSource)
+            .properties(properties)
+            .packages("edu.iu.uits.lms.lti.model")
+            .build();
+   }
+
+   @Bean(name = "ltiTransactionMgr")
+   public PlatformTransactionManager ltiTransactionMgr(
+         @Qualifier("ltiEntityMgrFactory") final EntityManagerFactory entityManagerFactory) {
+      return new JpaTransactionManager(entityManagerFactory);
+   }
 
 }

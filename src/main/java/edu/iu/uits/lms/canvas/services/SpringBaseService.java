@@ -75,6 +75,7 @@ public class SpringBaseService extends BaseService {
     protected <T> List<T> doGet(URI uri, Class<T[]> setType) {
         List<T> resultList = new ArrayList<T>();
         try {
+            log.debug("{}", uri);
             ResponseEntity<T[]> entity = restTemplate.getForEntity(uri, setType);
 
             LinkHeaderParser lhp = new LinkHeaderParser(entity.getHeaders());

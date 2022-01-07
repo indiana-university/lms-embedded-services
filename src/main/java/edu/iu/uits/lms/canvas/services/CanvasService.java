@@ -34,6 +34,7 @@ package edu.iu.uits.lms.canvas.services;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
 /**
@@ -41,7 +42,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class CanvasService extends SpringBaseService {
+public class CanvasService extends SpringBaseService implements InitializingBean {
 
    /**
     * Return the configured root account
@@ -57,5 +58,12 @@ public class CanvasService extends SpringBaseService {
     */
    public String getBaseUrl() {
       return canvasConfiguration.getBaseUrl();
+   }
+
+
+   @Override
+   public void afterPropertiesSet() throws Exception {
+      log.debug("Base Url: {}", canvasConfiguration.getBaseUrl());
+      log.debug("Base API Url: {}", canvasConfiguration.getBaseApiUrl());
    }
 }

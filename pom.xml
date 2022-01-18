@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>edu.iu.uits.lms</groupId>
-        <artifactId>lms2Wow</artifactId>
-        <version>4.0.11</version>
-        <relativePath />
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.4</version>
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>variable-replacement-service</artifactId>
+    <groupId>edu.iu.uits.lms</groupId>
+    <artifactId>lms-iu-variable-replacement-service</artifactId>
     <packaging>jar</packaging>
-    <version>4.0.1</version>
+    <version>5.0.0</version>
 
     <properties>
-        <common-configuration.version>4.0.13</common-configuration.version>
-        <commons-lang3.version>3.11</commons-lang3.version>
-        <lms-canvas-client.version>4.0.21</lms-canvas-client.version>
-        <lms-iuonly-client.version>4.0.5</lms-iuonly-client.version>
+        <common-configuration.version>5.0.2</common-configuration.version>
+        <lms-canvas-services.version>5.0.2</lms-canvas-services.version>
+        <lms-iuonly-impl.version>5.0.0</lms-iuonly-impl.version>
+
+        <!-- plugins -->
+        <gitflow-plugin.version>1.15.1</gitflow-plugin.version>
+        <jgitflow.version>1.0-m5.1</jgitflow.version>
     </properties>
 
     <dependencies>
@@ -29,41 +33,69 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
-        </dependency>
-        <dependency>
             <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>common-configuration</artifactId>
+            <artifactId>lms-canvas-common-configuration</artifactId>
             <version>${common-configuration.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>lms-canvas-client</artifactId>
-            <version>${lms-canvas-client.version}</version>
+            <artifactId>lms-canvas-services</artifactId>
+            <version>${lms-canvas-services.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>lms-iuonly-client</artifactId>
-            <version>${lms-iuonly-client.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-oauth2</artifactId>
-            <scope>provided</scope>
+            <artifactId>lms-iuonly-impl</artifactId>
+            <version>${lms-iuonly-impl.version}</version>
         </dependency>
     </dependencies>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
-    </build>
+    <repositories>
+        <repository>
+            <id>IUMaven</id>
+            <name>IUMaven</name>
+            <url>https://uisapp2.iu.edu/nxs-prd/content/groups/public</url>
+        </repository>
+    </repositories>
 
+    <distributionManagement>
+        <repository>
+            <name>IU Maven Repository</name>
+            <id>IUMaven</id>
+            <url>https://uisapp2.iu.edu/nxs-prd/content/repositories/IUInternal</url>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>${jgitflow.version}</version>
+                <dependencies>
+                    <!-- https://ecosystem.atlassian.net/browse/MJF-299 -->
+                    <!-- 2018-10-16: Must have been a recent change to github.iu.edu that removed support for a security algorithm -->
+                    <!-- Adding in an updated dependency to help -->
+                    <dependency>
+                        <groupId>com.jcraft</groupId>
+                        <artifactId>jsch</artifactId>
+                        <version>0.1.55</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <!-- see goals wiki page for configuration options -->
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <version>${gitflow-plugin.version}</version>
+                <configuration>
+                    <!-- see goals wiki page for configuration options -->
+                    <commitDevelopmentVersionAtStart>true</commitDevelopmentVersionAtStart>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.email;
+package edu.iu.uits.lms.email.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(EmailClientConfig.class)
+@Import(EmailServiceConfig.class)
 @Configuration(proxyBeanMethods = false)
 public @interface EnableEmailClient {
 }

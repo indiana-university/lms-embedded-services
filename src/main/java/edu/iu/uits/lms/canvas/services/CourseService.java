@@ -80,6 +80,7 @@ public class CourseService extends SpringBaseService {
     private static final String COURSE_URI = COURSES_BASE_URI + "/{id}";
     private static final String COURSE_USERS_URI = COURSE_URI + "/users";
     private static final String COURSE_ENROLLMENTS_URI = COURSE_URI + "/enrollments";
+    private static final String COURSE_DELETE_ENROLLMENTS_URI = COURSE_ENROLLMENTS_URI + "/{enrollmentId}";
     private static final String USERS_URI = "{url}/users/{id}";
     private static final String COURSE_SECTIONS_BASE_URI = COURSE_URI + "/sections";
     private static final String SECTIONS_BASE_URI = "{url}/sections";
@@ -88,6 +89,7 @@ public class CourseService extends SpringBaseService {
     private UriTemplate ACCOUNTS_COURSES_TEMPLATE = new UriTemplate(ACCOUNTS_COURSES_URI);
     private UriTemplate COURSE_BASE_TEMPLATE = new UriTemplate(COURSES_BASE_URI);
     private UriTemplate COURSE_ENROLLMENTS_TEMPLATE = new UriTemplate(COURSE_ENROLLMENTS_URI);
+    private UriTemplate COURSE_DELETE_ENROLLMENTS_TEMPLATE = new UriTemplate(COURSE_DELETE_ENROLLMENTS_URI);
     private UriTemplate COURSE_TEMPLATE = new UriTemplate(COURSE_URI);
     private UriTemplate FAVORITES_TEMPLATE = new UriTemplate(FAVORITES_URI + "/{id}");
     private UriTemplate COURSE_USERS_TEMPLATE = new UriTemplate(COURSE_USERS_URI);
@@ -780,6 +782,44 @@ public class CourseService extends SpringBaseService {
         }
 
         return doGet(builder.build().toUri(), User[].class);
+    }
+
+    /**
+     * Delete an enrollment for a course
+     * @param courseId Canvas course id
+     * @param enrollmentId Enrollment Id
+     * @return The removed Enrollment object
+     */
+    public Enrollment deleteEnrollment(String courseId, String enrollmentId) {
+        URI uri = COURSE_DELETE_ENROLLMENTS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, enrollmentId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.queryParam("task", "delete");
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+
+            HttpEntity<Enrollment> deleteEnrollmentResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, Enrollment.class);
+            log.debug("{}", deleteEnrollmentResponse);
+
+            ResponseEntity<Enrollment> responseEntity = (ResponseEntity<Enrollment>) deleteEnrollmentResponse;
+
+            if (responseEntity.getStatusCode() != HttpStatus.OK) {
+                throw new RuntimeException("Request to Canvas was not successful. Response code: "
+                        + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                        + ", body: " + responseEntity.getBody());
+            }
+
+            if (deleteEnrollmentResponse != null) {
+                return deleteEnrollmentResponse.getBody();
+            }
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error deleting enrollment", hcee);
+            throw new RuntimeException("Error deleting enrollment", hcee);
+        }
+
+        return null;
     }
 
     /**

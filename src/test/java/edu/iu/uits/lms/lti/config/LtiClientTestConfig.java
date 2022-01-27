@@ -34,6 +34,7 @@ package edu.iu.uits.lms.lti.config;
  */
 
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -48,13 +49,16 @@ public class LtiClientTestConfig {
    protected LtiAuthorizationRepository ltiAuthorizationRepository;
 
    @MockBean
+   @Qualifier("ltiDataSource")
    public DataSource dataSource;
 
 
    @MockBean
+   @Qualifier("ltiEntityMgrFactory")
    public LocalContainerEntityManagerFactoryBean ltiEntityMgrFactory;
 
    @MockBean
+   @Qualifier("ltiTransactionMgr")
    public PlatformTransactionManager ltiTransactionMgr;
 
 }

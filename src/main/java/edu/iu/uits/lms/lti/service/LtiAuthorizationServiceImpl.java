@@ -38,10 +38,8 @@ import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class LtiAuthorizationServiceImpl extends BaseService {
+public class LtiAuthorizationServiceImpl {
 
     @Autowired
     private LtiAuthorizationRepository ltiAuthorizationRepository = null;
@@ -50,42 +48,4 @@ public class LtiAuthorizationServiceImpl extends BaseService {
         return ltiAuthorizationRepository.findByKeyContextActive(consumerKey, context);
     }
 
-    public LmsLtiAuthz findById(Long id) {
-        return ltiAuthorizationRepository.findById(id).orElse(null);
-    }
-
-    public List<LmsLtiAuthz> getAuthzs(boolean includeSecrets) {
-        List<LmsLtiAuthz> results = (List<LmsLtiAuthz>)ltiAuthorizationRepository.findAll();
-
-        if (!includeSecrets) {
-            results.forEach(a -> a.setSecret("********"));
-        }
-        return results;
-    }
-
-    public LmsLtiAuthz updateAuthz(Long id, LmsLtiAuthz lmsLtiAuthz) {
-        LmsLtiAuthz updatedAuthz = ltiAuthorizationRepository.findById(id).orElse(null);
-
-        if (lmsLtiAuthz.getConsumerKey() != null) {
-            updatedAuthz.setConsumerKey(lmsLtiAuthz.getConsumerKey());
-        }
-        if (lmsLtiAuthz.getContext() != null) {
-            updatedAuthz.setContext(lmsLtiAuthz.getContext());
-        }
-        if (lmsLtiAuthz.getSecret() != null) {
-            updatedAuthz.setSecret(lmsLtiAuthz.getSecret());
-        }
-        updatedAuthz.setActive(lmsLtiAuthz.isActive());
-
-        return ltiAuthorizationRepository.save(updatedAuthz);
-    }
-
-    public LmsLtiAuthz createAuthz(LmsLtiAuthz lmsLtiAuthz) {
-        return ltiAuthorizationRepository.save(lmsLtiAuthz);
-    }
-
-    public String deleteAuthz(Long id) {
-        ltiAuthorizationRepository.deleteById(id);
-        return "Delete success.";
-    }
 }

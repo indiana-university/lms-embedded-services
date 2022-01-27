@@ -536,6 +536,41 @@ public class CourseService extends SpringBaseService {
     }
 
     /**
+     * Used to change the default_view for the home page of a course
+     * @param id the identifier for the course you are updating
+     * @param defaultViewType the value of what you to you want for the default view, e.g. modules
+     */
+    public void updateCourseFrontPage(String id, String defaultViewType) {
+        if (id == null) {
+            throw new IllegalArgumentException("Null id passed to updateCourseFrontPage.");
+        }
+
+        URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), id);
+        log.debug("{}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.queryParam("course[default_view]", defaultViewType);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> updateCourseFrontPageResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, String.class);
+            log.debug("{}", updateCourseFrontPageResponse);
+
+            ResponseEntity<String> responseEntity = (ResponseEntity<String>) updateCourseFrontPageResponse;
+
+            if (responseEntity.getStatusCode() != HttpStatus.OK) {
+                throw new RuntimeException("Request to Canvas was not successful. Response code: "
+                        + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                        + ", body: " + responseEntity.getBody());
+            }
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error updating course front page", hcee);
+        }
+    }
+
+    /**
      * Create a new course in canvas
      * @param newCourse
      * @return a Canvas Course object

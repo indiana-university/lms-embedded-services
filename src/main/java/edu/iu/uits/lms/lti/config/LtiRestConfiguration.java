@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 public class LtiRestConfiguration {
-    @Profile({"ltirest"})
+    @Profile("ltirest")
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 5000)
     public static class LtiRestWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
@@ -20,7 +20,7 @@ public class LtiRestConfiguration {
                     .and()
                     .authorizeRequests()
                     .antMatchers("/rest/lti/**")
-                    .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
+                    .access("hasAuthority('SCOPE_lti:read') or hasAuthority('SCOPE_lti:write')")
                     .and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
@@ -29,6 +29,19 @@ public class LtiRestConfiguration {
 
             // Need to disable csrf so that we can use POST via REST
             http.csrf().disable();
+        }
+    }
+
+    @Profile("ltirest & swagger")
+    @Configuration
+    @Order(SecurityProperties.BASIC_AUTH_ORDER - 5001)
+    public static class LtiApiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.requestMatchers().antMatchers("/api/lti/**")
+                  .and()
+                  .authorizeRequests()
+                  .antMatchers("/api/lti/**").permitAll();
         }
     }
 }

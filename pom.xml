@@ -163,6 +163,9 @@
                     <licenseName>bsd_3</licenseName>
                     <failOnMissingHeader>true</failOnMissingHeader>
                     <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
+                    <excludes>
+                        <exclude>**/lti-api-config.properties</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

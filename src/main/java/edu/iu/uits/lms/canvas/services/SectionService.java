@@ -62,11 +62,13 @@ public class SectionService extends SpringBaseService {
     private static final String CROSSLIST_BASE_URI = SECTION_URI + "/crosslist";
     private static final String CROSSLIST_URI = CROSSLIST_BASE_URI + "/{parent_id}";
     private static final String STUDENT_SECTION_ENROLLMENT_URI = BASE_URI + "/{sis_section_id}/enrollments";
+    private static final String ALL_SECTION_ENROLLMENT_URI = BASE_URI + "/{section_id}/enrollments";
 
     private static final UriTemplate SECTION_TEMPLATE = new UriTemplate(SECTION_URI);
     private static final UriTemplate CROSSLIST_TEMPLATE = new UriTemplate(CROSSLIST_URI);
     private static final UriTemplate CROSSLIST_BASE_TEMPLATE = new UriTemplate(CROSSLIST_BASE_URI);
     private static final UriTemplate STUDENT_SECTION_ENROLLMENT_TEMPLATE = new UriTemplate(STUDENT_SECTION_ENROLLMENT_URI);
+    private static final UriTemplate ALL_SECTION_ENROLLMENT_TEMPLATE = new UriTemplate(ALL_SECTION_ENROLLMENT_URI);
 
     // feel free to pass in "sis_section_id:1234" for the id if you need the SIS id instead of Canvas's section id
     public Section getSection(String id) {
@@ -161,6 +163,20 @@ public class SectionService extends SpringBaseService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
         builder.queryParam("type[]", "StudentEnrollment");
+        builder.queryParam("per_page", "50");
+        builder.queryParam("state[]", "active");
+
+        return doGet(builder.build().toUri(), Enrollment[].class);
+    }
+
+    public List<Enrollment> getAllSectionEnrollmentsById(String sectionId) {
+        final String sisSectionIdPath = sectionId;
+
+        URI uri = ALL_SECTION_ENROLLMENT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sisSectionIdPath);
+        log.debug("{}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
         builder.queryParam("per_page", "50");
         builder.queryParam("state[]", "active");
 

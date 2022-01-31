@@ -172,7 +172,7 @@ public class SectionService extends SpringBaseService {
     /**
      * Get all of the enrollments for a sectionId and states that are passed in, e.g. active, invited
      * @param sectionId the id of the section
-     * @param states String array of states
+     * @param states String array of states. Passing in a null will return Canvas defaults.
      * @return
      */
     public List<Enrollment> getAllSectionEnrollmentsByIdAndState(String sectionId, String[] states) {
@@ -184,7 +184,10 @@ public class SectionService extends SpringBaseService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
         builder.queryParam("per_page", "50");
-        builder.queryParam("state[]", states);
+
+        if (states != null) {
+            builder.queryParam("state[]", states);
+        }
 
         return doGet(builder.build().toUri(), Enrollment[].class);
     }

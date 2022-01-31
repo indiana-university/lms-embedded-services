@@ -169,7 +169,13 @@ public class SectionService extends SpringBaseService {
         return doGet(builder.build().toUri(), Enrollment[].class);
     }
 
-    public List<Enrollment> getAllSectionEnrollmentsById(String sectionId) {
+    /**
+     * Get all of the enrollments for a sectionId and states that are passed in, e.g. active, invited
+     * @param sectionId the id of the section
+     * @param states String array of states
+     * @return
+     */
+    public List<Enrollment> getAllSectionEnrollmentsByIdAndState(String sectionId, String[] states) {
         final String sisSectionIdPath = sectionId;
 
         URI uri = ALL_SECTION_ENROLLMENT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sisSectionIdPath);
@@ -178,7 +184,7 @@ public class SectionService extends SpringBaseService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
         builder.queryParam("per_page", "50");
-        builder.queryParam("state[]", "active");
+        builder.queryParam("state[]", states);
 
         return doGet(builder.build().toUri(), Enrollment[].class);
     }

@@ -38,12 +38,14 @@ public class EnrollmentHelper {
    public static enum STATE {
       active,
       invited,
+      creation_pending,
+      deleted,
       rejected,
       completed,
       inactive,
-      invited_or_pending,
-      pending,
-      creation_pending
+      current_and_invited,
+      current_and_future,
+      current_and_concluded
    }
 
    public static enum TYPE {
@@ -63,4 +65,5 @@ public class EnrollmentHelper {
    public static final String TYPE_TA = "TaEnrollment";
    public static final String TYPE_OBSERVER = "ObserverEnrollment";
    public static final String TYPE_DESIGNER = "DesignerEnrollment";
+   public static final String TYPE_STUDENT_VIEW = "StudentViewEnrollment";
 }

@@ -72,7 +72,8 @@ public class Enrollment implements Serializable {
 
 	private User user;
 
-
+	@JsonProperty("sis_import_id")
+	private String sisImportId;
 
 
 

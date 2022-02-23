@@ -1,8 +1,8 @@
-package edu.iu.uits.lms.lti.security;
+package edu.iu.uits.lms.lti.service;
 
 /*-
  * #%L
- * LMS Canvas LTI Framework Services
+ * lms-canvas-multiclassmessenger
  * %%
  * Copyright (C) 2015 - 2021 Indiana University
  * %%
@@ -33,37 +33,45 @@ package edu.iu.uits.lms.lti.security;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import edu.iu.uits.lms.lti.LTIConstants;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import uk.ac.ox.ctl.lti13.lti.Claims;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-@Slf4j
-public class OpenAuthenticationProvider implements AuthenticationProvider {
-   public OpenAuthenticationProvider() {
-      super();
-      log.info("OpenAuthenticationProvider()");
+import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_AUTHORITY;
+
+public class TestUtils {
+
+   public static String defaultUseragent() {
+      return "foobar";
    }
 
-   @Override
-   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-      log.info("authenticate()");
-      List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList();
-      if (authentication instanceof OpenAuthenticationToken) {
-         return new OpenAuthenticationToken(authentication.getPrincipal(), authorities);
+   public static String defaultRole() {
+      return BASE_USER_AUTHORITY;
+   }
+
+   public static OidcAuthenticationToken buildToken(String username, String courseId, String role) {
+      final String nameAttributeKey = "sub";
+      Map<String, Object> attributeMap = new HashMap<>();
+      attributeMap.put(nameAttributeKey, username);
+
+      JSONObject customMap = new JSONObject();
+      if (courseId != null) {
+         customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, courseId);
       }
-      return null;
+      attributeMap.put(Claims.CUSTOM, customMap);
+      OAuth2User oAuth2User = new DefaultOAuth2User(Collections.emptyList(), attributeMap, nameAttributeKey);
+      OidcAuthenticationToken token = new OidcAuthenticationToken(oAuth2User,
+            AuthorityUtils.createAuthorityList(TestUtils.defaultRole(), role),
+            "unit_test", "the_state");
+      return token;
    }
 
-   @Override
-   public boolean supports(Class<?> authentication) {
-      log.info("supports()");
-      return OpenAuthenticationToken.class.isAssignableFrom(authentication) ||
-            UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-   }
 }

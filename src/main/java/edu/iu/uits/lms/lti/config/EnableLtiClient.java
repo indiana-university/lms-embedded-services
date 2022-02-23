@@ -53,4 +53,6 @@ import java.lang.annotation.Target;
 @Import({LtiClientConfig.class, })
 @Configuration(proxyBeanMethods = false)
 public @interface EnableLtiClient {
+
+   String[] toolKeys() default {};
 }

@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.lti.security;
+package edu.iu.uits.lms.lti.service;
 
 /*-
  * #%L
@@ -33,34 +33,19 @@ package edu.iu.uits.lms.lti.security;
  * #L%
  */
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
+import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
+import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+@Service
+public class LtiAuthorizationService {
 
-/**
- * Created by chmaurer on 6/17/15.
- */
-public class OpenAuthenticationToken extends AbstractAuthenticationToken {
+    @Autowired
+    private LtiAuthorizationRepository ltiAuthorizationRepository = null;
 
-
-    private final Object principal;
-
-    public OpenAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities) {
-
-        super(authorities);
-        this.principal = principal;
-        setAuthenticated(true);
-    }
-
-    @Override
-    public Object getCredentials() {
-        return "";
-    }
-
-    @Override
-    public Object getPrincipal() {
-        return principal;
+    public LmsLtiAuthz findByRegistrationActive(String registrationId) {
+        return ltiAuthorizationRepository.findByRegistrationActive(registrationId);
     }
 
 }

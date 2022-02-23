@@ -33,13 +33,10 @@ package edu.iu.uits.lms.lti.controller;
  * #L%
  */
 
-import edu.iu.uits.lms.common.variablereplacement.MacroVariableMapper;
 import edu.iu.uits.lms.common.variablereplacement.VariableReplacementService;
-import org.tsugi.basiclti.BasicLTIConstants;
 
-import java.util.Map;
-
-public abstract class RedirectableLtiController extends LtiController {
+//TODO - Figure this guy out
+public abstract class RedirectableLtiController { //extends LtiController {
 
    public static final String CUSTOM_REDIRECT_URL_PROP = "custom_redirect_url";
 
@@ -55,25 +52,25 @@ public abstract class RedirectableLtiController extends LtiController {
     * @param launchParams Map of launch parameters
     * @return New url with variables replaced
     */
-   protected String performMacroVariableReplacement(String inputUrl, Map<String, String> launchParams) {
-      MacroVariableMapper macroVariableMapper = new MacroVariableMapper();
-
-      macroVariableMapper.setUserLastName(launchParams.get(BasicLTIConstants.LIS_PERSON_NAME_FAMILY));
-      macroVariableMapper.setUserFirstName(launchParams.get(BasicLTIConstants.LIS_PERSON_NAME_GIVEN));
-      macroVariableMapper.setUserNetworkId(launchParams.get(CUSTOM_CANVAS_USER_LOGIN_ID));
-      macroVariableMapper.setUserId(launchParams.get(BasicLTIConstants.LIS_PERSON_SOURCEDID));
-
-      String extRoles = launchParams.get(BasicLTIConstants.ROLES);
-      String[] roles = extRoles.split(",");
-
-      String canvasCourseId = launchParams.get(CUSTOM_CANVAS_COURSE_ID);
-      macroVariableMapper.setCanvasCourseId(canvasCourseId);
-
-      VariableReplacementService variableReplacementService = getVariableReplacementService();
-
-      variableReplacementService.setupMapper(macroVariableMapper, roles);
-
-      return variableReplacementService.performMacroVariableReplacement(macroVariableMapper, inputUrl);
-   }
+//   protected String performMacroVariableReplacement(String inputUrl, Map<String, String> launchParams) {
+//      MacroVariableMapper macroVariableMapper = new MacroVariableMapper();
+//
+//      macroVariableMapper.setUserLastName(launchParams.get(BasicLTIConstants.LIS_PERSON_NAME_FAMILY));
+//      macroVariableMapper.setUserFirstName(launchParams.get(BasicLTIConstants.LIS_PERSON_NAME_GIVEN));
+//      macroVariableMapper.setUserNetworkId(launchParams.get(CUSTOM_CANVAS_USER_LOGIN_ID));
+//      macroVariableMapper.setUserId(launchParams.get(BasicLTIConstants.LIS_PERSON_SOURCEDID));
+//
+//      String extRoles = launchParams.get(BasicLTIConstants.ROLES);
+//      String[] roles = extRoles.split(",");
+//
+//      String canvasCourseId = launchParams.get(CUSTOM_CANVAS_COURSE_ID);
+//      macroVariableMapper.setCanvasCourseId(canvasCourseId);
+//
+//      VariableReplacementService variableReplacementService = getVariableReplacementService();
+//
+//      variableReplacementService.setupMapper(macroVariableMapper, roles);
+//
+//      return variableReplacementService.performMacroVariableReplacement(macroVariableMapper, inputUrl);
+//   }
 
 }

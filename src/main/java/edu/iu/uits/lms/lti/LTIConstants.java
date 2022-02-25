@@ -90,6 +90,8 @@ public class LTIConstants {
 
 //    "$Canvas.user.sisSourceId"
 
+    public static final String JWKS_CONFIG_URI = "/.well-known/jwks.json";
+
     private LTIConstants() {
     }
 }

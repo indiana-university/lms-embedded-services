@@ -41,13 +41,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+import static edu.iu.uits.lms.lti.LTIConstants.JWKS_CONFIG_URI;
+
 @RestController
 public class JWKSController {
 
     @Autowired
     private Lti13Service lti13Service;
 
-    @GetMapping("/.well-known/jwks.json")
+    @GetMapping(JWKS_CONFIG_URI)
     public Map<String, Object> keys() {
         RSAKey jks = lti13Service.getJKS();
         return jks.toJSONObject();

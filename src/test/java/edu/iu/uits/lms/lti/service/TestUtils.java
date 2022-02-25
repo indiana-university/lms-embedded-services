@@ -35,12 +35,16 @@ package edu.iu.uits.lms.lti.service;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
 import edu.iu.uits.lms.lti.LTIConstants;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
 import uk.ac.ox.ctl.lti13.lti.Claims;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,6 +76,24 @@ public class TestUtils {
             AuthorityUtils.createAuthorityList(TestUtils.defaultRole(), role),
             "unit_test", "the_state");
       return token;
+   }
+
+   public static Jwt createJwtToken(String client) {
+      return createJwtToken(client, client);
+   }
+
+   public static Jwt createJwtToken(String client, String username) {
+      Jwt jwt = Jwt.withTokenValue("fake-token")
+            .header("typ", "JWT")
+            .header("alg", SignatureAlgorithm.RS256.getValue())
+            .claim("user_name", username)
+            .claim("client_id", client)
+            .notBefore(Instant.now())
+            .expiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
+            .subject(client)
+            .build();
+
+      return jwt;
    }
 
 }

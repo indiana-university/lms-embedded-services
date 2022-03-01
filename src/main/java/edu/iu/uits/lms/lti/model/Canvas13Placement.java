@@ -51,6 +51,9 @@ import java.util.Map;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Canvas13Placement {
 
+    // Constant for the window target
+    public static final String WINDOW_TARGET_BLANK = "_blank";
+
     public enum MessageType {LtiResourceLinkRequest, LtiDeepLinkingRequest};
 
     public enum Placement {
@@ -95,5 +98,8 @@ public class Canvas13Placement {
     private String targetLinkUri;
     private String canvasIconClass;
     private Map<String, String> customFields;
+
+    @JsonProperty("windowTarget")
+    private String windowTarget;
 
 }

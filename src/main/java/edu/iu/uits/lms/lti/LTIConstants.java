@@ -79,16 +79,18 @@ public class LTIConstants {
 
     public static final String CLAIMS_NAMEROLESERVICE_MEMBERSHIPS_URL_KEY = "context_memberships_url";
 
+    public static final String CLAIMS_FAMILY_NAME_KEY = "family_name";
+    public static final String CLAIMS_GIVEN_NAME_KEY = "given_name";
+
     public static final String CUSTOM_CANVAS_COURSE_ID_KEY = "canvas_course_id";
     public static final String CUSTOM_CANVAS_USER_ID_KEY = "canvas_user_id";
     public static final String CUSTOM_CANVAS_USER_LOGIN_ID_KEY = "canvas_user_login_id";
-//    public static final String CUSTOM_CANVAS_USER_SIS_ID_KEY = "canvas_user_id";
+    public static final String CUSTOM_CANVAS_USER_SIS_ID_KEY = "canvas_user_sis_id";
 
     public static final String CUSTOM_CANVAS_COURSE_ID_VAL = "$Canvas.course.id";
     public static final String CUSTOM_CANVAS_USER_ID_VAL = "$Canvas.user.id";
     public static final String CUSTOM_CANVAS_USER_LOGIN_ID_VAL = "$Canvas.user.loginId";
-
-//    "$Canvas.user.sisSourceId"
+    public static final String CUSTOM_CANVAS_USER_SIS_ID_VAL = "$Canvas.user.sisSourceId";
 
     public static final String JWKS_CONFIG_URI = "/.well-known/jwks.json";
 

@@ -33,25 +33,21 @@ package edu.iu.uits.lms.lti.service;
  * #L%
  */
 
+import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import uk.ac.ox.ctl.lti13.lti.Claims;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.util.Map;
 
+import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FAMILY_NAME_KEY;
+import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_GIVEN_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY;
+import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_SIS_ID_KEY;
 
 public class OidcTokenUtils {
-
-
-
-   /*
-           return Arrays.asList(CUSTOM_REDIRECT_URL_PROP, CUSTOM_CANVAS_COURSE_ID,
-              CUSTOM_CANVAS_USER_ID, CUSTOM_CANVAS_USER_LOGIN_ID, BasicLTIConstants.LIS_PERSON_NAME_FAMILY,
-              BasicLTIConstants.LIS_PERSON_NAME_GIVEN, BasicLTIConstants.LIS_PERSON_SOURCEDID, BasicLTIConstants.ROLES);
-    */
 
    public static String getCourseId(OidcAuthenticationToken token) {
       return getCustomValue(token, CUSTOM_CANVAS_COURSE_ID_KEY);
@@ -65,13 +61,35 @@ public class OidcTokenUtils {
       return getCustomValue(token, CUSTOM_CANVAS_USER_LOGIN_ID_KEY);
    }
 
-//   public static String getSisUserId() {
-//
-//   }
+   public static String getSisUserId(OidcAuthenticationToken token) {
+      return getCustomValue(token, CUSTOM_CANVAS_USER_SIS_ID_KEY);
+   }
+
+   public static String getPersonFamilyName(OidcAuthenticationToken token) {
+      Map<String, Object> attrMap = getAttributes(token);
+      String name = (String) attrMap.get(CLAIMS_FAMILY_NAME_KEY);
+      return name;
+   }
+
+   public static String getPersonGivenName(OidcAuthenticationToken token) {
+      Map<String, Object> attrMap = getAttributes(token);
+      String name = (String) attrMap.get(CLAIMS_GIVEN_NAME_KEY);
+      return name;
+   }
+
+   public static String[] getRoles(OidcAuthenticationToken token) {
+      Map<String, Object> attrMap = getAttributes(token);
+      JSONArray jsonObj = (JSONArray) attrMap.get(Claims.ROLES);
+      return jsonObj.toArray(String[]::new);
+   }
 
    public static String getCustomValue(OidcAuthenticationToken token, String key) {
-      Map<String, Object> attrMap = token.getPrincipal().getAttributes();
+      Map<String, Object> attrMap = getAttributes(token);
       JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
       return jsonObj.getAsString(key);
+   }
+
+   private static Map<String, Object> getAttributes(OidcAuthenticationToken token) {
+      return token.getPrincipal().getAttributes();
    }
 }

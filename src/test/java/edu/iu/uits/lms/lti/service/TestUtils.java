@@ -2,7 +2,7 @@ package edu.iu.uits.lms.lti.service;
 
 /*-
  * #%L
- * lms-canvas-multiclassmessenger
+ * LMS Canvas LTI Framework Services
  * %%
  * Copyright (C) 2015 - 2021 Indiana University
  * %%
@@ -62,15 +62,24 @@ public class TestUtils {
    }
 
    public static OidcAuthenticationToken buildToken(String username, String courseId, String role) {
+      JSONObject customMap = new JSONObject();
+      customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, courseId);
+
+      return buildToken(username, role, new HashMap<>(), customMap);
+   }
+
+   public static OidcAuthenticationToken buildToken(String username, String role, Map<String, Object> extraAttributes, JSONObject extraCustomAttributes) {
       final String nameAttributeKey = "sub";
       Map<String, Object> attributeMap = new HashMap<>();
       attributeMap.put(nameAttributeKey, username);
 
-      JSONObject customMap = new JSONObject();
-      if (courseId != null) {
-         customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, courseId);
+      if (extraAttributes != null) {
+         attributeMap.putAll(extraAttributes);
       }
-      attributeMap.put(Claims.CUSTOM, customMap);
+
+      JSONObject customMap = (JSONObject) attributeMap.computeIfAbsent(Claims.CUSTOM, k -> new JSONObject());
+      customMap.merge(extraCustomAttributes);
+
       OAuth2User oAuth2User = new DefaultOAuth2User(Collections.emptyList(), attributeMap, nameAttributeKey);
       OidcAuthenticationToken token = new OidcAuthenticationToken(oAuth2User,
             AuthorityUtils.createAuthorityList(TestUtils.defaultRole(), role),

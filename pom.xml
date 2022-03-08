@@ -10,7 +10,7 @@
     <groupId>edu.iu.uits.lms</groupId>
     <artifactId>lms-canvas-lti-framework</artifactId>
     <packaging>jar</packaging>
-    <version>5.0.5-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
     <name>LMS Canvas LTI Framework Services</name>
     <description>Shared services for the lms-canvas LTI tools around the LTI tool launch</description>
     <url>https://github.com/indiana-university/lms-canvas-lti-framework</url>

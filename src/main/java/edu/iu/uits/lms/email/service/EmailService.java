@@ -50,7 +50,7 @@ public class EmailService {
       return "[LMS " + emailServiceConfig.getEnv().toUpperCase() + " Notifications]";
    }
 
-   public void sendEmail(EmailDetails emailDetails, boolean digitallySign) throws LmsEmailTooBigException, MessagingException {
+   public void sendEmail(EmailDetails emailDetails, boolean digitallySign, String unsignedToEmailToUseInPreProd) throws LmsEmailTooBigException, MessagingException {
       String subject = emailDetails.getSubject();
       String body = emailDetails.getBody();
       String[] recipients = emailDetails.getRecipients();
@@ -92,7 +92,7 @@ public class EmailService {
                result = sendSignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, digitallySign, from);
             }
             if (!result.isSuccess() && ++count == maxTries) {
-               sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from);
+               sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from, unsignedToEmailToUseInPreProd);
                break;
             } else if (result.isSuccess()) {
                break;
@@ -102,7 +102,7 @@ public class EmailService {
          } catch (IOException e) {
             log.error("Bad email!", e);
             if (++count == maxTries) {
-               sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from);
+               sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from, unsignedToEmailToUseInPreProd);
                break;
             }
          }
@@ -176,9 +176,26 @@ public class EmailService {
     * @throws LmsEmailTooBigException Exception thrown when the email body is too big to send
     */
    private void sendUnsignedEmail(String[] recipients, String subject, String body, List<EmailServiceAttachment> emailServiceAttachmentList,
-                                  boolean enableHtml, Priority priority, String from) throws LmsEmailTooBigException, MessagingException, MailException {
+                                  boolean enableHtml, Priority priority, String from, String unsignedToEmailToUseInPreProd) throws LmsEmailTooBigException, MessagingException, MailException {
       log.warn("Sending unsigned email");
 
+      if (! "prd".equals(emailServiceConfig.getEnv())) {
+         String htmlNewLineString = enableHtml ? "<br />" : "";
+
+         String preBody = "** In production, this message will go to " + htmlNewLineString + "\r\n";
+
+         for (String recipient : recipients) {
+            preBody += String.format(" - TO: %s "  + htmlNewLineString + "\r\n", recipient);
+         }
+
+         body = preBody + "\r\n" + body;
+
+         recipients = new String[] {   unsignedToEmailToUseInPreProd != null &&
+               unsignedToEmailToUseInPreProd.trim().length() > 0
+               ? unsignedToEmailToUseInPreProd
+               : emailServiceConfig.getDefaultUnsignedTo() };
+
+      }
 
       MimeMessage message = javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);

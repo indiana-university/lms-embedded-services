@@ -34,44 +34,46 @@ package edu.iu.uits.lms.lti.controller;
  */
 
 import edu.iu.uits.lms.common.session.CourseSessionService;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
+import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import javax.servlet.http.HttpSession;
 
 /**
- * Created by chmaurer on 12/3/15.
+ * Created by chmaurer on 2/17/22.
  */
-public class LtiAuthenticationTokenAwareController {
+public class OidcTokenAwareController {
 
     public static final String SESSION_TOKEN_KEY = "session_token_key";
 
     /**
      * Get the authn token from the SecurityContext
      * @param context Context from a request to compare against the token's context
-     * @return A validated LtiAuthenticationToken
+     * @return A validated OidcUserAuthority
      * @throws InvalidTokenContextException Throws exception if no token was found, or if the context doesn't match
      */
-    protected LtiAuthenticationToken getValidatedToken(String context) throws InvalidTokenContextException {
+    protected OidcAuthenticationToken getValidatedToken(String context) throws InvalidTokenContextException {
         return getValidatedToken(context, null);
     }
 
-    protected LtiAuthenticationToken getValidatedToken(String context, CourseSessionService courseSessionService) throws InvalidTokenContextException {
-        LtiAuthenticationToken token = null;
+    protected OidcAuthenticationToken getValidatedToken(String context, CourseSessionService courseSessionService) throws InvalidTokenContextException {
+        OidcAuthenticationToken token = null;
         Authentication authToken = SecurityContextHolder.getContext().getAuthentication();
 
         if (authToken == null) {
             throw new InvalidTokenContextException("No authentication token found");
         }
 
-        if (authToken instanceof LtiAuthenticationToken) {
-            token = (LtiAuthenticationToken) authToken;
+        if (authToken instanceof OidcAuthenticationToken) {
+            token = (OidcAuthenticationToken) authToken;
 
             if (courseSessionService == null) {
-                boolean contextMatch = context.equals(token.getContext());
+                String tokenContext = OidcTokenUtils.getCourseId(token);
+                boolean contextMatch = context.equals(tokenContext);
 
                 if (! contextMatch) {
                     throw new InvalidTokenContextException("Context in authentication token does not match request context");
@@ -80,7 +82,7 @@ public class LtiAuthenticationTokenAwareController {
                 ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
                 HttpSession session = servletRequestAttributes.getRequest().getSession(false);
 
-                LtiAuthenticationToken sessionToken = courseSessionService.getAttributeFromSession(session, context, SESSION_TOKEN_KEY, LtiAuthenticationToken.class);
+                OidcAuthenticationToken sessionToken = courseSessionService.getAttributeFromSession(session, context, SESSION_TOKEN_KEY, OidcAuthenticationToken.class);
 
                 if (sessionToken == null) {
                     throw new InvalidTokenContextException("Context in authentication token does not match any session context");
@@ -95,11 +97,11 @@ public class LtiAuthenticationTokenAwareController {
     /**
      * Get the authn token from the SecurityContext. Only use this method if you do not have a
      * context/course id (ie SiteRequest or Multiclass Messenger)
-     * @return a validated LtiAuthenticationToken
+     * @return a validated OidcUserAuthority
      * @throws InvalidTokenContextException throws exception if not token was found
      */
-    protected LtiAuthenticationToken getTokenWithoutContext() {
-        LtiAuthenticationToken token = null;
+    protected OidcAuthenticationToken getTokenWithoutContext() {
+        OidcAuthenticationToken token = null;
 
         Authentication authToken = SecurityContextHolder.getContext().getAuthentication();
 
@@ -107,8 +109,8 @@ public class LtiAuthenticationTokenAwareController {
             throw new InvalidTokenContextException("No authentication token found");
         }
 
-        if (authToken instanceof LtiAuthenticationToken) {
-            token = (LtiAuthenticationToken) authToken;
+        if (authToken instanceof OidcAuthenticationToken) {
+            token = (OidcAuthenticationToken) authToken;
         }
 
         return token;

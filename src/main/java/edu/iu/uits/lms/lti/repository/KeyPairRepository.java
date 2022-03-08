@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.lti.config;
+package edu.iu.uits.lms.lti.repository;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,26 +33,12 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import edu.iu.uits.lms.lti.model.KeyPair;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+@Component
+public interface KeyPairRepository extends PagingAndSortingRepository<KeyPair, Long> {
 
-/**
- * Add this annotation to an {@code @Configuration} class to expose the
- * various lti APIs as beans.
- * @since 4.0.5
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Import({LtiClientConfig.class, })
-@Configuration(proxyBeanMethods = false)
-public @interface EnableLtiClient {
-
-   String[] toolKeys();
+   KeyPair findFirstByOrderByIdAsc();
 }

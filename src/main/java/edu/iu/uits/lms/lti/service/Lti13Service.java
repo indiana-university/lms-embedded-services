@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.lti.config;
+package edu.iu.uits.lms.lti.service;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,46 +33,31 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.model.ServerConfig;
+import com.nimbusds.jose.jwk.RSAKey;
+import edu.iu.uits.lms.lti.model.KeyPair;
+import edu.iu.uits.lms.lti.repository.KeyPairRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.stereotype.Service;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-@ControllerAdvice
+@Service
 @Slf4j
-public class ApplicationErrorController {
-    @Autowired
-    private ServerConfig serverConfig;
+public class Lti13Service {
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(AccessDeniedException.class)
-    public String handleAccessDeniedException(Model model, Exception exception) {
-        if (serverConfig == null || serverConfig.getAccessDeniedViewName() == null || serverConfig.getAccessDeniedViewName().equals(ServerConfig.NOT_SET)) {
-            return handleAllExceptions(model, exception);
-        }
-        else {
-            return serverConfig.getAccessDeniedViewName();
-        }
-    }
+   @Autowired
+   private KeyPairRepository keyPairRepository = null;
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception.class)
-    public String handleAllExceptions(Model model, Exception exception) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        exception.printStackTrace(printWriter);
+   public RSAKey getJKS() {
+      KeyPair pair = keyPairRepository.findFirstByOrderByIdAsc();
 
-        model.addAttribute("message", "An unexpected error has occurred.");
-        model.addAttribute("error", stringWriter.toString());
+      if (pair == null) {
+         throw new RuntimeException("No keys to be able to sign for the access token");
+      }
 
-        return "error";
-    }
+      RSAKey key = KeyServiceUtil.convert(pair);
+
+      return key;
+   }
+
+
 }

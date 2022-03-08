@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.lti.service;
+package edu.iu.uits.lms.lti.controller;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,19 +33,26 @@ package edu.iu.uits.lms.lti.service;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
-import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
+import com.nimbusds.jose.jwk.RSAKey;
+import edu.iu.uits.lms.lti.service.Lti13Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Service
-public class LtiAuthorizationServiceImpl {
+import java.util.Map;
+
+import static edu.iu.uits.lms.lti.LTIConstants.JWKS_CONFIG_URI;
+
+@RestController
+public class JWKSController {
 
     @Autowired
-    private LtiAuthorizationRepository ltiAuthorizationRepository = null;
+    private Lti13Service lti13Service;
 
-    public LmsLtiAuthz findByKeyContextActive(String consumerKey, String context) {
-        return ltiAuthorizationRepository.findByKeyContextActive(consumerKey, context);
+    @GetMapping(JWKS_CONFIG_URI)
+    public Map<String, Object> keys() {
+        RSAKey jks = lti13Service.getJKS();
+        return jks.toJSONObject();
     }
 
 }

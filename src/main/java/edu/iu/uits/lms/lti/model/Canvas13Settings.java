@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.lti.security;
+package edu.iu.uits.lms.lti.model;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,51 +33,28 @@ package edu.iu.uits.lms.lti.security;
  * #L%
  */
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.Collection;
 
-/**
- * Created by chmaurer on 6/17/15.
- */
-public class LtiAuthenticationToken extends AbstractAuthenticationToken implements Serializable {
+@Data
+@Builder
+@Setter(AccessLevel.NONE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class Canvas13Settings {
 
-    private final Object principal;
-    private final String context;
-    private final String systemId;
-    private final String toolId;
+    private String text;
+    private String iconUrl;
+    private String selectionHeight;
+    private String selectionWidth;
+    private Lti13Config.PrivacyLevel privacyLevel;
+    private Collection<Canvas13Placement> placements;
 
-    public LtiAuthenticationToken(Object principal, String context, String systemId, Collection<? extends GrantedAuthority> authorities, String toolId) {
-
-        super(authorities);
-        this.principal = principal;
-        this.context = context;
-        this.systemId = systemId;
-        this.toolId = toolId;
-        setAuthenticated(true);
-    }
-
-    @Override
-    public Object getCredentials() {
-        return "";
-    }
-
-    @Override
-    public Object getPrincipal() {
-        return principal;
-    }
-
-    public String getContext() {
-        return context;
-    }
-
-    public String getSystemId() {
-        return systemId;
-    }
-
-    public String getToolId() {
-        return toolId;
-    }
 }

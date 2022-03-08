@@ -8,18 +8,18 @@ package edu.iu.uits.lms.lti.config;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,9 +33,13 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
+import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
+import edu.iu.uits.lms.lti.service.LtiAuthorizationService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -43,15 +47,28 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.ImportAware;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ComponentScan(basePackages = "edu.iu.uits.lms.lti",
       excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
@@ -60,7 +77,64 @@ import java.util.Map;
       transactionManagerRef = "ltiTransactionMgr",
       basePackageClasses = LtiAuthorizationRepository.class)
 @Slf4j
-public class LtiClientConfig {
+public class LtiClientConfig implements ImportAware {
+
+   @Lazy
+   @Autowired
+   private LtiAuthorizationService ltiAuthorizationService = null;
+
+   private List<String> toolKeys;
+
+   @Value("https://${canvas.host}")
+   private String canvasBaseUrl;
+
+   @Override
+   public void setImportMetadata(AnnotationMetadata annotationMetadata) {
+      Map<String, Object> attributeMap = annotationMetadata
+            .getAnnotationAttributes(EnableLtiClient.class.getName());
+      AnnotationAttributes attributes = AnnotationAttributes.fromMap(attributeMap);
+
+      String[] keys = attributes.getStringArray("toolKeys");
+      toolKeys = Arrays.asList(keys);
+   }
+
+   @Bean
+   public ClientRegistrationRepository clientRegistrationRepository() {
+      List<ClientRegistration> registrations = toolKeys.stream()
+            .map(this::getCanvasBuilder)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+      return new InMemoryClientRegistrationRepository(registrations);
+   }
+
+   public ClientRegistration getCanvasBuilder(String toolKey) {
+      ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(toolKey)
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .authorizationGrantType(AuthorizationGrantType.IMPLICIT)
+//      builder.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE);
+//      builder.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS);
+
+            .redirectUri("{baseUrl}/lti/login")
+            .scope("openid")
+            .authorizationUri(canvasBaseUrl + "/api/lti/authorize_redirect")
+            .tokenUri(canvasBaseUrl + "/login/oauth2/token")
+            .jwkSetUri(canvasBaseUrl + "/api/lti/security/jwks")
+
+            // Issuer should always be https://canvas.instructure.com and not match your institutional/env url
+            .issuerUri("https://canvas.instructure.com")
+            .userNameAttributeName("sub")
+            .clientName(toolKey);
+
+      // Use toolKey to lookup client and secret
+      LmsLtiAuthz ltiAuthz = ltiAuthorizationService.findByRegistrationActive(toolKey);
+      if (ltiAuthz != null) {
+         builder.clientId(ltiAuthz.getClientId())
+               .clientSecret(ltiAuthz.getSecret());
+      }
+      return builder.build();
+   }
+
 
    @ConditionalOnMissingBean
    @Bean(name = "ltiDataSource")

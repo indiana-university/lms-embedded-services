@@ -4,7 +4,7 @@ package edu.iu.uits.lms.lti.controller;
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,22 +33,18 @@ package edu.iu.uits.lms.lti.controller;
  * #L%
  */
 
-/**
- * Created with IntelliJ IDEA.
- * User: chmaurer
- * Date: 11/12/14
- * Time: 2:21 PM
- * To change this template use File | Settings | File Templates.
- */
-/**
- * Exception class for tracking certain types of errors
- * @author chmaurer
- *
- */
-public class LTIException extends RuntimeException {
-    private static final long serialVersionUID = -2890251603390152099L;
+import com.nimbusds.jose.jwk.RSAKey;
+import edu.iu.uits.lms.lti.service.Lti13Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-    public LTIException(String msg, String detail, Throwable t) {
-        super(msg + ": " + detail, t);
-    }
+public class ConfigurationController {
+
+   @Autowired
+   private Lti13Service lti13Service;
+
+   protected RSAKey getJKS() {
+      RSAKey jks = lti13Service.getJKS();
+      return jks;
+   }
+
 }

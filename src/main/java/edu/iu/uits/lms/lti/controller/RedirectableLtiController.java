@@ -35,13 +35,12 @@ package edu.iu.uits.lms.lti.controller;
 
 import edu.iu.uits.lms.common.variablereplacement.MacroVariableMapper;
 import edu.iu.uits.lms.common.variablereplacement.VariableReplacementService;
-import org.tsugi.basiclti.BasicLTIConstants;
+import edu.iu.uits.lms.lti.service.OidcTokenUtils;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
-import java.util.Map;
+public abstract class RedirectableLtiController extends OidcTokenAwareController {
 
-public abstract class RedirectableLtiController extends LtiController {
-
-   public static final String CUSTOM_REDIRECT_URL_PROP = "custom_redirect_url";
+   public static final String CUSTOM_REDIRECT_URL_PROP = "redirect_url";
 
    /**
     * Get the VariableReplacementService
@@ -52,21 +51,24 @@ public abstract class RedirectableLtiController extends LtiController {
    /**
     * Do any variable replacement in the inputUrl
     * @param inputUrl Input url, potentially containing variables
-    * @param launchParams Map of launch parameters
     * @return New url with variables replaced
     */
-   protected String performMacroVariableReplacement(String inputUrl, Map<String, String> launchParams) {
+   protected String performMacroVariableReplacement(String inputUrl) {
+      OidcAuthenticationToken token = getTokenWithoutContext();
+      String canvasCourseId = OidcTokenUtils.getCourseId(token);
+      String userLoginId = OidcTokenUtils.getUserLoginId(token);
+      String sisUserId = OidcTokenUtils.getSisUserId(token);
+      String familyName = OidcTokenUtils.getPersonFamilyName(token);
+      String givenName = OidcTokenUtils.getPersonGivenName(token);
+      String[] roles = OidcTokenUtils.getRoles(token);
+
       MacroVariableMapper macroVariableMapper = new MacroVariableMapper();
 
-      macroVariableMapper.setUserLastName(launchParams.get(BasicLTIConstants.LIS_PERSON_NAME_FAMILY));
-      macroVariableMapper.setUserFirstName(launchParams.get(BasicLTIConstants.LIS_PERSON_NAME_GIVEN));
-      macroVariableMapper.setUserNetworkId(launchParams.get(CUSTOM_CANVAS_USER_LOGIN_ID));
-      macroVariableMapper.setUserId(launchParams.get(BasicLTIConstants.LIS_PERSON_SOURCEDID));
+      macroVariableMapper.setUserLastName(familyName);
+      macroVariableMapper.setUserFirstName(givenName);
+      macroVariableMapper.setUserNetworkId(userLoginId);
+      macroVariableMapper.setUserId(sisUserId);
 
-      String extRoles = launchParams.get(BasicLTIConstants.ROLES);
-      String[] roles = extRoles.split(",");
-
-      String canvasCourseId = launchParams.get(CUSTOM_CANVAS_COURSE_ID);
       macroVariableMapper.setCanvasCourseId(canvasCourseId);
 
       VariableReplacementService variableReplacementService = getVariableReplacementService();

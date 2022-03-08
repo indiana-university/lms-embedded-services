@@ -61,9 +61,8 @@ public class LtiAuthorizationRestController {
 
     @GetMapping("/")
     @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
-    public LmsLtiAuthz findByKeyContextActive(@RequestParam("consumerKey") String consumerKey,
-                                              @RequestParam("context") String context) {
-        return ltiAuthorizationRepository.findByKeyContextActive(consumerKey, context);
+    public LmsLtiAuthz findByRegistrationActive(@RequestParam("registrationId") String registrationId) {
+        return ltiAuthorizationRepository.findByRegistrationActive(registrationId);
     }
 
     @GetMapping("/{id}")
@@ -88,11 +87,11 @@ public class LtiAuthorizationRestController {
     public LmsLtiAuthz updateAuthz(@PathVariable("id") Long id, @RequestBody LmsLtiAuthz lmsLtiAuthz) {
         LmsLtiAuthz updatedAuthz = ltiAuthorizationRepository.findById(id).orElse(null);
 
-        if (lmsLtiAuthz.getConsumerKey() != null) {
-            updatedAuthz.setConsumerKey(lmsLtiAuthz.getConsumerKey());
+        if (lmsLtiAuthz.getRegistrationId() != null) {
+            updatedAuthz.setRegistrationId(lmsLtiAuthz.getRegistrationId());
         }
-        if (lmsLtiAuthz.getContext() != null) {
-            updatedAuthz.setContext(lmsLtiAuthz.getContext());
+        if (lmsLtiAuthz.getClientId() != null) {
+            updatedAuthz.setClientId(lmsLtiAuthz.getClientId());
         }
         if (lmsLtiAuthz.getSecret() != null) {
             updatedAuthz.setSecret(lmsLtiAuthz.getSecret());

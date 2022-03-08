@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.lti.security;
+package edu.iu.uits.lms.lti.model;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,37 +33,47 @@ package edu.iu.uits.lms.lti.security;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import java.util.Date;
 
-@Slf4j
-public class OpenAuthenticationProvider implements AuthenticationProvider {
-   public OpenAuthenticationProvider() {
-      super();
-      log.info("OpenAuthenticationProvider()");
-   }
+@Entity
+@Table(name = "LTI_KEY_PAIRS")
+@SequenceGenerator(name = "LTI_KEY_PAIR_ID_SEQ", sequenceName = "LTI_KEY_PAIR_ID_SEQ", allocationSize = 1)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class KeyPair {
+   @Id
+   @Column(name = "LTI_KEY_PAIR_ID")
+   @GeneratedValue(generator = "LTI_KEY_PAIR_ID_SEQ")
+   private Long id;
 
-   @Override
-   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-      log.info("authenticate()");
-      List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList();
-      if (authentication instanceof OpenAuthenticationToken) {
-         return new OpenAuthenticationToken(authentication.getPrincipal(), authorities);
+   @Column(name = "PRIVATE_KEY")
+   private String privateKey;
+
+   @Column(name = "PUBLIC_KEY")
+   private String publicKey;
+
+   private Date created;
+   private Date modified;
+
+   @PreUpdate
+   @PrePersist
+   public void updateTimeStamps() {
+      modified = new Date();
+      if (created==null) {
+         created = new Date();
       }
-      return null;
-   }
-
-   @Override
-   public boolean supports(Class<?> authentication) {
-      log.info("supports()");
-      return OpenAuthenticationToken.class.isAssignableFrom(authentication) ||
-            UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
    }
 }

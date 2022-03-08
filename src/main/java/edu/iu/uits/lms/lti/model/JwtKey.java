@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.lti.security;
+package edu.iu.uits.lms.lti.model;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,34 +33,16 @@ package edu.iu.uits.lms.lti.security;
  * #L%
  */
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
+import lombok.Data;
 
-import java.util.Collection;
+import java.io.Serializable;
 
-/**
- * Created by chmaurer on 6/17/15.
- */
-public class OpenAuthenticationToken extends AbstractAuthenticationToken {
-
-
-    private final Object principal;
-
-    public OpenAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities) {
-
-        super(authorities);
-        this.principal = principal;
-        setAuthenticated(true);
-    }
-
-    @Override
-    public Object getCredentials() {
-        return "";
-    }
-
-    @Override
-    public Object getPrincipal() {
-        return principal;
-    }
-
+@Data
+public class JwtKey implements Serializable {
+   private String e;
+   private String use;
+   private String alg;
+   private String kty;
+   private String n;
+   private String kid;
 }

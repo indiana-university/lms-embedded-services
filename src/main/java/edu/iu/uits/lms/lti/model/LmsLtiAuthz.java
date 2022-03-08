@@ -47,35 +47,34 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.Date;
 
 /**
  * Created by chmaurer on 2/13/15.
  */
 @Entity
-@Table(name = "LTI_AUTHZ")
+@Table(name = "LTI_13_AUTHZ", uniqueConstraints = @UniqueConstraint(name = "UK_LTI_AUTH_REG", columnNames = {"REGISTRATION_ID"}))
 @NamedQueries({
-        @NamedQuery(name = "LmsLtiAuthz.findByKeyContextActive", query = "from LmsLtiAuthz where consumerKey = :consumerKey and " +
-                "(context = :context or context = '" + LmsLtiAuthz.CONTEXT_WILDCARD + "') and active = true"),
+        @NamedQuery(name = "LmsLtiAuthz.findByRegistrationActive", query = "from LmsLtiAuthz where registrationId = :registrationId and active = true"),
         @NamedQuery(name = "LmsLtiAuthz.findById", query = "from LmsLtiAuthz where ltiAuthzId = :id and active = true"),
 })
-@SequenceGenerator(name = "LTI_AUTHZ_ID_SEQ", sequenceName = "LTI_AUTHZ_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "LTI_13_AUTHZ_ID_SEQ", sequenceName = "LTI_13_AUTHZ_ID_SEQ", allocationSize = 1)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LmsLtiAuthz {
 
-    protected static final String CONTEXT_WILDCARD = "*";
-
     @Id
-    @Column(name = "LTI_AUTHZ_ID")
-    @GeneratedValue(generator = "LTI_AUTHZ_ID_SEQ")
+    @Column(name = "LTI_13_AUTHZ_ID")
+    @GeneratedValue(generator = "LTI_13_AUTHZ_ID_SEQ")
     private Long ltiAuthzId;
 
-    @Column(name = "CONSUMER_KEY")
-    private String consumerKey;
+    @Column(name = "REGISTRATION_ID")
+    private String registrationId;
 
-    private String context;
+    @Column(name = "CLIENT_ID")
+    private String clientId;
     private String secret;
     private boolean active;
     private Date created;

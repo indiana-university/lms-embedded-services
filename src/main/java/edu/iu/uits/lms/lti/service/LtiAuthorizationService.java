@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.lti.config;
+package edu.iu.uits.lms.lti.service;
 
 /*-
  * #%L
@@ -33,46 +33,19 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.model.ServerConfig;
-import lombok.extern.slf4j.Slf4j;
+import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
+import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.stereotype.Service;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+@Service
+public class LtiAuthorizationService {
 
-@ControllerAdvice
-@Slf4j
-public class ApplicationErrorController {
     @Autowired
-    private ServerConfig serverConfig;
+    private LtiAuthorizationRepository ltiAuthorizationRepository = null;
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(AccessDeniedException.class)
-    public String handleAccessDeniedException(Model model, Exception exception) {
-        if (serverConfig == null || serverConfig.getAccessDeniedViewName() == null || serverConfig.getAccessDeniedViewName().equals(ServerConfig.NOT_SET)) {
-            return handleAllExceptions(model, exception);
-        }
-        else {
-            return serverConfig.getAccessDeniedViewName();
-        }
+    public LmsLtiAuthz findByRegistrationActive(String registrationId) {
+        return ltiAuthorizationRepository.findByRegistrationActive(registrationId);
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception.class)
-    public String handleAllExceptions(Model model, Exception exception) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        exception.printStackTrace(printWriter);
-
-        model.addAttribute("message", "An unexpected error has occurred.");
-        model.addAttribute("error", stringWriter.toString());
-
-        return "error";
-    }
 }

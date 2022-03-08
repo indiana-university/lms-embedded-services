@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.lti.config;
+package edu.iu.uits.lms.lti.model;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,26 +33,32 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Setter;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+@Data
+@Builder
+@Setter(AccessLevel.NONE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class Canvas13Extension {
 
-/**
- * Add this annotation to an {@code @Configuration} class to expose the
- * various lti APIs as beans.
- * @since 4.0.5
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Import({LtiClientConfig.class, })
-@Configuration(proxyBeanMethods = false)
-public @interface EnableLtiClient {
+    // Constant for the instructure platform
+    public static final String INSTRUCTURE = "canvas.instructure.com";
 
-   String[] toolKeys();
+    private String domain;
+
+    private String toolId;
+
+    private String platform;
+
+    private Lti13Config.PrivacyLevel privacyLevel;
+
+    private Canvas13Settings settings;
+
 }

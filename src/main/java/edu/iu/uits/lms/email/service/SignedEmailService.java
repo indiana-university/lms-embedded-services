@@ -34,7 +34,7 @@ package edu.iu.uits.lms.email.service;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.iu.security.Aws4AuthUtil;
+import edu.iu.ess.security.Aws4AuthUtil;
 import edu.iu.uits.lms.email.config.SignedEmailServiceConfig;
 import edu.iu.uits.lms.email.model.sis.Message;
 import edu.iu.uits.lms.email.model.sis.Result;

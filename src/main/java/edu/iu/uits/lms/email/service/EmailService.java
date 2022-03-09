@@ -83,6 +83,10 @@ public class EmailService {
       return "[LMS " + emailServiceConfig.getEnv().toUpperCase() + " Notifications]";
    }
 
+   public void sendEmail(EmailDetails emailDetails, boolean digitallySign) throws LmsEmailTooBigException, MessagingException {
+      sendEmail(emailDetails, digitallySign, null);
+   }
+
    public void sendEmail(EmailDetails emailDetails, boolean digitallySign, String unsignedToEmailToUseInPreProd) throws LmsEmailTooBigException, MessagingException {
       String subject = emailDetails.getSubject();
       String body = emailDetails.getBody();

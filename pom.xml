@@ -58,15 +58,6 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <!-- The iu maven repository is needed for the edu.iu.ess:iu-util dependency    -->
-    <repositories>
-        <repository>
-            <id>IUMaven</id>
-            <name>IUMaven</name>
-            <url>https://uisapp2.iu.edu/nxs-prd/content/groups/public</url>
-        </repository>
-    </repositories>
-
     <scm>
         <connection>scm:git:https://github.com/indiana-university/lms-canvas-email-service.git</connection>
         <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-email-service.git</developerConnection>

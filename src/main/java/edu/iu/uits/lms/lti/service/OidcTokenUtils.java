@@ -42,6 +42,7 @@ import java.util.Map;
 
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FAMILY_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_GIVEN_NAME_KEY;
+import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_PLATFORM_GUID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY;
@@ -81,6 +82,12 @@ public class OidcTokenUtils {
       Map<String, Object> attrMap = getAttributes(token);
       JSONArray jsonObj = (JSONArray) attrMap.get(Claims.ROLES);
       return jsonObj.toArray(String[]::new);
+   }
+
+   public static String getPlatformGuid(OidcAuthenticationToken token) {
+      Map<String, Object> attrMap = getAttributes(token);
+      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.PLATFORM_INSTANCE);
+      return jsonObj.getAsString(CLAIMS_PLATFORM_GUID_KEY);
    }
 
    public static String getCustomValue(OidcAuthenticationToken token, String key) {

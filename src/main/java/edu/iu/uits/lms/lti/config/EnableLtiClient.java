@@ -55,4 +55,8 @@ import java.lang.annotation.Target;
 public @interface EnableLtiClient {
 
    String[] toolKeys();
+
+   boolean enableClientRepository() default true;
+
+   boolean enableNamesRoleService() default false;
 }

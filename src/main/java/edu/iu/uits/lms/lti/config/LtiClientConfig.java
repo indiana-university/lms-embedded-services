@@ -33,8 +33,10 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
+import com.nimbusds.jose.JOSEException;
 import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
+import edu.iu.uits.lms.lti.service.Lti13Service;
 import edu.iu.uits.lms.lti.service.LtiAuthorizationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +62,15 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.context.support.GenericWebApplicationContext;
+import uk.ac.ox.ctl.lti13.KeyPairService;
+import uk.ac.ox.ctl.lti13.SingleKeyPairService;
+import uk.ac.ox.ctl.lti13.TokenRetriever;
+import uk.ac.ox.ctl.lti13.nrps.NamesRoleService;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.security.KeyPair;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +91,13 @@ public class LtiClientConfig implements ImportAware {
    @Autowired
    private LtiAuthorizationService ltiAuthorizationService = null;
 
+   @Lazy
+   @Autowired
+   private Lti13Service lti13Service = null;
+
+   @Autowired
+   private GenericWebApplicationContext context;
+
    private List<String> toolKeys;
 
    @Value("https://${canvas.host}")
@@ -96,9 +111,30 @@ public class LtiClientConfig implements ImportAware {
 
       String[] keys = attributes.getStringArray("toolKeys");
       toolKeys = Arrays.asList(keys);
+
+      boolean enableClientRepository = attributes.getBoolean("enableClientRepository");
+
+      if (enableClientRepository) {
+         ClientRegistrationRepository clientRegistrationRepository = clientRegistrationRepository();
+         context.registerBean(ClientRegistrationRepository.class, clientRegistrationRepository);
+
+         boolean enableNamesRoleService = attributes.getBoolean("enableNamesRoleService");
+
+         if (enableNamesRoleService) {
+            try {
+               KeyPair keyPair = lti13Service.getJKS().toKeyPair();
+               KeyPairService keyPairService = new SingleKeyPairService(keyPair);
+               TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+               context.registerBean(NamesRoleService.class, new NamesRoleService(clientRegistrationRepository, tokenRetriever));
+            } catch (JOSEException e) {
+               log.error("Unable to configure NamesRoleService", e);
+            }
+         }
+      }
+
+
    }
 
-   @Bean
    public ClientRegistrationRepository clientRegistrationRepository() {
       List<ClientRegistration> registrations = toolKeys.stream()
             .map(this::getCanvasBuilder)

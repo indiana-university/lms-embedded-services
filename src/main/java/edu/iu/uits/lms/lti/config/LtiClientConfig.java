@@ -91,12 +91,12 @@ public class LtiClientConfig implements ImportAware {
    @Autowired
    private LtiAuthorizationService ltiAuthorizationService = null;
 
-   @Lazy
-   @Autowired
-   private Lti13Service lti13Service = null;
-
-   @Autowired
-   private GenericWebApplicationContext context;
+//   @Lazy
+//   @Autowired
+//   private Lti13Service lti13Service = null;
+//
+//   @Autowired
+//   private GenericWebApplicationContext context;
 
    private List<String> toolKeys;
 
@@ -114,27 +114,28 @@ public class LtiClientConfig implements ImportAware {
 
       boolean enableClientRepository = attributes.getBoolean("enableClientRepository");
 
-      if (enableClientRepository) {
-         ClientRegistrationRepository clientRegistrationRepository = clientRegistrationRepository();
-         context.registerBean(ClientRegistrationRepository.class, clientRegistrationRepository);
-
-         boolean enableNamesRoleService = attributes.getBoolean("enableNamesRoleService");
-
-         if (enableNamesRoleService) {
-            try {
-               KeyPair keyPair = lti13Service.getJKS().toKeyPair();
-               KeyPairService keyPairService = new SingleKeyPairService(keyPair);
-               TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
-               context.registerBean(NamesRoleService.class, new NamesRoleService(clientRegistrationRepository, tokenRetriever));
-            } catch (JOSEException e) {
-               log.error("Unable to configure NamesRoleService", e);
-            }
-         }
-      }
+//      if (enableClientRepository) {
+//         ClientRegistrationRepository clientRegistrationRepository = clientRegistrationRepository();
+//         context.registerBean(ClientRegistrationRepository.class, clientRegistrationRepository);
+//
+//         boolean enableNamesRoleService = attributes.getBoolean("enableNamesRoleService");
+//
+//         if (enableNamesRoleService) {
+//            try {
+//               KeyPair keyPair = lti13Service.getJKS().toKeyPair();
+//               KeyPairService keyPairService = new SingleKeyPairService(keyPair);
+//               TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+//               context.registerBean(NamesRoleService.class, new NamesRoleService(clientRegistrationRepository, tokenRetriever));
+//            } catch (JOSEException e) {
+//               log.error("Unable to configure NamesRoleService", e);
+//            }
+//         }
+//      }
 
 
    }
 
+   @Bean
    public ClientRegistrationRepository clientRegistrationRepository() {
       List<ClientRegistration> registrations = toolKeys.stream()
             .map(this::getCanvasBuilder)

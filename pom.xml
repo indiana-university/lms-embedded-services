@@ -10,7 +10,7 @@
     <groupId>edu.iu.uits.lms</groupId>
     <artifactId>lms-canvas-lti-framework</artifactId>
     <packaging>jar</packaging>
-    <version>5.1.1-SNAPSHOT</version>
+    <version>5.1.2-SNAPSHOT</version>
     <name>LMS Canvas LTI Framework Services</name>
     <description>Shared services for the lms-canvas LTI tools around the LTI tool launch</description>
     <url>https://github.com/indiana-university/lms-canvas-lti-framework</url>
@@ -171,6 +171,7 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${plugins.compiler.version}</version>
                 <configuration>

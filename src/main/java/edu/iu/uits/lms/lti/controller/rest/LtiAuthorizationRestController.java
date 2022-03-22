@@ -61,8 +61,8 @@ public class LtiAuthorizationRestController {
 
     @GetMapping("/")
     @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
-    public LmsLtiAuthz findByRegistrationActive(@RequestParam("registrationId") String registrationId) {
-        return ltiAuthorizationRepository.findByRegistrationActive(registrationId);
+    public LmsLtiAuthz findByRegistrationEnvActive(@RequestParam("registrationId") String registrationId, @RequestParam("env") String env) {
+        return ltiAuthorizationRepository.findByRegistrationEnvActive(registrationId, env);
     }
 
     @GetMapping("/{id}")

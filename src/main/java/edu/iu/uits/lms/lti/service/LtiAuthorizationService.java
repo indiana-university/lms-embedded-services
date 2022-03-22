@@ -44,8 +44,8 @@ public class LtiAuthorizationService {
     @Autowired
     private LtiAuthorizationRepository ltiAuthorizationRepository = null;
 
-    public LmsLtiAuthz findByRegistrationActive(String registrationId) {
-        return ltiAuthorizationRepository.findByRegistrationActive(registrationId);
+    public LmsLtiAuthz findByRegistrationEnvActive(String registrationId, String env) {
+        return ltiAuthorizationRepository.findByRegistrationEnvActive(registrationId, env);
     }
 
 }

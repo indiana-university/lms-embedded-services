@@ -54,9 +54,9 @@ import java.util.Date;
  * Created by chmaurer on 2/13/15.
  */
 @Entity
-@Table(name = "LTI_13_AUTHZ", uniqueConstraints = @UniqueConstraint(name = "UK_LTI_AUTH_REG", columnNames = {"REGISTRATION_ID"}))
+@Table(name = "LTI_13_AUTHZ", uniqueConstraints = @UniqueConstraint(name = "UK_LTI_AUTH_REG_ENV", columnNames = {"REGISTRATION_ID", "ENV"}))
 @NamedQueries({
-        @NamedQuery(name = "LmsLtiAuthz.findByRegistrationActive", query = "from LmsLtiAuthz where registrationId = :registrationId and active = true"),
+        @NamedQuery(name = "LmsLtiAuthz.findByRegistrationEnvActive", query = "from LmsLtiAuthz where registrationId = :registrationId and env = :env and active = true"),
         @NamedQuery(name = "LmsLtiAuthz.findById", query = "from LmsLtiAuthz where ltiAuthzId = :id and active = true"),
 })
 @SequenceGenerator(name = "LTI_13_AUTHZ_ID_SEQ", sequenceName = "LTI_13_AUTHZ_ID_SEQ", allocationSize = 1)
@@ -79,6 +79,9 @@ public class LmsLtiAuthz {
     private boolean active;
     private Date created;
     private Date modified;
+
+    @Column(name = "ENV", length = 5)
+    private String env;
 
     @PreUpdate
     @PrePersist

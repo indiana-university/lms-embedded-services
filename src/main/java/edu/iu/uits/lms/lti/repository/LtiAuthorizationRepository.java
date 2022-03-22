@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 @Component
 public interface LtiAuthorizationRepository extends PagingAndSortingRepository<LmsLtiAuthz, Long> {
 
-    LmsLtiAuthz findByRegistrationActive(@Param("registrationId") String registrationId);
+    LmsLtiAuthz findByRegistrationEnvActive(@Param("registrationId") String registrationId, @Param("env") String env);
 
     LmsLtiAuthz findById(@Param("id") String id);
 }

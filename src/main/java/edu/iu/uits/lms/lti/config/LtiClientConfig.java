@@ -62,7 +62,6 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.web.context.support.GenericWebApplicationContext;
 import uk.ac.ox.ctl.lti13.KeyPairService;
 import uk.ac.ox.ctl.lti13.SingleKeyPairService;
 import uk.ac.ox.ctl.lti13.TokenRetriever;
@@ -91,14 +90,14 @@ public class LtiClientConfig implements ImportAware {
    @Autowired
    private LtiAuthorizationService ltiAuthorizationService = null;
 
-//   @Lazy
-//   @Autowired
-//   private Lti13Service lti13Service = null;
-//
-//   @Autowired
-//   private GenericWebApplicationContext context;
+   @Lazy
+   @Autowired
+   private Lti13Service lti13Service = null;
 
    private List<String> toolKeys;
+
+   @Value("${app.env}")
+   private String env;
 
    @Value("https://${canvas.host}")
    private String canvasBaseUrl;
@@ -111,28 +110,14 @@ public class LtiClientConfig implements ImportAware {
 
       String[] keys = attributes.getStringArray("toolKeys");
       toolKeys = Arrays.asList(keys);
+   }
 
-      boolean enableClientRepository = attributes.getBoolean("enableClientRepository");
-
-//      if (enableClientRepository) {
-//         ClientRegistrationRepository clientRegistrationRepository = clientRegistrationRepository();
-//         context.registerBean(ClientRegistrationRepository.class, clientRegistrationRepository);
-//
-//         boolean enableNamesRoleService = attributes.getBoolean("enableNamesRoleService");
-//
-//         if (enableNamesRoleService) {
-//            try {
-//               KeyPair keyPair = lti13Service.getJKS().toKeyPair();
-//               KeyPairService keyPairService = new SingleKeyPairService(keyPair);
-//               TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
-//               context.registerBean(NamesRoleService.class, new NamesRoleService(clientRegistrationRepository, tokenRetriever));
-//            } catch (JOSEException e) {
-//               log.error("Unable to configure NamesRoleService", e);
-//            }
-//         }
-//      }
-
-
+   @Bean
+   public NamesRoleService namesRoleService() throws JOSEException {
+      KeyPair keyPair = lti13Service.getJKS().toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair);
+      TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+      return new NamesRoleService(clientRegistrationRepository(), tokenRetriever);
    }
 
    @Bean
@@ -141,6 +126,15 @@ public class LtiClientConfig implements ImportAware {
             .map(this::getCanvasBuilder)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
+
+      if (registrations.isEmpty()) {
+         //Add a dummy registration since it cannot be empty
+         registrations.add(ClientRegistration.withRegistrationId("dummy")
+               .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+               .tokenUri("dummy")
+               .clientId("dummy")
+               .build());
+      }
 
       return new InMemoryClientRegistrationRepository(registrations);
    }
@@ -164,7 +158,7 @@ public class LtiClientConfig implements ImportAware {
             .clientName(toolKey);
 
       // Use toolKey to lookup client and secret
-      LmsLtiAuthz ltiAuthz = ltiAuthorizationService.findByRegistrationActive(toolKey);
+      LmsLtiAuthz ltiAuthz = ltiAuthorizationService.findByRegistrationEnvActive(toolKey, env);
       if (ltiAuthz != null) {
          builder.clientId(ltiAuthz.getClientId())
                .clientSecret(ltiAuthz.getSecret());

@@ -86,6 +86,6 @@ public class LmsDefaultGrantedAuthoritiesMapper implements GrantedAuthoritiesMap
    protected List<String> getDefaultInstructorRoles() {
       return Arrays.asList(Role.System.ADMINISTRATOR, Role.System.ACCOUNT_ADMIN, Role.System.SYS_ADMIN,
             Role.Institution.ADMINISTRATOR, Role.Institution.INSTRUCTOR, Role.Institution.FACULTY,
-            Role.Context.ADMINISTRATOR, Role.Context.INSTRUCTOR);
+            Role.Context.ADMINISTRATOR, Role.Context.INSTRUCTOR, "Instructor", "Administrator");
    }
 }

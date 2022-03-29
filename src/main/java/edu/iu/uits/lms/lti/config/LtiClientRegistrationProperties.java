@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.lti.controller;
+package edu.iu.uits.lms.lti.config;
 
 /*-
  * #%L
@@ -33,33 +33,33 @@ package edu.iu.uits.lms.lti.controller;
  * #L%
  */
 
-import com.nimbusds.jose.jwk.RSAKey;
-import edu.iu.uits.lms.lti.service.Lti13Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static edu.iu.uits.lms.lti.LTIConstants.JWKS_CONFIG_URI;
-import static edu.iu.uits.lms.lti.LTIConstants.JWKS_PUB_CONFIG_URI;
+@Component
+@ConfigurationProperties(prefix = "lti.clientregistration")
+@Getter
+@Setter
+public class LtiClientRegistrationProperties {
 
-@RestController
-public class JWKSController {
+   private String defaultClient;
 
-    @Autowired
-    private Lti13Service lti13Service;
+   private Map<String, RegistrationDetails> clients;
 
-    @GetMapping(JWKS_CONFIG_URI)
-    public Map<String, Object> keys() {
-        RSAKey jks = lti13Service.getJKS();
-        return jks.toJSONObject();
-    }
+   public RegistrationDetails getDefaultRegistrationDetails() {
+      return clients.get(defaultClient);
+   }
 
-    @GetMapping(JWKS_PUB_CONFIG_URI)
-    public Map<String, Object> pubjwk() {
-        RSAKey jks = lti13Service.getJKS();
-        return jks.toPublicJWK().toJSONObject();
-    }
-
+   @Getter
+   @Setter
+   protected static class RegistrationDetails {
+      private String issuer;
+      private String authzUrl;
+      private String tokenUri;
+      private String jwkSetUri;
+   }
 }

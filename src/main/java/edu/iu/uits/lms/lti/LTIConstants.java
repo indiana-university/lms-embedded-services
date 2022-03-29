@@ -94,7 +94,10 @@ public class LTIConstants {
     public static final String CUSTOM_CANVAS_USER_LOGIN_ID_VAL = "$Canvas.user.loginId";
     public static final String CUSTOM_CANVAS_USER_SIS_ID_VAL = "$Canvas.user.sisSourceId";
 
-    public static final String JWKS_CONFIG_URI = "/.well-known/jwks.json";
+    public static final String WELL_KNOWN_PATH = "/.well-known";
+    public static final String WELL_KNOWN_ALL = WELL_KNOWN_PATH + "/**";
+    public static final String JWKS_CONFIG_URI = WELL_KNOWN_PATH + "/jwks.json";
+    public static final String JWKS_PUB_CONFIG_URI = WELL_KNOWN_PATH + "/jwks_pub.json";
 
     private LTIConstants() {
     }

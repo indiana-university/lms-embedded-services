@@ -99,8 +99,8 @@ public class LtiClientConfig implements ImportAware {
    @Value("${app.env}")
    private String env;
 
-   @Value("https://${canvas.host}")
-   private String canvasBaseUrl;
+   @Autowired
+   private LtiClientRegistrationProperties ltiClientRegistrationProperties;
 
    @Override
    public void setImportMetadata(AnnotationMetadata annotationMetadata) {
@@ -123,7 +123,7 @@ public class LtiClientConfig implements ImportAware {
    @Bean
    public ClientRegistrationRepository clientRegistrationRepository() {
       List<ClientRegistration> registrations = toolKeys.stream()
-            .map(this::getCanvasBuilder)
+            .map(this::getRegistrationBuilder)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
@@ -139,7 +139,9 @@ public class LtiClientConfig implements ImportAware {
       return new InMemoryClientRegistrationRepository(registrations);
    }
 
-   public ClientRegistration getCanvasBuilder(String toolKey) {
+   public ClientRegistration getRegistrationBuilder(String toolKey) {
+      LtiClientRegistrationProperties.RegistrationDetails registrationDetails = ltiClientRegistrationProperties.getDefaultRegistrationDetails();
+
       ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(toolKey)
             .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
             .authorizationGrantType(AuthorizationGrantType.IMPLICIT)
@@ -148,12 +150,10 @@ public class LtiClientConfig implements ImportAware {
 
             .redirectUri("{baseUrl}/lti/login")
             .scope("openid")
-            .authorizationUri(canvasBaseUrl + "/api/lti/authorize_redirect")
-            .tokenUri(canvasBaseUrl + "/login/oauth2/token")
-            .jwkSetUri(canvasBaseUrl + "/api/lti/security/jwks")
-
-            // Issuer should always be https://canvas.instructure.com and not match your institutional/env url
-            .issuerUri("https://canvas.instructure.com")
+            .authorizationUri(registrationDetails.getAuthzUrl())
+            .tokenUri(registrationDetails.getTokenUri())
+            .jwkSetUri(registrationDetails.getJwkSetUri())
+            .issuerUri(registrationDetails.getIssuer())
             .userNameAttributeName("sub")
             .clientName(toolKey);
 

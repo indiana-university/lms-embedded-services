@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 import static edu.iu.uits.lms.lti.LTIConstants.JWKS_CONFIG_URI;
+import static edu.iu.uits.lms.lti.LTIConstants.JWKS_PUB_CONFIG_URI;
 
 @RestController
 public class JWKSController {
@@ -53,6 +54,12 @@ public class JWKSController {
     public Map<String, Object> keys() {
         RSAKey jks = lti13Service.getJKS();
         return jks.toJSONObject();
+    }
+
+    @GetMapping(JWKS_PUB_CONFIG_URI)
+    public Map<String, Object> pubjwk() {
+        RSAKey jks = lti13Service.getJKS();
+        return jks.toPublicJWK().toJSONObject();
     }
 
 }

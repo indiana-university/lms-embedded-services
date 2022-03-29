@@ -189,6 +189,7 @@
                     <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
                     <excludes>
                         <exclude>**/lti-api-config.properties</exclude>
+                        <exclude>**/lti-registrations.properties</exclude>
                     </excludes>
                 </configuration>
             </plugin>

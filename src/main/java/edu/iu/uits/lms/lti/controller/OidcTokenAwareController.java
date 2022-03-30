@@ -72,7 +72,8 @@ public class OidcTokenAwareController {
             token = (OidcAuthenticationToken) authToken;
 
             if (courseSessionService == null) {
-                String tokenContext = OidcTokenUtils.getCourseId(token);
+                OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+                String tokenContext = oidcTokenUtils.getCourseId();
                 boolean contextMatch = context.equals(tokenContext);
 
                 if (! contextMatch) {

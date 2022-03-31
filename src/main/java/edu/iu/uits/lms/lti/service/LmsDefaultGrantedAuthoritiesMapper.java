@@ -34,6 +34,7 @@ package edu.iu.uits.lms.lti.service;
  */
 
 import edu.iu.uits.lms.lti.LTIConstants;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -46,6 +47,15 @@ import java.util.List;
 
 @Slf4j
 public class LmsDefaultGrantedAuthoritiesMapper implements GrantedAuthoritiesMapper {
+
+   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+
+   public LmsDefaultGrantedAuthoritiesMapper() {}
+
+   public LmsDefaultGrantedAuthoritiesMapper(DefaultInstructorRoleRepository defaultInstructorRoleRepository) {
+      this.defaultInstructorRoleRepository = defaultInstructorRoleRepository;
+   }
+
    @Override
    public Collection<? extends GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
       List<GrantedAuthority> remappedAuthorities = new ArrayList<>();
@@ -82,10 +92,7 @@ public class LmsDefaultGrantedAuthoritiesMapper implements GrantedAuthoritiesMap
    }
 
    protected List<String> getDefaultInstructorRoles() {
-//      return Arrays.asList(Role.System.ADMINISTRATOR, Role.System.ACCOUNT_ADMIN, Role.System.SYS_ADMIN,
-//            Role.Institution.ADMINISTRATOR, Role.Institution.INSTRUCTOR, Role.Institution.FACULTY,
-//            Role.Context.ADMINISTRATOR, Role.Context.INSTRUCTOR, "Instructor", "Administrator");
-
-      return Arrays.asList("TeacherEnrollment", "Account Admin", "Instructor", "Administrator");
+      List<String> allInstructorRoles = defaultInstructorRoleRepository.findInstructorRoles();
+      return allInstructorRoles;
    }
 }

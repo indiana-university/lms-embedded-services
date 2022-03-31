@@ -33,6 +33,7 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.repository.KeyPairRepository;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import edu.iu.uits.lms.lti.service.Lti13Service;
@@ -76,5 +77,8 @@ public class LtiClientTestConfig {
 
    @MockBean
    public NamesRoleService namesRoleService;
+
+   @MockBean
+   public DefaultInstructorRoleRepository defaultInstructorRoleRepository;
 
 }

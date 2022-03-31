@@ -35,7 +35,9 @@ package edu.iu.uits.lms.lti.config;
 
 import com.nimbusds.jose.JOSEException;
 import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
+import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.lti.service.Lti13Service;
 import edu.iu.uits.lms.lti.service.LtiAuthorizationService;
 import lombok.extern.slf4j.Slf4j;
@@ -102,6 +104,10 @@ public class LtiClientConfig implements ImportAware {
    @Autowired
    private LtiClientRegistrationProperties ltiClientRegistrationProperties;
 
+   @Lazy
+   @Autowired
+   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+
    @Override
    public void setImportMetadata(AnnotationMetadata annotationMetadata) {
       Map<String, Object> attributeMap = annotationMetadata
@@ -118,6 +124,11 @@ public class LtiClientConfig implements ImportAware {
       KeyPairService keyPairService = new SingleKeyPairService(keyPair);
       TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
       return new NamesRoleService(clientRegistrationRepository(), tokenRetriever);
+   }
+
+   @Bean
+   public LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper() {
+      return new LmsDefaultGrantedAuthoritiesMapper(defaultInstructorRoleRepository);
    }
 
    @Bean

@@ -44,59 +44,76 @@ import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FAMILY_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_GIVEN_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_PLATFORM_GUID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY;
+import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_SIS_ID_KEY;
 
 public class OidcTokenUtils {
 
-   public static String getCourseId(OidcAuthenticationToken token) {
-      return getCustomValue(token, CUSTOM_CANVAS_COURSE_ID_KEY);
+   private Map<String, Object> attrMap;
+
+   /**
+    * Constructor to initialize using the token.  Will typically be used by tool controllers.
+    * @param token
+    */
+   public OidcTokenUtils(OidcAuthenticationToken token) {
+      this.attrMap = token.getPrincipal().getAttributes();
    }
 
-   public static String getUserId(OidcAuthenticationToken token) {
-      return getCustomValue(token, CUSTOM_CANVAS_USER_ID_KEY);
+   /**
+    * Constructor to initialize with an attribute map
+    * @param attributeMap
+    */
+   public OidcTokenUtils(Map<String, Object> attributeMap) {
+      this.attrMap = attributeMap;
    }
 
-   public static String getUserLoginId(OidcAuthenticationToken token) {
-      return getCustomValue(token, CUSTOM_CANVAS_USER_LOGIN_ID_KEY);
+   public String getCourseId() {
+      return getCustomValue(CUSTOM_CANVAS_COURSE_ID_KEY);
    }
 
-   public static String getSisUserId(OidcAuthenticationToken token) {
-      return getCustomValue(token, CUSTOM_CANVAS_USER_SIS_ID_KEY);
+   public String getUserId() {
+      return getCustomValue(CUSTOM_CANVAS_USER_ID_KEY);
    }
 
-   public static String getPersonFamilyName(OidcAuthenticationToken token) {
-      Map<String, Object> attrMap = getAttributes(token);
+   public String getUserLoginId() {
+      return getCustomValue(CUSTOM_CANVAS_USER_LOGIN_ID_KEY);
+   }
+
+   public String getSisUserId() {
+      return getCustomValue(CUSTOM_CANVAS_USER_SIS_ID_KEY);
+   }
+
+   public String getPersonFamilyName() {
       String name = (String) attrMap.get(CLAIMS_FAMILY_NAME_KEY);
       return name;
    }
 
-   public static String getPersonGivenName(OidcAuthenticationToken token) {
-      Map<String, Object> attrMap = getAttributes(token);
+   public String getPersonGivenName() {
       String name = (String) attrMap.get(CLAIMS_GIVEN_NAME_KEY);
       return name;
    }
 
-   public static String[] getRoles(OidcAuthenticationToken token) {
-      Map<String, Object> attrMap = getAttributes(token);
+   public String[] getRoles() {
       JSONArray jsonObj = (JSONArray) attrMap.get(Claims.ROLES);
       return jsonObj.toArray(String[]::new);
    }
 
-   public static String getPlatformGuid(OidcAuthenticationToken token) {
-      Map<String, Object> attrMap = getAttributes(token);
+   public String[] getCustomCanvasMembershipRoles() {
+      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
+      String roleStr = jsonObj.getAsString(CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY);
+      return roleStr.split(",");
+   }
+
+   public String getPlatformGuid() {
       JSONObject jsonObj = (JSONObject) attrMap.get(Claims.PLATFORM_INSTANCE);
       return jsonObj.getAsString(CLAIMS_PLATFORM_GUID_KEY);
    }
 
-   public static String getCustomValue(OidcAuthenticationToken token, String key) {
-      Map<String, Object> attrMap = getAttributes(token);
+   public String getCustomValue(String key) {
       JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
       return jsonObj.getAsString(key);
    }
 
-   private static Map<String, Object> getAttributes(OidcAuthenticationToken token) {
-      return token.getPrincipal().getAttributes();
-   }
 }

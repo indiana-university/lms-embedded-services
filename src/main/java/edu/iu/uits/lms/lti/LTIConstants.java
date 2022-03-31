@@ -88,6 +88,7 @@ public class LTIConstants {
     public static final String CUSTOM_CANVAS_USER_ID_KEY = "canvas_user_id";
     public static final String CUSTOM_CANVAS_USER_LOGIN_ID_KEY = "canvas_user_login_id";
     public static final String CUSTOM_CANVAS_USER_SIS_ID_KEY = "canvas_user_sis_id";
+    public static final String CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY = "canvas_membership_roles";
 
     public static final String CUSTOM_CANVAS_COURSE_ID_VAL = "$Canvas.course.id";
     public static final String CUSTOM_CANVAS_USER_ID_VAL = "$Canvas.user.id";

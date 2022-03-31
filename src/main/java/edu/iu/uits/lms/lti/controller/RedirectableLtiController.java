@@ -55,12 +55,13 @@ public abstract class RedirectableLtiController extends OidcTokenAwareController
     */
    protected String performMacroVariableReplacement(String inputUrl) {
       OidcAuthenticationToken token = getTokenWithoutContext();
-      String canvasCourseId = OidcTokenUtils.getCourseId(token);
-      String userLoginId = OidcTokenUtils.getUserLoginId(token);
-      String sisUserId = OidcTokenUtils.getSisUserId(token);
-      String familyName = OidcTokenUtils.getPersonFamilyName(token);
-      String givenName = OidcTokenUtils.getPersonGivenName(token);
-      String[] roles = OidcTokenUtils.getRoles(token);
+      OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+      String canvasCourseId = oidcTokenUtils.getCourseId();
+      String userLoginId = oidcTokenUtils.getUserLoginId();
+      String sisUserId = oidcTokenUtils.getSisUserId();
+      String familyName = oidcTokenUtils.getPersonFamilyName();
+      String givenName = oidcTokenUtils.getPersonGivenName();
+      String[] roles = oidcTokenUtils.getRoles();
 
       MacroVariableMapper macroVariableMapper = new MacroVariableMapper();
 

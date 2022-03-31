@@ -44,6 +44,7 @@ import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FAMILY_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_GIVEN_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_PLATFORM_GUID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY;
+import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_SIS_ID_KEY;
@@ -101,7 +102,7 @@ public class OidcTokenUtils {
 
    public String[] getCustomCanvasMembershipRoles() {
       JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
-      String roleStr = jsonObj.getAsString("canvas_membership_roles");
+      String roleStr = jsonObj.getAsString(CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY);
       return roleStr.split(",");
    }
 

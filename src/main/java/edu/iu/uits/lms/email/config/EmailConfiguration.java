@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.email.model.sis;
+package edu.iu.uits.lms.email.config;
 
 /*-
  * #%L
@@ -33,26 +33,23 @@ package edu.iu.uits.lms.email.model.sis;
  * #L%
  */
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.Serializable;
+@Configuration
+@ComponentScan(basePackages = "edu.iu.uits.lms.email")
+public class EmailConfiguration {
 
-@Data
-@NoArgsConstructor
-@RequiredArgsConstructor
-public class Attachment implements Serializable {
-   public enum TYPE {
-      text, binary
+   @Bean
+   public RestTemplate sisRestTemplate() {
+      RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
+
+//        restTemplate.getInterceptors().add(new LoggingRequestInterceptor());
+      return restTemplate;
    }
 
-   @NonNull
-   private TYPE type;
-   private String fileName;
-   @NonNull
-   private String contentType;
-   @NonNull
-   private String content;
 }

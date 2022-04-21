@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.email.model.sis;
+package edu.iu.uits.lms.email.config;
 
 /*-
  * #%L
@@ -33,26 +33,31 @@ package edu.iu.uits.lms.email.model.sis;
  * #L%
  */
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.OAuthFlow;
+import io.swagger.v3.oas.annotations.security.OAuthFlows;
+import io.swagger.v3.oas.annotations.security.OAuthScope;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springdoc.core.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
-import java.io.Serializable;
+@Profile("emailrest & swagger")
+@Configuration("EmailSwaggerConfig")
+@SecurityScheme(name = "security_auth_email", type = SecuritySchemeType.OAUTH2,
+      flows = @OAuthFlows(authorizationCode = @OAuthFlow(
+            authorizationUrl = "${springdoc.oAuthFlow.authorizationUrl}",
+            scopes = {@OAuthScope(name = "email:send")},
+            tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
+public class SwaggerConfig {
 
-@Data
-@NoArgsConstructor
-@RequiredArgsConstructor
-public class Attachment implements Serializable {
-   public enum TYPE {
-      text, binary
+   @Bean
+   public GroupedOpenApi emailOpenApi() {
+      return GroupedOpenApi.builder()
+            .group("email")
+            .packagesToScan("edu.iu.uits.lms.email")
+            .pathsToMatch("/rest/email/**")
+            .build();
    }
-
-   @NonNull
-   private TYPE type;
-   private String fileName;
-   @NonNull
-   private String contentType;
-   @NonNull
-   private String content;
 }

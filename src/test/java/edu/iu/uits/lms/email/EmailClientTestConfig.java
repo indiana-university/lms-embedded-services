@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.email.model.sis;
+package edu.iu.uits.lms.email;
 
 /*-
  * #%L
@@ -33,26 +33,22 @@ package edu.iu.uits.lms.email.model.sis;
  * #L%
  */
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import edu.iu.uits.lms.email.config.EmailServiceConfig;
+import edu.iu.uits.lms.email.service.SignedEmailService;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.javamail.JavaMailSender;
 
-import java.io.Serializable;
+@TestConfiguration
+public class EmailClientTestConfig {
 
-@Data
-@NoArgsConstructor
-@RequiredArgsConstructor
-public class Attachment implements Serializable {
-   public enum TYPE {
-      text, binary
-   }
+   @MockBean
+   private JavaMailSender javaMailSender;
 
-   @NonNull
-   private TYPE type;
-   private String fileName;
-   @NonNull
-   private String contentType;
-   @NonNull
-   private String content;
+   @MockBean
+   private EmailServiceConfig emailServiceConfig;
+
+   @MockBean
+   private SignedEmailService signedEmailService;
+
 }

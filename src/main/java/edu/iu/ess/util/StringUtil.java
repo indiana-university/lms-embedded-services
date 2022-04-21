@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.email.model.sis;
+package edu.iu.ess.util;
 
 /*-
  * #%L
@@ -33,26 +33,30 @@ package edu.iu.uits.lms.email.model.sis;
  * #L%
  */
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+public final class StringUtil {
 
-import java.io.Serializable;
-
-@Data
-@NoArgsConstructor
-@RequiredArgsConstructor
-public class Attachment implements Serializable {
-   public enum TYPE {
-      text, binary
+   private StringUtil() {
    }
 
-   @NonNull
-   private TYPE type;
-   private String fileName;
-   @NonNull
-   private String contentType;
-   @NonNull
-   private String content;
+   /**
+    * Mask all but the last characters of a string with the specified masking
+    * character.
+    *
+    * @param s The original string.
+    * @param m The masking character.
+    * @param n The number of chars at the end of the string to leave unmasked.
+    * @return masked string
+    */
+   public static String mask(String s, char m, int n) {
+      if (s == null || n >= s.length()) {
+         return s;
+      }
+      StringBuilder sb = new StringBuilder(s);
+      for (int i = 0; i < s.length() - n; i++) {
+         sb.setCharAt(i, m);
+      }
+      return sb.toString();
+   }
+
+
 }

@@ -73,7 +73,7 @@
 <!--        <jdk.source>11</jdk.source>-->
 <!--        <jdk.target>11</jdk.target>-->
         <lms-canvas-common-configuration.version>5.0.3</lms-canvas-common-configuration.version>
-        <springdoc-openapi-ui.version>1.6.5</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>1.6.7</springdoc-openapi-ui.version>
         <spring-security-lti13.version>0.0.2</spring-security-lti13.version>
 
         <plugins.compiler.version>3.8.1</plugins.compiler.version>
@@ -127,6 +127,7 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>${springdoc-openapi-ui.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>

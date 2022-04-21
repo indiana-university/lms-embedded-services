@@ -17,44 +17,29 @@ You can find the latest version in [Maven Central](https://search.maven.org/sear
 
 ## Setup Examples
 ### Include annotation to enable to the configs
-Add to any configuration class, or even the main application class `@EnableLtiClient`.
+Add to any configuration class, or even the main application class `@EnableLtiClient(toolKeys = {"example_tool_id"})`.
 
-Once that has been done, you can autowire in and use any canvas service.  Generally, you won't use them directly, but they are used in the default LTI Controller that you will extend.
+Replace `example_tool_id` with something that will uniquely identify your tool. Once that has been done, you can autowire in and use any lti service.  Generally, you won't use them directly, but they are used in various configurations.
 
-### Create a controller that extends LtiController
-This controller will handle the LTI launches from canvas, then redirect to your tool's main controller (via launch url below).
+### Override default role mappings
+Implement a class, similar to the below
 ```java
-// example lti controller
-public class MyToolLtiController extends LtiController {
+public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
    @Override
-   protected String getLaunchUrl(Map<String, String> paramMap) {
-      String courseId = launchParams.get(CUSTOM_CANVAS_COURSE_ID);
-      return courseId + "/index";
-   }
-
-   @Override
-   protected Map<String, String> getParametersForLaunch(Map<String, String> payload, Claims claims) {
-      Map<String, String> paramMap = new HashMap<String, String>(1);
-
-      paramMap.put(CUSTOM_CANVAS_COURSE_ID, payload.get(CUSTOM_CANVAS_COURSE_ID));
-      paramMap.put(BasicLTIConstants.ROLES, payload.get(BasicLTIConstants.ROLES));
-      paramMap.put(CUSTOM_CANVAS_USER_LOGIN_ID, payload.get(CUSTOM_CANVAS_USER_LOGIN_ID));
-
-      return paramMap;
-   }
-
-   @Override
-   protected String getToolContext() {
-      return "my_tool_context";
+   protected List<String> getDefaultInstructorRoles() {
+      return Arrays.asList("special", "roles", "here");
    }
 }
 ```
-There are other overridable methods that might be of interest.  Take a look and see!
+Then, just use that when configuring...
+```java
+Lti13Configurer lti13Configurer = new Lti13Configurer()
+      .grantedAuthoritiesMapper(new CustomRoleMapper());
+```
 
 ## Setup Database
 After compiling, see `target/generated-resources/sql/ddl/auto/postgresql9.sql` for appropriate ddl.
-Insert a record into the `LTI_AUTHZ` table with a key and secret.  The context should be defined by your tool's `getToolContext()` method, as implemented in the example above.
-A wildcard (`*`) is also acceptable in the database and is useful for testing multiple tools, but may not be recommended in production environments.
+Insert a record into the `LTI_13_AUTHZ` table with your tool's registration_id (`example_tool_id`, from above), along with the client_id and secret from Canvas's Developer Key.  An `env` designator is also required here, and allows a database to support multiple environments simultaneously (dev and reg, for example).
 
 ## Configuration
 If choosing to use properties files for the configuration values, the default location is `/usr/src/app/config`, but that can be overridden by setting the `app.fullFilePath` value via system property or environment variable.

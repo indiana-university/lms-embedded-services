@@ -282,7 +282,7 @@ public class BlueprintService extends SpringBaseService {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    private static class BlueprintConfiguration {
+    public static class BlueprintConfiguration {
         boolean enabled;
         BlueprintRestriction restrictions;
         boolean hasObjectRestrictions;

@@ -67,7 +67,7 @@ public class CanvasTerm implements Serializable {
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown=true)
-    public static class TermOverride {
+    public static class TermOverride implements Serializable {
 
         @JsonProperty("start_at")
         private String startAt;

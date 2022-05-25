@@ -36,6 +36,7 @@ package edu.iu.uits.lms.lti.controller.rest;
 import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,12 +50,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static edu.iu.uits.lms.lti.LTIConstants.READ_SCOPE;
+import static edu.iu.uits.lms.lti.LTIConstants.WRITE_SCOPE;
+
+@Profile("ltirest")
 @RestController
 @RequestMapping("/rest/lti/authz")
 public class LtiAuthorizationRestController {
-
-    protected final static String READ_SCOPE = "SCOPE_lti:read";
-    protected final static String WRITE_SCOPE = "SCOPE_lti:write";
 
     @Autowired
     private LtiAuthorizationRepository ltiAuthorizationRepository = null;

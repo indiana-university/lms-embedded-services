@@ -42,6 +42,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import static edu.iu.uits.lms.lti.LTIConstants.READ_SCOPE;
+import static edu.iu.uits.lms.lti.LTIConstants.WRITE_SCOPE;
+
 public class LtiRestConfiguration {
     @Profile("ltirest")
     @Configuration
@@ -53,7 +56,7 @@ public class LtiRestConfiguration {
                     .and()
                     .authorizeRequests()
                     .antMatchers("/rest/lti/**")
-                    .access("hasAuthority('SCOPE_lti:read') or hasAuthority('SCOPE_lti:write')")
+                    .access("hasAuthority('" + READ_SCOPE + "') or hasAuthority('" + WRITE_SCOPE + "')")
                     .and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()

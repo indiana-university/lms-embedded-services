@@ -35,6 +35,7 @@ package edu.iu.uits.lms.lti.config;
 
 import edu.iu.uits.lms.lti.model.ServerConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -56,6 +57,12 @@ public class GlobalErrorHandlerConfig implements ImportAware {
         return serverConfig;
     }
 
+    @Value("${lti.errorcontact.name}")
+    private String errorContactName;
+
+    @Value("${lti.errorcontact.link}")
+    private String errorContactLink;
+
     @Override
     public void setImportMetadata(AnnotationMetadata annotationMetadata) {
         Map<String, Object> attributeMap = annotationMetadata
@@ -65,6 +72,6 @@ public class GlobalErrorHandlerConfig implements ImportAware {
         String rivetPath = attributes.getString("rivetPath");
         String accessDeniedViewName = attributes.getString("accessDeniedViewName");
 
-        serverConfig = new ServerConfig(rivetPath, accessDeniedViewName);
+        serverConfig = new ServerConfig(rivetPath, accessDeniedViewName, errorContactName, errorContactLink);
     }
 }

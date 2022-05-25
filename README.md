@@ -48,12 +48,22 @@ If choosing to use properties files for the configuration values, the default lo
 The following properties need to be set to configure the communication with a database.
 They can be set in a security.properties file, or overridden as environment variables.
 
-| Property | Description |
-|-------|----------------|
-| `lms.db.user`         | Username used to access the database |
-| `lms.db.url`          | JDBC URL of the database.  Will have the form `jdbc:<host>:<port>/<database>` |
-| `lms.db.driverClass`  | JDBC Driver class name |
-| `lms.db.password`     | Password for the user accessing the database |
+| Property             | Description                                                                   |
+|----------------------|-------------------------------------------------------------------------------|
+| `lms.db.user`        | Username used to access the database                                          |
+| `lms.db.url`         | JDBC URL of the database.  Will have the form `jdbc:<host>:<port>/<database>` |
+| `lms.db.driverClass` | JDBC Driver class name                                                        |
+| `lms.db.password`    | Password for the user accessing the database                                  |
+
+### Configure support contact information
+The following properties need to be set to configure the contact information on the global error page.
+They can be set in a security.properties file, or overridden as environment variables.
+
+| Property                | Description                                                                                               |
+|-------------------------|-----------------------------------------------------------------------------------------------------------|
+| `lti.errorcontact.name` | Display name for your support organization                                                                |
+| `lti.errorcontact.link` | Contact mechanism - URL or mailto:email (e.g. `http://support.school.edu` or `mailto:support@school.edu`) |
+
 
 ### Exposing the LTI authz REST endpoints
 If you would like to expose the LTI authz endpoints in a tool (for CRUD operations on the LTI authorizations), you will

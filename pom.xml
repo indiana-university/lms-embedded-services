@@ -68,7 +68,7 @@
     <properties>
         <common-configuration.version>5.0.3</common-configuration.version>
         <lms-canvas-services.version>5.0.2</lms-canvas-services.version>
-        <lms-iuonly-impl.version>5.0.2-SNAPSHOT</lms-iuonly-impl.version>
+        <lms-iuonly-impl.version>5.0.2</lms-iuonly-impl.version>
 
         <!-- plugins -->
         <plugins.compiler.version>3.10.0</plugins.compiler.version>

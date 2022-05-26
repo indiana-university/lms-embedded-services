@@ -43,12 +43,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import static edu.iu.uits.lms.lti.LTIConstants.READ;
+import static edu.iu.uits.lms.lti.LTIConstants.WRITE;
+
 @Profile("ltirest & swagger")
 @Configuration("LtiSwaggerConfig")
 @SecurityScheme(name = "security_auth_lti", type = SecuritySchemeType.OAUTH2,
       flows = @OAuthFlows(authorizationCode = @OAuthFlow(
             authorizationUrl = "${springdoc.oAuthFlow.authorizationUrl}",
-            scopes = {@OAuthScope(name = "lti:read"), @OAuthScope(name = "lti:write")},
+            scopes = {@OAuthScope(name = READ), @OAuthScope(name = WRITE)},
             tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
 public class SwaggerConfig {
 

@@ -38,6 +38,10 @@ package edu.iu.uits.lms.lti;
  */
 public class LTIConstants {
 
+    public final static String READ = "lti:read";
+    public final static String WRITE = "lti:write";
+    public final static String READ_SCOPE = "SCOPE_" + READ;
+    public final static String WRITE_SCOPE = "SCOPE_" + WRITE;
     public static final String AUTHORITY_ROLE_PREFIX = "ROLE_";
     public static final String ADMIN_ROLE = "LTI_ADMIN";
     public static final String INSTRUCTOR_ROLE = "LTI_INSTRUCTOR";

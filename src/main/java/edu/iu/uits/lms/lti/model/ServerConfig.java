@@ -43,4 +43,6 @@ public class ServerConfig {
 
     private String rivetPath;
     private String accessDeniedViewName;
+    private String errorContactName;
+    private String errorContactLink;
 }

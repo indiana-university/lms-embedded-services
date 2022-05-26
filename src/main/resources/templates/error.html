@@ -48,7 +48,7 @@
         <span th:unless="${message != null and #strings.length(message) > 0}">
             <span id="errorMessage">Your session with this tool has timed out.</span>
         </span>
-        <span>To access the tool, reload this page or relaunch the tool from Canvas. If the error persists, contact the <a href='https://kb.iu.edu/d/abxl' target='_blank'>UITS Support Center</a> for assistance.</span>
+        <span>To access the tool, reload this page or relaunch the tool from Canvas. If the error persists, contact the <a href='http://support.com' target='_blank' th:text="${@serverConfig.errorContactName}" th:href="${@serverConfig.errorContactLink}">Support Contact</a> for assistance.</span>
         <div th:if="${message != null and #strings.length(message) > 0}" class="rvt-collapsible rvt-collapsible--panel rvt-m-top-xs">
             <h3 class="rvt-collapsible__title">
                 <button id="stackTrace-label" data-collapsible="stackTrace" aria-expanded="false">

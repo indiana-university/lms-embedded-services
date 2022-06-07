@@ -12,7 +12,7 @@
     <artifactId>lms-iu-variable-replacement-service</artifactId>
     <name>lms-iu-variable-replacement-service</name>
     <packaging>jar</packaging>
-    <version>5.0.1</version>
+    <version>5.0.2-SNAPSHOT</version>
 
     <description>Shared services for handling url variable replacement details, used by redirect and reports</description>
     <url>https://github.com/indiana-university/lms-canvas-variable-replacement-service</url>
@@ -62,7 +62,7 @@
         <connection>scm:git:https://github.com/indiana-university/lms-canvas-variable-replacement-service.git</connection>
         <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-variable-replacement-service.git</developerConnection>
         <url>https://github.com/indiana-university/lms-canvas-variable-replacement-service</url>
-        <tag>lms-iu-variable-replacement-service-5.0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>

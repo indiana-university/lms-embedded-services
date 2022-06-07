@@ -33,28 +33,18 @@ package edu.iu.uits.lms.variablereplacement;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.config.EnableCanvasClient;
-import edu.iu.uits.lms.common.variablereplacement.VariableReplacementService;
-import edu.iu.uits.lms.iuonly.config.EnableIuOnlyClient;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.boot.actuate.info.Info;
+import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.stereotype.Component;
 
-@EnableIuOnlyClient
-@EnableCanvasClient
-@Slf4j
-@Configuration
-public class IUVariableReplacementConfig {
+@Component
+public class VariableReplacementInfoContributor implements InfoContributor {
 
-   public IUVariableReplacementConfig() {
-      log.debug("IUVariableReplacementConfig()");
+   @Override
+   public void contribute(Info.Builder builder) {
+      Package pkg = this.getClass().getPackage();
+      String version =  pkg != null ? pkg.getImplementationVersion() : null;
+      builder.withDetail("variable-replacement-service", version);
    }
 
-   @Bean
-   @Primary
-   public VariableReplacementService variableReplacementService(){
-      log.debug("Registering custom VariableReplacementServiceImpl");
-      return new IUVariableReplacementServiceImpl();
-   }
 }

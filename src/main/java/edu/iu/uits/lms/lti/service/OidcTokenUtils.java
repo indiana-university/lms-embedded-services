@@ -40,6 +40,7 @@ import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenti
 
 import java.util.Map;
 
+import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_EMAIL_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FAMILY_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_GIVEN_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_PLATFORM_GUID_KEY;
@@ -95,6 +96,11 @@ public class OidcTokenUtils {
       return name;
    }
 
+   public String getPersonEmail() {
+      String name = (String) attrMap.get(CLAIMS_EMAIL_KEY);
+      return name;
+   }
+
    public String[] getRoles() {
       JSONArray jsonObj = (JSONArray) attrMap.get(Claims.ROLES);
       return jsonObj.toArray(String[]::new);
@@ -113,6 +119,16 @@ public class OidcTokenUtils {
 
    public String getCustomValue(String key) {
       JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
+      return jsonObj.getAsString(key);
+   }
+
+   public String getContextValue(String key) {
+      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CONTEXT);
+      return jsonObj.getAsString(key);
+   }
+
+   public String getLisValue(String key) {
+      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.LIS);
       return jsonObj.getAsString(key);
    }
 

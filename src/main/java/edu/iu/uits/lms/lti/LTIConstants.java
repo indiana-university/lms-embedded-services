@@ -85,6 +85,12 @@ public class LTIConstants {
 
     public static final String CLAIMS_FAMILY_NAME_KEY = "family_name";
     public static final String CLAIMS_GIVEN_NAME_KEY = "given_name";
+    public static final String CLAIMS_EMAIL_KEY = "email";
+
+    public static final String CLAIMS_CONTEXT_TITLE_KEY = "title";
+    public static final String CLAIMS_CONTEXT_LABEL_KEY = "label";
+
+    public static final String CLAIMS_LIS_COURSE_OFFERING_SOURCEDID_KEY = "course_offering_sourcedid";
 
     public static final String CLAIMS_PLATFORM_GUID_KEY = "guid";
 

@@ -45,8 +45,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -181,9 +181,9 @@ public class LtiClientConfig implements ImportAware {
    @ConditionalOnMissingBean
    @Bean(name = "ltiDataSource")
    @ConfigurationProperties(prefix = "spring.datasource")
-   public DataSource dataSource() {
+   public DataSource dataSource(DataSourceProperties properties) {
       log.info("dataSource()");
-      return DataSourceBuilder.create().build();
+      return properties.initializeDataSourceBuilder().build();
    }
 
    @Bean(name = "ltiEntityMgrFactory")

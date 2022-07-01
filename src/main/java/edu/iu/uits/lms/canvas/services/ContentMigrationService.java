@@ -36,8 +36,11 @@ package edu.iu.uits.lms.canvas.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.ContentMigration;
+import edu.iu.uits.lms.canvas.model.ContentMigrationCreateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -68,7 +71,9 @@ public class ContentMigrationService extends SpringBaseService {
     *                    internal id. See {@link CanvasConstants} for API_FIELD options
     * @param fileUrl A URL to download the file from. Must not require authentication.
     * @return content migration
+    * @deprecated Use initiateContentMigration with the MIGRATION_TYPE_CC type
     */
+   @Deprecated(since = "5.0.8")
    public ContentMigration importCCIntoCourse(String courseId, String idFieldName, String fileUrl) {
       String altCourseId = buildAlternateId(courseId, idFieldName);
       URI uri = CREATE_COURSE_MIGRATION.expand(canvasConfiguration.getBaseApiUrl(), altCourseId);
@@ -95,6 +100,47 @@ public class ContentMigrationService extends SpringBaseService {
          } catch (IOException e) {
             log.error("Error parsing error message", e);
          }
+      }
+      return contentMigration;
+   }
+
+   /**
+    * Create a content migration
+    * @param courseId Course Id
+    * @param idFieldName Optional. Leave null if the id param given is the Canvas internal id. Otherwise,
+    *                    the Canvas Course API allows retrieving Course objects by identifiers other than the
+    *                    internal id. See {@link CanvasConstants} for API_FIELD options
+    * @param wrapper ContentMigrationCreateWrapper object used to create the content migration
+    * @return content migration
+    */
+   public ContentMigration initiateContentMigration(String courseId, String idFieldName, ContentMigrationCreateWrapper wrapper) {
+      String altCourseId = buildAlternateId(courseId, idFieldName);
+      URI uri = CREATE_COURSE_MIGRATION.expand(canvasConfiguration.getBaseApiUrl(), altCourseId);
+
+      UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+      log.debug("woooooo: " + builder.build().toUri());
+
+      ContentMigration contentMigration = null;
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      HttpEntity<ContentMigrationCreateWrapper> requestEntity = new HttpEntity<>(wrapper, headers);
+
+      try {
+         HttpEntity<ContentMigration> response = restTemplate.postForEntity(builder.build().toUri(), requestEntity, ContentMigration.class);
+         contentMigration = response.getBody();
+      } catch (HttpStatusCodeException rce) {
+         log.error("Error performing content migration for course: " + courseId, rce);
+         ObjectMapper mapper = new ObjectMapper();
+
+         try {
+            String status = mapper.readValue(rce.getResponseBodyAsString(), String.class);
+            log.error("Unable to begin a migration: " + status);
+         } catch (IOException e) {
+            log.error("Error parsing error message", e);
+         }
+      } catch (Exception e) {
+         log.error("Error performing content migration for course: " + courseId, e);
       }
       return contentMigration;
    }

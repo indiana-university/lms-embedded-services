@@ -35,6 +35,7 @@ package edu.iu.uits.lms.canvas.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
+import edu.iu.uits.lms.canvas.helpers.ContentMigrationHelper;
 import edu.iu.uits.lms.canvas.model.ContentMigration;
 import edu.iu.uits.lms.canvas.model.ContentMigrationCreateWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +82,7 @@ public class ContentMigrationService extends SpringBaseService {
       UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
       builder.queryParam("settings[file_url]", fileUrl);
-      builder.queryParam("migration_type", ContentMigration.MIGRATION_TYPE_CC);
+      builder.queryParam("migration_type", ContentMigrationHelper.MIGRATION_TYPE_CC);
 
       log.debug("woooooo: " + builder.build().toUri());
 

@@ -34,30 +34,24 @@ package edu.iu.uits.lms.canvas.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @JsonIgnoreProperties (ignoreUnknown=true)
 @Data
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ContentMigration implements Serializable {
 
-   public static final String STATUS_PREPROCESSING = "pre_processing";
-   public static final String STATUS_PREPROCESSED = "pre_processed";
-   public static final String STATUS_RUNNING = "running";
-   public static final String STATUS_WAITING = "waiting_for_select";
-   public static final String STATUS_COMPLETED = "completed";
-   public static final String STATUS_FAILED = "failed";
-
-   public static final String MIGRATION_TYPE_CC = "common_cartridge_importer";
-
    private String id;
-   private String migration_type;
-   private String migration_type_title;
-   private String migration_issues_url;
-   private String progress_url;
-   private String user_id;
-   private String workflow_state;
-   private String started_at;
-   private String finished_at;
+   private String migrationType;
+   private String migrationTypeTitle;
+   private String migrationIssuesUrl;
+   private String progressUrl;
+   private String userId;
+   private String workflowState;
+   private String startedAt;
+   private String finishedAt;
 }

@@ -41,4 +41,5 @@ public class ContentMigrationHelper {
     public static final String STATUS_COMPLETED = "completed";
     public static final String STATUS_FAILED = "failed";
     public static final String MIGRATION_TYPE_CC = "common_cartridge_importer";
+    public static final String MIGRATION_TYPE_COURSE_COPY = "course_copy_importer";
 }

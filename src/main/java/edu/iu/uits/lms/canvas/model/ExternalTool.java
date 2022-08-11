@@ -51,5 +51,5 @@ public class ExternalTool {
    private Map<String, String> customFields;
 
    @JsonProperty("course_navigation")
-   private Map<String, String> courseNavigation;
+   private Map<String, Object> courseNavigation;
 }

@@ -42,11 +42,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import static edu.iu.uits.lms.lti.LTIConstants.LTIREST_PROFILE;
 import static edu.iu.uits.lms.lti.LTIConstants.READ_SCOPE;
 import static edu.iu.uits.lms.lti.LTIConstants.WRITE_SCOPE;
 
 public class LtiRestConfiguration {
-    @Profile("ltirest")
+    @Profile(LTIREST_PROFILE)
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 5000)
     public static class LtiRestWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
@@ -65,7 +66,7 @@ public class LtiRestConfiguration {
         }
     }
 
-    @Profile("ltirest & swagger")
+    @Profile(LTIREST_PROFILE + " & swagger")
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 5001)
     public static class LtiApiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {

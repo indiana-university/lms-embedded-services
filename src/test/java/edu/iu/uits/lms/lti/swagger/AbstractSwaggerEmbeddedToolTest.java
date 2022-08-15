@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.lti.config;
+package edu.iu.uits.lms.lti.swagger;
 
 /*-
  * #%L
@@ -33,37 +33,30 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.OAuthFlow;
-import io.swagger.v3.oas.annotations.security.OAuthFlows;
-import io.swagger.v3.oas.annotations.security.OAuthScope;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import org.springdoc.core.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+
+import java.util.List;
 
 import static edu.iu.uits.lms.lti.LTIConstants.LTIREST_PROFILE;
-import static edu.iu.uits.lms.lti.LTIConstants.LTI_GROUP_CODE;
-import static edu.iu.uits.lms.lti.LTIConstants.READ;
-import static edu.iu.uits.lms.lti.LTIConstants.WRITE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Profile(LTIREST_PROFILE + " & swagger")
-@Configuration("LtiSwaggerConfig")
-@SecurityScheme(name = "security_auth_lti", type = SecuritySchemeType.OAUTH2,
-      flows = @OAuthFlows(authorizationCode = @OAuthFlow(
-            authorizationUrl = "${springdoc.oAuthFlow.authorizationUrl}",
-            scopes = {@OAuthScope(name = READ), @OAuthScope(name = WRITE)},
-            tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
-public class SwaggerConfig {
+@Slf4j
+@ActiveProfiles({"swagger", LTIREST_PROFILE})
+@TestPropertySource("classpath:shared-tests.properties")
+public abstract class AbstractSwaggerEmbeddedToolTest extends SwaggerBase {
 
-   @Bean
-   public GroupedOpenApi ltiOpenApi() {
-      return GroupedOpenApi.builder()
-            .group(LTI_GROUP_CODE)
-            .packagesToScan("edu.iu.uits.lms.lti")
-            .pathsToMatch("/rest/lti/**")
-            .build();
-   }
+      @Test
+      public void customEmbeddedToolPaths() throws Exception {
+         List<String> paths = getEmbeddedSwaggerToolPaths();
+         for (String path : paths) {
+            log.info("Checking {}", getCustomApiPath() + path);
+            mvc.perform(get(getCustomApiPath() + path))
+                  .andExpect(status().isOk());
+         }
+      }
 
 }

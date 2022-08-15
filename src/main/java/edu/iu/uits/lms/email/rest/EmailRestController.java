@@ -36,6 +36,8 @@ package edu.iu.uits.lms.email.rest;
 import edu.iu.uits.lms.email.model.EmailDetails;
 import edu.iu.uits.lms.email.service.EmailService;
 import edu.iu.uits.lms.email.service.LmsEmailTooBigException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,8 +49,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 
+import static edu.iu.uits.lms.email.EmailConstants.SEND_SCOPE;
+
 @RestController
 @RequestMapping("/rest/email")
+@Tag(name = "EmailRestController", description = "Email sending operations")
 @Slf4j
 public class EmailRestController {
 
@@ -56,7 +61,8 @@ public class EmailRestController {
    private EmailService emailService;
 
    @PostMapping("/sendViaSecondary")
-   @PreAuthorize("hasAuthority('SCOPE_email:send')")
+   @PreAuthorize("hasAuthority('" + SEND_SCOPE + "')")
+   @Operation(summary = "Send an unsigned email via the secondary mechanism")
    public void sendUnsignedEmail(@RequestBody EmailDetails emailDetails,
                                  @RequestParam(name = "unsignedToEmailToUseInPreProd", required = false, defaultValue = "") String unsignedToEmailToUseInPreProd) throws LmsEmailTooBigException, MessagingException {
 
@@ -65,7 +71,8 @@ public class EmailRestController {
    }
 
    @PostMapping("/send")
-   @PreAuthorize("hasAuthority('SCOPE_email:send')")
+   @PreAuthorize("hasAuthority('" + SEND_SCOPE + "')")
+   @Operation(summary = "Send an email")
    public void sendEmail(@RequestBody EmailDetails emailDetails,
                          @RequestParam(name = "digitallySign", required = false, defaultValue = "true") boolean digitallySign,
                          @RequestParam(name = "unsignedToEmailToUseInPreProd", required = false, defaultValue = "") String unsignedToEmailToUseInPreProd) throws LmsEmailTooBigException, MessagingException {

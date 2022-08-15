@@ -69,7 +69,7 @@
         <java.version>11</java.version>
         <commons-io.version>2.11.0</commons-io.version>
         <commons-codec.version>1.15</commons-codec.version>
-        <lms-canvas-common-configuration.version>5.0.3</lms-canvas-common-configuration.version>
+        <lms-canvas-common-configuration.version>5.0.4</lms-canvas-common-configuration.version>
         <springdoc-openapi-ui.version>1.6.7</springdoc-openapi-ui.version>
 
         <!-- plugins -->
@@ -126,6 +126,16 @@
             <version>${springdoc-openapi-ui.version}</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -149,7 +159,6 @@
                     <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
                     <excludes>
                         <exclude>**/email.properties</exclude>
-                        <exclude>**/email-api-config.properties</exclude>
                     </excludes>
                 </configuration>
             </plugin>

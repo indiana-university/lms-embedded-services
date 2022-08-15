@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.email.config;
+package edu.iu.uits.lms.email;
 
 /*-
  * #%L
@@ -33,35 +33,34 @@ package edu.iu.uits.lms.email.config;
  * #L%
  */
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.OAuthFlow;
-import io.swagger.v3.oas.annotations.security.OAuthFlows;
-import io.swagger.v3.oas.annotations.security.OAuthScope;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import org.springdoc.core.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+public class EmailConstants {
 
-import static edu.iu.uits.lms.email.EmailConstants.EMAILREST_PROFILE;
-import static edu.iu.uits.lms.email.EmailConstants.EMAIL_GROUP_CODE;
-import static edu.iu.uits.lms.email.EmailConstants.SEND;
+   /**
+    * Scope needed for email related REST operations
+    */
+   public final static String SEND = "email:send";
 
-@Profile(EMAILREST_PROFILE + " & swagger")
-@Configuration("EmailSwaggerConfig")
-@SecurityScheme(name = "security_auth_email", type = SecuritySchemeType.OAUTH2,
-      flows = @OAuthFlows(authorizationCode = @OAuthFlow(
-            authorizationUrl = "${springdoc.oAuthFlow.authorizationUrl}",
-            scopes = {@OAuthScope(name = SEND)},
-            tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
-public class SwaggerConfig {
+   /**
+    * Authority needed for email related REST operations
+    */
+   public final static String SEND_SCOPE = "SCOPE_" + SEND;
 
-   @Bean
-   public GroupedOpenApi emailOpenApi() {
-      return GroupedOpenApi.builder()
-            .group(EMAIL_GROUP_CODE)
-            .packagesToScan("edu.iu.uits.lms.email")
-            .pathsToMatch("/rest/email/**")
-            .build();
+   /**
+    * Constant used for the profile to enable the email related REST operations
+    */
+   public final static String EMAILREST_PROFILE = "emailrest";
+
+   /**
+    * Group code wrapping up the email related REST operations in the generated API specs
+    */
+   public final static String EMAIL_GROUP_CODE = "email";
+
+   /**
+    * Group code path wrapping up the email related REST operations in the generated API specs
+    */
+   public final static String EMAIL_GROUP_CODE_PATH = "/" + EMAIL_GROUP_CODE;
+
+
+   private EmailConstants() {
    }
 }

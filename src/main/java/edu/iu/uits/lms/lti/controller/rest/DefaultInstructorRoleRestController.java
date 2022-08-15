@@ -49,10 +49,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static edu.iu.uits.lms.lti.LTIConstants.LTIREST_PROFILE;
 import static edu.iu.uits.lms.lti.LTIConstants.READ_SCOPE;
 import static edu.iu.uits.lms.lti.LTIConstants.WRITE_SCOPE;
 
-@Profile("ltirest")
+@Profile(LTIREST_PROFILE)
 @RestController
 @RequestMapping("/rest/lti/instructors")
 public class DefaultInstructorRoleRestController {

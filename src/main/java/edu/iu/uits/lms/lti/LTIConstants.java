@@ -110,6 +110,21 @@ public class LTIConstants {
     public static final String JWKS_CONFIG_URI = WELL_KNOWN_PATH + "/jwks.json";
     public static final String JWKS_PUB_CONFIG_URI = WELL_KNOWN_PATH + "/jwks_pub.json";
 
+    /**
+     * Constant used for the profile to enable the LTI related REST operations
+     */
+    public final static String LTIREST_PROFILE = "ltirest";
+
+    /**
+     * Group code wrapping up the LTI related REST operations in the generated API specs
+     */
+    public final static String LTI_GROUP_CODE = "lti-framework";
+
+    /**
+     * Group code path wrapping up the LTI related REST operations in the generated API specs
+     */
+    public final static String LTI_GROUP_CODE_PATH = "/" + LTI_GROUP_CODE;
+
     private LTIConstants() {
     }
 }

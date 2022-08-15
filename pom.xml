@@ -71,8 +71,7 @@
         <java.version>11</java.version>
 <!--        <jdk.source>11</jdk.source>-->
 <!--        <jdk.target>11</jdk.target>-->
-        <jjwt-api.version>0.11.2</jjwt-api.version>
-        <lms-canvas-common-configuration.version>5.0.3</lms-canvas-common-configuration.version>
+        <lms-canvas-common-configuration.version>5.0.4</lms-canvas-common-configuration.version>
         <springdoc-openapi-ui.version>1.6.7</springdoc-openapi-ui.version>
         <spring-security-lti13.version>0.0.3</spring-security-lti13.version>
 
@@ -146,9 +145,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>${jjwt-api.version}</version>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -194,7 +198,7 @@
                     <failOnMissingHeader>true</failOnMissingHeader>
                     <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
                     <excludes>
-                        <exclude>**/lti-api-config.properties</exclude>
+                        <exclude>**/shared-tests.properties</exclude>
                         <exclude>**/lti-registrations.properties</exclude>
                     </excludes>
                 </configuration>

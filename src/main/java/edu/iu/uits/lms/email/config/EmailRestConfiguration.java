@@ -42,8 +42,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import static edu.iu.uits.lms.email.EmailConstants.EMAILREST_PROFILE;
+import static edu.iu.uits.lms.email.EmailConstants.SEND_SCOPE;
+
 public class EmailRestConfiguration {
-    @Profile("emailrest")
+    @Profile(EMAILREST_PROFILE)
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 4999)
     public static class EmailRestWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
@@ -53,7 +56,7 @@ public class EmailRestConfiguration {
                     .and()
                     .authorizeRequests()
                     .antMatchers("/rest/email/**")
-                    .access("hasAuthority('SCOPE_email:send')")
+                    .access("hasAuthority('" + SEND_SCOPE + "')")
                     .and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
@@ -62,7 +65,7 @@ public class EmailRestConfiguration {
         }
     }
 
-    @Profile("emailrest & swagger")
+    @Profile(EMAILREST_PROFILE + " & swagger")
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 4998)
     public static class EmailApiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {

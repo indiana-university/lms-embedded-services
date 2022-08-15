@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.email.config;
+package edu.iu.uits.lms.email;
 
 /*-
  * #%L
@@ -33,35 +33,21 @@ package edu.iu.uits.lms.email.config;
  * #L%
  */
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.OAuthFlow;
-import io.swagger.v3.oas.annotations.security.OAuthFlows;
-import io.swagger.v3.oas.annotations.security.OAuthScope;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import org.springdoc.core.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import edu.iu.uits.lms.common.test.CommonTestUtils;
+import edu.iu.uits.lms.email.model.EmailDetails;
 
-import static edu.iu.uits.lms.email.EmailConstants.EMAILREST_PROFILE;
-import static edu.iu.uits.lms.email.EmailConstants.EMAIL_GROUP_CODE;
-import static edu.iu.uits.lms.email.EmailConstants.SEND;
+import java.io.IOException;
 
-@Profile(EMAILREST_PROFILE + " & swagger")
-@Configuration("EmailSwaggerConfig")
-@SecurityScheme(name = "security_auth_email", type = SecuritySchemeType.OAUTH2,
-      flows = @OAuthFlows(authorizationCode = @OAuthFlow(
-            authorizationUrl = "${springdoc.oAuthFlow.authorizationUrl}",
-            scopes = {@OAuthScope(name = SEND)},
-            tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
-public class SwaggerConfig {
+public class TestUtils extends CommonTestUtils {
 
-   @Bean
-   public GroupedOpenApi emailOpenApi() {
-      return GroupedOpenApi.builder()
-            .group(EMAIL_GROUP_CODE)
-            .packagesToScan("edu.iu.uits.lms.email")
-            .pathsToMatch("/rest/email/**")
-            .build();
+   /**
+    * Convert the EmailDetails object into a json string representation
+    * @return Json string representation of an EmailDetails object
+    * @throws IOException If error with the ObjectMapper
+    */
+   protected static String getEmailDetailsForContentBody() throws IOException {
+      EmailDetails ed = new EmailDetails();
+
+      return convertObjectToJsonString(ed);
    }
 }

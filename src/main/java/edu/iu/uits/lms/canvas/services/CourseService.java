@@ -39,12 +39,15 @@ import edu.iu.uits.lms.canvas.model.CourseCreateWrapper;
 import edu.iu.uits.lms.canvas.model.CourseSectionUpdateWrapper;
 import edu.iu.uits.lms.canvas.model.Enrollment;
 import edu.iu.uits.lms.canvas.model.EnrollmentCreateWrapper;
+import edu.iu.uits.lms.canvas.model.ExternalTool;
 import edu.iu.uits.lms.canvas.model.Favorite;
 import edu.iu.uits.lms.canvas.model.FeatureFlag;
 import edu.iu.uits.lms.canvas.model.QuotaInfo;
 import edu.iu.uits.lms.canvas.model.Section;
 import edu.iu.uits.lms.canvas.model.SectionCreateWrapper;
 import edu.iu.uits.lms.canvas.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -54,17 +57,24 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * API for accessing courses
@@ -901,5 +911,121 @@ public class CourseService extends SpringBaseService {
             log.error("Error toggling the course tool", hcee);
             throw new RuntimeException("Error modifying tab/tool", hcee);
         }
+    }
+
+    public ExternalCourseToolResult getCourseTool(String courseId, String courseToolId) {
+        URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.path("/external_tools");
+        builder.path("/" + courseToolId);
+
+        ResponseErrorHandler oldResponseErrorHandler = restTemplate.getErrorHandler();
+
+        ExternalCourseToolResult externalCourseToolResult = null;
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+
+            restTemplate.setErrorHandler(new ClientErrorHandler());
+
+            HttpEntity<ExternalTool> httpEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.GET, null, ExternalTool.class);
+
+            ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) httpEntity;
+
+            externalCourseToolResult = new ExternalCourseToolResult(responseEntity.getStatusCode(), responseEntity.getStatusCodeValue(), responseEntity.getBody());
+
+        } catch (Exception e) {
+            log.error("Error ", e);
+        } finally {
+            restTemplate.setErrorHandler(oldResponseErrorHandler);
+        }
+
+        return externalCourseToolResult;
+    }
+
+    public ExternalCourseToolResult renameCourseTool(String courseId, String courseToolId, String newToolName) {
+        if (newToolName == null || newToolName.trim().length() == 0) {
+            return null;
+        }
+
+        URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.path("/external_tools");
+        builder.path("/" + courseToolId);
+
+        ResponseErrorHandler oldResponseErrorHandler = restTemplate.getErrorHandler();
+        ExternalCourseToolResult externalCourseToolResult = null;
+
+        try {
+            restTemplate.setErrorHandler(new ClientErrorHandler());
+
+            Map<String, String> valueMap = new HashMap<>();
+            valueMap.put("name", newToolName);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+
+            HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(valueMap, headers);
+
+            HttpEntity<ExternalTool> httpEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, ExternalTool.class);
+
+            ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) httpEntity;
+
+            externalCourseToolResult = new ExternalCourseToolResult(responseEntity.getStatusCode(), responseEntity.getStatusCodeValue(), responseEntity.getBody());
+
+        } catch (Exception e) {
+            log.error("Error ", e);
+        } finally {
+            restTemplate.setErrorHandler(oldResponseErrorHandler);
+        }
+
+        return externalCourseToolResult;
+    }
+
+    public ExternalCourseToolResult deleteCourseTool(String courseId, String courseToolId) {
+        URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.path("/external_tools");
+        builder.path("/" + courseToolId);
+
+        ResponseErrorHandler oldResponseErrorHandler = restTemplate.getErrorHandler();
+        ExternalCourseToolResult externalCourseToolResult = null;
+
+        try {
+            restTemplate.setErrorHandler(new ClientErrorHandler());
+
+            HttpEntity<ExternalTool> httpEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
+
+            ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) httpEntity;
+
+            externalCourseToolResult = new ExternalCourseToolResult(responseEntity.getStatusCode(), responseEntity.getStatusCodeValue(), responseEntity.getBody());
+
+        } catch (Exception e) {
+            log.error("Error ", e);
+        } finally {
+            restTemplate.setErrorHandler(oldResponseErrorHandler);
+        }
+
+        return externalCourseToolResult;
+    }
+
+    private class ClientErrorHandler extends DefaultResponseErrorHandler {
+        @Override
+        public void handleError(ClientHttpResponse response) throws IOException
+        {
+            log.info("Handling error!!!");
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public class ExternalCourseToolResult implements Serializable {
+        public HttpStatus httpStatus;
+        public int httpStatusCode;
+        public ExternalTool externalTool;
     }
 }

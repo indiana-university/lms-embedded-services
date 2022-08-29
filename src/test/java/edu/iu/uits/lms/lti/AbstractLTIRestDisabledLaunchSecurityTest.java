@@ -35,10 +35,12 @@ package edu.iu.uits.lms.lti;
 
 import edu.iu.uits.lms.common.test.CommonTestUtils;
 import edu.iu.uits.lms.lti.controller.rest.LtiAuthorizationRestController;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -50,6 +52,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collection;
 
 import static edu.iu.uits.lms.lti.LTIConstants.READ_SCOPE;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,7 +70,12 @@ public abstract class AbstractLTIRestDisabledLaunchSecurityTest {
       mvc.perform(get("/rest/lti/authz/all")
                   .header(HttpHeaders.USER_AGENT, CommonTestUtils.defaultUseragent())
                   .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isUnauthorized());
+            .andExpect(result -> assertThat("Response status", result.getResponse().getStatus(),
+                  Matchers.anyOf(Matchers.is(HttpStatus.UNAUTHORIZED.value()),
+                        Matchers.is(HttpStatus.FORBIDDEN.value()))));
+      // The above matcher is using an anyOf here to handle 2 different configuration cases.
+      // The first is the "normal" case where the REST endpoint configuration exists, but the user is not authorized.
+      // The second case is for when the configuration is "missing" because the tool doesn't need it as it doesn't have its own REST endpoints to configure.
    }
 
    @Test

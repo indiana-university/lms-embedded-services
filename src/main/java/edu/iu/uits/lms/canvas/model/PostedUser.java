@@ -58,4 +58,5 @@ public class PostedUser {
     @JsonProperty("skip_registration")
     private boolean skipRegistration;
 
+    private String pronouns;
 }

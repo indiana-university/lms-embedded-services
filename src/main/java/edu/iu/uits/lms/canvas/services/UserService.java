@@ -276,9 +276,11 @@ public class UserService extends SpringBaseService {
     * @param loginUniqueId
     * @param sisUserId Id of the user represented by the sis system
     * @param email Email address
+    * @param pronouns pronouns
     * @return The id of the created canvas user
     */
-   public String createUser(String accountId, String firstName, String lastName, String loginUniqueId, String sisUserId, String email) {
+   public String createUser(String accountId, String firstName, String lastName, String loginUniqueId, String sisUserId,
+                            String email, String pronouns) {
       JsonUser jsonUser = new JsonUser();
       PostedUser postedUser = new PostedUser();
       postedUser.setName(firstName + " " + lastName);
@@ -291,6 +293,7 @@ public class UserService extends SpringBaseService {
          cc.setSkipConfirmation(true);
          jsonUser.setCommunicationChannel(cc);
       }
+      postedUser.setPronouns(pronouns);
       postedUser.setTermsOfUse("true");
       postedUser.setSkipRegistration(true);
 
@@ -502,6 +505,22 @@ public class UserService extends SpringBaseService {
       builder.queryParam("login[unique_id]", newLoginUniqueId);
 
       HttpEntity<CanvasLogin> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, CanvasLogin.class);
+      return response.getBody();
+   }
+
+   /**
+    * Update the pronouns for a user
+    * @param canvasUserId Id of the user in canvas
+    * @param pronouns String of the pronouns to be set
+    * @return
+    */
+   public User updatePronouns(String canvasUserId, String pronouns) {
+      URI uri = USERS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), canvasUserId);
+
+      UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+      builder.queryParam("user[pronouns]", pronouns);
+
+      HttpEntity<User> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, User.class);
       return response.getBody();
    }
 

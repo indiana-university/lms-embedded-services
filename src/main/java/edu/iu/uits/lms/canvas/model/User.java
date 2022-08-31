@@ -101,4 +101,7 @@ public class User implements Serializable {
 	//IANA time zone name of the user's preferred timezone.
 	@JsonProperty("time_zone")
 	private String timeZone;
+
+	// if this doesn't exist for a user, Canvas won't bother to return it
+	private String pronouns;
 }

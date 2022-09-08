@@ -67,7 +67,7 @@ public class TestMacroVariableReplacement {
         macroVariableMapper.setSisTermId("1234");
         macroVariableMapper.setSisCourseId("ASDF-1234-QWER-0987");
         macroVariableMapper.setUserNetworkId("jsmith");
-        macroVariableMapper.setUserRole("Learner");
+        macroVariableMapper.setUserRole("StudentEnrollment");
         macroVariableMapper.setUserId("000123456789");
         macroVariableMapper.setClassNumber("9876");
         macroVariableMapper.setCanvasCourseId("1111111");

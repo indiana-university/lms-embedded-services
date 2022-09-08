@@ -54,35 +54,35 @@ public class TestDefaultRoleResolver {
 
     @Test
     public void testGetLowestRole() throws Exception {
-        List<String> userRoles = Arrays.asList("Instructor", "urn:lti:instrole:ims/lis/Observer");
+        List<String> userRoles = Arrays.asList("TeacherEnrollment", "ObserverEnrollment");
         String returnedRole = roleResolver.returnLowestRole(userRoles);
         Assertions.assertNotNull(returnedRole);
-        Assertions.assertEquals("urn:lti:instrole:ims/lis/Observer", returnedRole, "Role not a match");
+        Assertions.assertEquals("ObserverEnrollment", returnedRole, "Role not a match");
     }
 
     @Test
     public void testGetLowestRole2() throws Exception {
-        List<String> userRoles = Arrays.asList("Instructor");
+        List<String> userRoles = Arrays.asList("TeacherEnrollment");
         String returnedRole = roleResolver.returnLowestRole(userRoles);
         Assertions.assertNotNull(returnedRole);
-        Assertions.assertEquals("Instructor", returnedRole, "Role not a match");
+        Assertions.assertEquals("TeacherEnrollment", returnedRole, "Role not a match");
     }
 
     @Test
     public void testGetHighestRole() throws Exception {
-        List<String> userRoles = Arrays.asList("urn:lti:role:ims/lis/TeachingAssistant", "urn:lti:instrole:ims/lis/Observer");
+        List<String> userRoles = Arrays.asList("TaEnrollment", "ObserverEnrollment");
         String returnedRole = roleResolver.returnHighestRole(userRoles);
 
         Assertions.assertNotNull(returnedRole);
-        Assertions.assertEquals("urn:lti:role:ims/lis/TeachingAssistant", returnedRole, "Role not a match");
+        Assertions.assertEquals("TaEnrollment", returnedRole, "Role not a match");
     }
 
     @Test
     public void testGetHighestRole2() throws Exception {
-        List<String> userRoles = Arrays.asList("urn:lti:instrole:ims/lis/Observer");
+        List<String> userRoles = Arrays.asList("ObserverEnrollment");
         String returnedRole = roleResolver.returnHighestRole(userRoles);
 
         Assertions.assertNotNull(returnedRole);
-        Assertions.assertEquals("urn:lti:instrole:ims/lis/Observer", returnedRole, "Role not a match");
+        Assertions.assertEquals("ObserverEnrollment", returnedRole, "Role not a match");
     }
 }

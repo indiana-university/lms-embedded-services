@@ -44,7 +44,8 @@ import java.util.List;
 @Service
 public class DefaultRoleResolverImpl implements RoleResolver {
 
-    private static final String[] orderedRoles = {"Instructor","urn:lti:role:ims/lis/TeachingAssistant","ContentDeveloper","Learner","urn:lti:instrole:ims/lis/Observer"};
+    private static final String[] orderedRoles = {"TeacherEnrollment","Instructor","TaEnrollment","urn:lti:role:ims/lis/TeachingAssistant",
+          "DesignerEnrollment","ContentDeveloper","StudentEnrollment","Learner","ObserverEnrollment","urn:lti:instrole:ims/lis/Observer"};
 
     @Override
     public String returnHighestRole(List<String> userRoles) {

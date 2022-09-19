@@ -46,7 +46,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -72,6 +75,7 @@ import uk.ac.ox.ctl.lti13.nrps.NamesRoleService;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.security.KeyPair;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +89,7 @@ import java.util.stream.Collectors;
 @EnableJpaRepositories(entityManagerFactoryRef = "ltiEntityMgrFactory",
       transactionManagerRef = "ltiTransactionMgr",
       basePackageClasses = LtiAuthorizationRepository.class)
+@EnableConfigurationProperties(OAuth2ClientProperties.class)
 @Slf4j
 public class LtiClientConfig implements ImportAware {
 
@@ -119,11 +124,11 @@ public class LtiClientConfig implements ImportAware {
    }
 
    @Bean
-   public NamesRoleService namesRoleService() throws JOSEException {
+   public NamesRoleService namesRoleService(OAuth2ClientProperties properties) throws JOSEException {
       KeyPair keyPair = lti13Service.getJKS().toKeyPair();
       KeyPairService keyPairService = new SingleKeyPairService(keyPair);
       TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
-      return new NamesRoleService(clientRegistrationRepository(), tokenRetriever);
+      return new NamesRoleService(clientRegistrationRepository(properties), tokenRetriever);
    }
 
    @Bean
@@ -132,11 +137,16 @@ public class LtiClientConfig implements ImportAware {
    }
 
    @Bean
-   public ClientRegistrationRepository clientRegistrationRepository() {
+   public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
       List<ClientRegistration> registrations = toolKeys.stream()
             .map(this::getRegistrationBuilder)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
+
+      // If the calling tool has configured any additional clients (via standard application.yml means), wire them in here as well.
+      List<ClientRegistration> additionalRegistrations = new ArrayList<>(
+            OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
+      registrations.addAll(additionalRegistrations);
 
       if (registrations.isEmpty()) {
          //Add a dummy registration since it cannot be empty

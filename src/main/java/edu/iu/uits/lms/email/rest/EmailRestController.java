@@ -40,6 +40,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,8 +50,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 
+import static edu.iu.uits.lms.email.EmailConstants.EMAILREST_PROFILE;
 import static edu.iu.uits.lms.email.EmailConstants.SEND_SCOPE;
 
+@Profile(EMAILREST_PROFILE)
 @RestController
 @RequestMapping("/rest/email")
 @Tag(name = "EmailRestController", description = "Email sending operations")

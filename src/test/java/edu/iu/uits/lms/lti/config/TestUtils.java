@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.lti.service;
+package edu.iu.uits.lms.lti.config;
 
 /*-
  * #%L

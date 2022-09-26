@@ -136,6 +136,12 @@
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <scope>test</scope>
+            <version>0.10.2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -171,6 +177,11 @@
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>edu/iu/uits/lms/email/rest/**</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

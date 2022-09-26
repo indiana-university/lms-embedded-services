@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.email;
+package edu.iu.uits.lms.email.rest;
 
 /*-
  * #%L
@@ -33,21 +33,16 @@ package edu.iu.uits.lms.email;
  * #L%
  */
 
-import edu.iu.uits.lms.common.test.CommonTestUtils;
-import edu.iu.uits.lms.email.model.EmailDetails;
+import edu.iu.uits.lms.email.service.EmailService;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 
-import java.io.IOException;
+@SpringBootConfiguration
+@ComponentScan(basePackageClasses = EmailRestController.class)
+public class RestTestConfig {
 
-public class TestUtils extends CommonTestUtils {
+   @MockBean
+   public EmailService emailService;
 
-   /**
-    * Convert the EmailDetails object into a json string representation
-    * @return Json string representation of an EmailDetails object
-    * @throws IOException If error with the ObjectMapper
-    */
-   protected static String getEmailDetailsForContentBody() throws IOException {
-      EmailDetails ed = new EmailDetails();
-
-      return convertObjectToJsonString(ed);
-   }
 }

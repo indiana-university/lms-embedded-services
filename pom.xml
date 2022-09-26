@@ -5,7 +5,7 @@
     <artifactId>lms-email-service</artifactId>
     <packaging>jar</packaging>
     <name>lms-email-service</name>
-    <version>5.0.4</version>
+    <version>5.0.5-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -62,7 +62,7 @@
         <connection>scm:git:https://github.com/indiana-university/lms-canvas-email-service.git</connection>
         <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-email-service.git</developerConnection>
         <url>https://github.com/indiana-university/lms-canvas-email-service</url>
-        <tag>lms-email-service-5.0.4</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>

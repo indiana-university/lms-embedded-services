@@ -42,6 +42,7 @@ import java.util.Map;
 
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_EMAIL_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FAMILY_NAME_KEY;
+import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FULL_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_GIVEN_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_PLATFORM_GUID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY;
@@ -93,6 +94,11 @@ public class OidcTokenUtils {
 
    public String getPersonGivenName() {
       String name = (String) attrMap.get(CLAIMS_GIVEN_NAME_KEY);
+      return name;
+   }
+
+   public String getPersonFullName() {
+      String name = (String) attrMap.get(CLAIMS_FULL_NAME_KEY);
       return name;
    }
 

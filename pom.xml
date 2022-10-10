@@ -12,7 +12,7 @@
     <groupId>edu.iu.uits.lms</groupId>
     <name>LMS Canvas Services</name>
     <packaging>jar</packaging>
-    <version>5.0.10-SNAPSHOT</version>
+    <version>5.0.10</version>
     <description>Shared services for the lms-canvas LTI tools to talk to Canvas</description>
     <url>https://github.com/indiana-university/lms-canvas-services</url>
     <inceptionYear>2015</inceptionYear>
@@ -61,7 +61,7 @@
         <connection>scm:git:https://github.com/indiana-university/lms-canvas-services.git</connection>
         <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-services.git</developerConnection>
         <url>https://github.com/indiana-university/lms-canvas-services</url>
-        <tag>HEAD</tag>
+        <tag>lms-canvas-services-5.0.10</tag>
     </scm>
 
     <properties>

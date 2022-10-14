@@ -99,6 +99,9 @@ public class LtiAuthorizationRestController {
         if (lmsLtiAuthz.getSecret() != null) {
             updatedAuthz.setSecret(lmsLtiAuthz.getSecret());
         }
+        if (lmsLtiAuthz.getEnv() != null) {
+            updatedAuthz.setEnv(lmsLtiAuthz.getEnv());
+        }
         updatedAuthz.setActive(lmsLtiAuthz.isActive());
 
         return ltiAuthorizationRepository.save(updatedAuthz);

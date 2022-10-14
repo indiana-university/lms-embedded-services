@@ -35,6 +35,8 @@ package edu.iu.uits.lms.lti.controller.rest;
 
 import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -57,24 +59,28 @@ import static edu.iu.uits.lms.lti.LTIConstants.WRITE_SCOPE;
 @Profile(LTIREST_PROFILE)
 @RestController
 @RequestMapping("/rest/lti/authz")
+@Tag(name = "LtiAuthorizationRestController", description = "Interact with the LmsLtiAuthz repository with CRUD operations")
 public class LtiAuthorizationRestController {
 
     @Autowired
     private LtiAuthorizationRepository ltiAuthorizationRepository = null;
 
     @GetMapping("/")
+    @Operation(summary = "Get an LmsLtiAuthz by registrationId and env")
     @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
     public LmsLtiAuthz findByRegistrationEnvActive(@RequestParam("registrationId") String registrationId, @RequestParam("env") String env) {
         return ltiAuthorizationRepository.findByRegistrationEnvActive(registrationId, env);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get an LmsLtiAuthz by id")
     @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
     public LmsLtiAuthz findById(@PathVariable("id") Long id) {
         return ltiAuthorizationRepository.findById(id).orElse(null);
     }
 
     @GetMapping("/all")
+    @Operation(summary = "Get all LmsLtiAuthz records")
     @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
     public List<LmsLtiAuthz> getAuthzs(@RequestParam(required = false, defaultValue = "false") boolean includeSecrets) {
         List<LmsLtiAuthz> results = (List<LmsLtiAuthz>)ltiAuthorizationRepository.findAll();
@@ -86,6 +92,7 @@ public class LtiAuthorizationRestController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update an LmsLtiAuthz by id")
     @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     public LmsLtiAuthz updateAuthz(@PathVariable("id") Long id, @RequestBody LmsLtiAuthz lmsLtiAuthz) {
         LmsLtiAuthz updatedAuthz = ltiAuthorizationRepository.findById(id).orElse(null);
@@ -108,12 +115,14 @@ public class LtiAuthorizationRestController {
     }
 
     @PostMapping("/")
+    @Operation(summary = "Create a new LmsLtiAuthz")
     @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     public LmsLtiAuthz createAuthz(@RequestBody LmsLtiAuthz lmsLtiAuthz) {
         return ltiAuthorizationRepository.save(lmsLtiAuthz);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an LmsLtiAuthz by id")
     @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     public String deleteAuthz(@PathVariable("id") Long id) {
         ltiAuthorizationRepository.deleteById(id);

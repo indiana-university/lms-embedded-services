@@ -35,6 +35,8 @@ package edu.iu.uits.lms.lti.controller.rest;
 
 import edu.iu.uits.lms.lti.model.DefaultInstructorRole;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -56,18 +58,21 @@ import static edu.iu.uits.lms.lti.LTIConstants.WRITE_SCOPE;
 @Profile(LTIREST_PROFILE)
 @RestController
 @RequestMapping("/rest/lti/instructors")
+@Tag(name = "DefaultInstructorRoleRestController", description = "Interact with the DefaultInstructorRole repository with CRUD operations")
 public class DefaultInstructorRoleRestController {
 
     @Autowired
     private DefaultInstructorRoleRepository defaultInstructorRoleRepository = null;
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get a DefaultInstructorRole by id")
     @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
     public DefaultInstructorRole findById(@PathVariable("id") Long id) {
         return defaultInstructorRoleRepository.findById(id).orElse(null);
     }
 
     @GetMapping("/all")
+    @Operation(summary = "Get all DefaultInstructorRole records")
     @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
     public List<DefaultInstructorRole> getAll() {
         List<DefaultInstructorRole> results = (List<DefaultInstructorRole>) defaultInstructorRoleRepository.findAll();
@@ -75,6 +80,7 @@ public class DefaultInstructorRoleRestController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update a DefaultInstructorRole by id")
     @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     public DefaultInstructorRole update(@PathVariable("id") Long id, @RequestBody DefaultInstructorRole defaultInstructorRole) {
         DefaultInstructorRole updated = defaultInstructorRoleRepository.findById(id).orElse(null);
@@ -87,12 +93,14 @@ public class DefaultInstructorRoleRestController {
     }
 
     @PostMapping("/")
+    @Operation(summary = "Create a new DefaultInstructorRole")
     @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     public DefaultInstructorRole create(@RequestBody DefaultInstructorRole defaultInstructorRole) {
         return defaultInstructorRoleRepository.save(defaultInstructorRole);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a DefaultInstructorRole by id")
     @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     public String delete(@PathVariable("id") Long id) {
         defaultInstructorRoleRepository.deleteById(id);

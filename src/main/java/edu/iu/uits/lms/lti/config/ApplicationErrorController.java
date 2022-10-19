@@ -72,7 +72,14 @@ public class ApplicationErrorController {
 
         model.addAttribute("message", "An unexpected error has occurred.");
         model.addAttribute("error", stringWriter.toString());
-
-        return "error";
+        if (serverConfig.getRivetVersion().equals("rivet1")) {
+            // assume rivet1 path
+            System.out.println("RIVET 1");
+            return "error-rivet1";
+        } else {
+            System.out.println("RIVET 2");
+            log.info("RIVET 2");
+            return "error-rivet2";
+        }
     }
 }

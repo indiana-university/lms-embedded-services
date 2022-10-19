@@ -54,5 +54,6 @@ import java.lang.annotation.Target;
 @Configuration(proxyBeanMethods = false)
 public @interface EnableGlobalErrorHandler {
     String rivetPath() default "/app/jsrivet";
+    String rivetVersion() default "rivet1";
     String accessDeniedViewName() default ServerConfig.NOT_SET;
 }

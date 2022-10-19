@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<!--
+  #%L
+  LMS Canvas LTI Framework Services
+  %%
+  Copyright (C) 2015 - 2021 Indiana University
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  
+  3. Neither the name of the Indiana University nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <link th:href="@{|${@serverConfig.rivetPath}/rivet.min.css|}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div>
+    <div class="rvt-container-xl" role="main">
+        <h1 class="rvt-ts-26">An application error has occurred</h1>
+        <span th:if="${message != null and #strings.length(message) > 0}">
+            <span id="errorMessage" th:text="${message}">Error message</span>
+        </span>
+        <span th:unless="${message != null and #strings.length(message) > 0}">
+            <span id="errorMessage">Your session with this tool has timed out.</span>
+        </span>
+        <span>To access the tool, reload this page or relaunch the tool from Canvas. If the error persists, contact the <a href='http://support.com' target='_blank' th:text="${@serverConfig.errorContactName}" th:href="${@serverConfig.errorContactLink}">Support Contact</a> for assistance.</span>
+        <div th:if="${message != null and #strings.length(message) > 0}" class="rvt-disclosure rvt-m-top-xs" data-rvt-disclosure="disclosure-1">
+            <button class="rvt-disclosure__toggle" data-rvt-disclosure-toggle aria-expanded="false">Stack trace</button>
+            <div class="rvt-disclosure__content" data-rvt-disclosure-target hidden>
+                <div class="rvt-prose rvt-flow">
+                    <pre th:text="${error}"> ERROR! </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container rvt-m-top-lg">
+    <div id="footer" th:text="${@serverInfo}"></div>
+</footer>
+
+<script type="text/javascript" th:src="@{|${@serverConfig.rivetPath}/rivet.min.js|}"></script>
+</body>
+</html>

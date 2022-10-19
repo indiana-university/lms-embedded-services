@@ -48,7 +48,7 @@
             <span id="errorMessage">Your session with this tool has timed out.</span>
         </span>
         <span>To access the tool, reload this page or relaunch the tool from Canvas. If the error persists, contact the <a href='http://support.com' target='_blank' th:text="${@serverConfig.errorContactName}" th:href="${@serverConfig.errorContactLink}">Support Contact</a> for assistance.</span>
-        <div th:if="${message != null and #strings.length(message) > 0}" class="rvt-disclosure rvt-m-top-xs" data-rvt-disclosure="disclosure-1">
+        <div th:if="${message != null and #strings.length(message) > 0}" class="rvt-disclosure rvt-m-top-xs" data-rvt-disclosure="error-disclosure">
             <button class="rvt-disclosure__toggle" data-rvt-disclosure-toggle aria-expanded="false">Stack trace</button>
             <div class="rvt-disclosure__content" data-rvt-disclosure-target hidden>
                 <div class="rvt-prose rvt-flow">
@@ -58,10 +58,13 @@
         </div>
     </div>
 </div>
-<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container rvt-m-top-lg">
+<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container-xl rvt-m-top-lg">
     <div id="footer" th:text="${@serverInfo}"></div>
 </footer>
 
 <script type="text/javascript" th:src="@{|${@serverConfig.rivetPath}/rivet.min.js|}"></script>
+<script>
+  Rivet.init();
+</script>
 </body>
 </html>

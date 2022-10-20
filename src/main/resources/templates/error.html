@@ -35,12 +35,12 @@
 <html lang="en-US"
       xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
-    <link th:href="@{|${@serverConfig.rivetPath}/rivet-bundle.min.css|}" rel="stylesheet" type="text/css" />
-    <link th:href="@{|${@serverConfig.rivetPath}/rivet-collapsible.min.css|}" rel="stylesheet" type="text/css" />
+    <link th:href="${rivet2} ? @{|${@serverConfig.rivetPath}/rivet.min.css|} : @{|${@serverConfig.rivetPath}/rivet-bundle.min.css|}" rel="stylesheet" type="text/css" />
+    <link th:if="${!rivet2}" th:href="@{|${@serverConfig.rivetPath}/rivet-collapsible.min.css|}" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div>
-    <div class="rvt-container" role="main">
+    <div th:class="${rivet2} ? rvt-container-xl : rvt-container" class="rvt-container" role="main">
         <h1 class="rvt-ts-26">An application error has occurred</h1>
         <span th:if="${message != null and #strings.length(message) > 0}">
             <span id="errorMessage" th:text="${message}">Error message</span>
@@ -49,26 +49,40 @@
             <span id="errorMessage">Your session with this tool has timed out.</span>
         </span>
         <span>To access the tool, reload this page or relaunch the tool from Canvas. If the error persists, contact the <a href='http://support.com' target='_blank' th:text="${@serverConfig.errorContactName}" th:href="${@serverConfig.errorContactLink}">Support Contact</a> for assistance.</span>
-        <div th:if="${message != null and #strings.length(message) > 0}" class="rvt-collapsible rvt-collapsible--panel rvt-m-top-xs">
-            <h3 class="rvt-collapsible__title">
-                <button id="stackTrace-label" data-collapsible="stackTrace" aria-expanded="false">
-                    <svg role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                        <path fill="currentColor" d="M5.5,15a1,1,0,0,1-.77-1.64L9.2,8,4.73,2.64A1,1,0,0,1,6.27,1.36L11.13,7.2a1.25,1.25,0,0,1,0,1.61L6.27,14.64A1,1,0,0,1,5.5,15ZM9.6,8.48h0Zm0-1h0Z"></path>
-                    </svg>
-                    <span>Stack trace</span>
-                </button>
-            </h3>
-            <div class="rvt-collapsible__content rvt-p-top-sm" id="stackTrace" aria-hidden="true" aria-labelledby="stackTrace-label">
-                <pre th:text="${error}"> ERROR! </pre>
+        <div th:if="${!rivet2}">
+            <div th:if="${message != null and #strings.length(message) > 0}" class="rvt-collapsible rvt-collapsible--panel rvt-m-top-xs">
+                <h3 class="rvt-collapsible__title">
+                    <button id="stackTrace-label" data-collapsible="stackTrace" aria-expanded="false">
+                        <svg role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                            <path fill="currentColor" d="M5.5,15a1,1,0,0,1-.77-1.64L9.2,8,4.73,2.64A1,1,0,0,1,6.27,1.36L11.13,7.2a1.25,1.25,0,0,1,0,1.61L6.27,14.64A1,1,0,0,1,5.5,15ZM9.6,8.48h0Zm0-1h0Z"></path>
+                        </svg>
+                        <span>Stack trace</span>
+                    </button>
+                </h3>
+                <div class="rvt-collapsible__content rvt-p-top-sm" id="stackTrace" aria-hidden="true" aria-labelledby="stackTrace-label">
+                    <pre th:text="${error}"> ERROR! </pre>
+                </div>
+            </div>
+        </div>
+        <div th:if="${rivet2}">
+            <div th:if="${message != null and #strings.length(message) > 0}" class="rvt-disclosure rvt-m-top-xs" data-rvt-disclosure="error-disclosure">
+                <button class="rvt-disclosure__toggle" data-rvt-disclosure-toggle aria-expanded="false">Stack trace</button>
+                <div class="rvt-disclosure__content" data-rvt-disclosure-target hidden>
+                    <div class="rvt-prose rvt-flow">
+                        <pre th:text="${error}"> ERROR! </pre>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container rvt-m-top-lg">
+<footer th:unless="${hideFooter}" th:classappend="${rivet2} ? rvt-container-xl : rvt-container" class="rvt-ts-12 rvt-m-top-lg">
     <div id="footer" th:text="${@serverInfo}"></div>
 </footer>
 
-<script type="text/javascript" th:src="@{|${@serverConfig.rivetPath}/rivet-collapsible.min.js|}"></script>
-<script type="text/javascript">Collapsible.init();</script>
+<script type="text/javascript" th:src="${rivet2} ? @{|${@serverConfig.rivetPath}/rivet.min.js|} : @{|${@serverConfig.rivetPath}/rivet-bundle.min.js|}"></script>
+<script th:if="${!rivet2}" type="text/javascript" th:src="@{|${@serverConfig.rivetPath}/rivet-collapsible.min.js|}"></script>
+<script th:if="${!rivet2}" type="text/javascript">Collapsible.init();</script>
+<script th:if="${rivet2}" type="text/javascript">Rivet.init();</script>
 </body>
 </html>

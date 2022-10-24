@@ -40,7 +40,7 @@
 </head>
 <body>
 <div>
-    <div th:class="${rivet2} ? rvt-container-xl : rvt-container" class="rvt-container" role="main">
+    <div th:class="${rivet2} ? rvt-container-xl : rvt-container">
         <h1 class="rvt-ts-26">An application error has occurred</h1>
         <span th:if="${message != null and #strings.length(message) > 0}">
             <span id="errorMessage" th:text="${message}">Error message</span>

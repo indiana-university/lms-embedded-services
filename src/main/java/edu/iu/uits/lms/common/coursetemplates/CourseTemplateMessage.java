@@ -49,5 +49,7 @@ public class CourseTemplateMessage implements Serializable {
    private String accountId;
    private String sisCourseId;
    private boolean forceApply;
+   private String activityType;
+   private String activityUser;
 
 }

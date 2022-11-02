@@ -101,6 +101,7 @@ public class LTIConstants {
     public static final String CUSTOM_CANVAS_USER_LOGIN_ID_KEY = "canvas_user_login_id";
     public static final String CUSTOM_CANVAS_USER_SIS_ID_KEY = "canvas_user_sis_id";
     public static final String CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY = "canvas_membership_roles";
+    public static final String CUSTOM_INSTRUCTURE_MEMBERSHIP_ROLES_KEY = "instructure_membership_roles";
 
     public static final String CUSTOM_CANVAS_COURSE_ID_VAL = "$Canvas.course.id";
     public static final String CUSTOM_CANVAS_USER_ID_VAL = "$Canvas.user.id";
@@ -126,6 +127,13 @@ public class LTIConstants {
      * Group code path wrapping up the LTI related REST operations in the generated API specs
      */
     public final static String LTI_GROUP_CODE_PATH = "/" + LTI_GROUP_CODE;
+
+    public static final String CANVAS_INSTRUCTOR_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Instructor";
+    public static final String CANVAS_LEARNER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Student";
+    public static final String CANVAS_TA_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership/Instructor#TeachingAssistant";
+    public static final String CANVAS_DESIGNER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#ContentDeveloper";
+    public static final String CANVAS_OBSERVER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#Mentor";
+    public static final String CANVAS_ADMIN_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator";
 
     private LTIConstants() {
     }

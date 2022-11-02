@@ -128,8 +128,8 @@ public class LTIConstants {
      */
     public final static String LTI_GROUP_CODE_PATH = "/" + LTI_GROUP_CODE;
 
-    public static final String CANVAS_INSTRUCTOR_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Instructor";
-    public static final String CANVAS_LEARNER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Student";
+    public static final String CANVAS_INSTRUCTOR_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor";
+    public static final String CANVAS_LEARNER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#Learner";
     public static final String CANVAS_TA_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership/Instructor#TeachingAssistant";
     public static final String CANVAS_DESIGNER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#ContentDeveloper";
     public static final String CANVAS_OBSERVER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#Mentor";

@@ -64,7 +64,7 @@ public class LmsDefaultGrantedAuthoritiesMapper implements GrantedAuthoritiesMap
          OidcUserAuthority userAuth = (OidcUserAuthority) authority;
          OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(userAuth.getAttributes());
          log.debug("LTI Claims: {}", userAuth.getAttributes());
-         String[] roles = oidcTokenUtils.getCustomCanvasMembershipRoles();
+         String[] roles = oidcTokenUtils.getCustomInstructureMembershipRoles();
          String newAuthString = returnEquivalentAuthority(roles, getDefaultInstructorRoles());
          OidcUserAuthority newUserAuth = new OidcUserAuthority(newAuthString, userAuth.getIdToken(), userAuth.getUserInfo());
 

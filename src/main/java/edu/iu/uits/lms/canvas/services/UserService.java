@@ -525,7 +525,7 @@ public class UserService extends SpringBaseService {
    }
 
    @Data
-   private static class NameWrapper implements Serializable {
+   public static class NameWrapper implements Serializable {
       private String name;
       private String shortName;
       private String sortableName;

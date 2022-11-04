@@ -1023,7 +1023,7 @@ public class CourseService extends SpringBaseService {
 
     @Data
     @AllArgsConstructor
-    public class ExternalCourseToolResult implements Serializable {
+    public static class ExternalCourseToolResult implements Serializable {
         public HttpStatus httpStatus;
         public int httpStatusCode;
         public ExternalTool externalTool;

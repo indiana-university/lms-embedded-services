@@ -207,6 +207,17 @@ public class OidcTokenUtils {
    }
 
    /**
+    * Get the specified key out of the Custom claim
+    * @param key Key
+    * @return String[] of given key from the Custom claim.  Returns an empty array if key is not found.
+    */
+   public String[] getCustomArray(String key) {
+      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
+      JSONArray jsonArray = (JSONArray) jsonObj.get(key);
+      return jsonArray != null ? jsonArray.toArray(String[]::new) : new String[]{};
+   }
+
+   /**
     * Get the specified key out of the Context claim
     * @param key Key
     * @return Value of given key from the Context claim

@@ -80,4 +80,7 @@ public class CanvasUploadStatus implements Serializable {
     @JsonProperty("processing_warnings")
     private List<List<String>> processingWarnings;
 
+    @JsonProperty("processing_errors")
+    private List<List<String>> processingErrors;
+
 }

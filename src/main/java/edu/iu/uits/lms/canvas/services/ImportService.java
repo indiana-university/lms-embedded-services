@@ -78,7 +78,7 @@ public class ImportService extends SpringBaseService {
      */
     public String sendCsvToCanvas(MultipartFile file) {
         try {
-            return sendFileToCanvas(file.getBytes(), "instructure_csv", "csv");
+            return sendFileToCanvas(file.getBytes(), "instructure_csv", "csv", false);
         } catch (IOException e) {
             log.error("unable to send file to canvas", e);
         }
@@ -88,16 +88,15 @@ public class ImportService extends SpringBaseService {
     /**
      * Use to send a zip file to Canvas.
      *
-     * @param file file
+     * @param bytes file bytes
      * @return The id of the import
      */
-    public String sendZipToCanvas(MultipartFile file) {
-        try {
-            return sendFileToCanvas(file.getBytes(), "instructure_csv", "zip");
-        } catch (IOException e) {
-            log.error("unable to send file to canvas", e);
-        }
-        return null;
+    public String sendZipToCanvas(byte[] bytes) {
+        return sendFileToCanvas(bytes, "instructure_csv", "zip", false);
+    }
+
+    public String sendZipToCanvasOverrideStickiness(byte[] bytes) {
+        return sendFileToCanvas(bytes, "instructure_csv", "zip", true);
     }
 
     /**
@@ -107,7 +106,7 @@ public class ImportService extends SpringBaseService {
      * @param extension Likely zip or csv
      * @return The import id created
      */
-    private String sendFileToCanvas(byte[] fileBytes, String importType, String extension) {
+    private String sendFileToCanvas(byte[] fileBytes, String importType, String extension, boolean overrideStickiness) {
         URI uri = UPLOAD_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), canvasConfiguration.getAccountId());
         log.debug("{}", uri);
 
@@ -115,6 +114,11 @@ public class ImportService extends SpringBaseService {
 
         builder.queryParam("import_type", importType);
         builder.queryParam("extension", extension);
+
+        if (overrideStickiness) {
+            builder.queryParam("override_sis_stickiness", true);
+            builder.queryParam("clear_sis_stickiness", true);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         try {

@@ -37,13 +37,9 @@ import edu.iu.uits.lms.email.config.EmailServiceConfig;
 import edu.iu.uits.lms.email.model.EmailDetails;
 import edu.iu.uits.lms.email.model.EmailServiceAttachment;
 import edu.iu.uits.lms.email.model.Priority;
-import edu.iu.uits.lms.email.model.sis.Attachment;
 import edu.iu.uits.lms.email.model.sis.Message;
-import edu.iu.uits.lms.email.model.sis.Recipient;
 import edu.iu.uits.lms.email.model.sis.Result;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -55,7 +51,6 @@ import javax.activation.URLDataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -69,29 +64,21 @@ public class EmailService {
     */
    private static final int BODY_MAX_LENGTH = 5242880;
 
-   public enum SENDING_METHOD {
-      PRIMARY, SECONDARY
-   }
-
-
    @Autowired
    private JavaMailSender javaMailSender;
 
    @Autowired
    private EmailServiceConfig emailServiceConfig;
 
-   @Autowired
-   private SignedEmailService signedEmailService;
-
    public String getStandardHeader() {
       return "[LMS " + emailServiceConfig.getEnv().toUpperCase() + " Notifications]";
    }
 
-   public void sendEmail(EmailDetails emailDetails, boolean digitallySign) throws LmsEmailTooBigException, MessagingException {
-      sendEmail(emailDetails, digitallySign, null, SENDING_METHOD.PRIMARY);
+   public void sendEmail(EmailDetails emailDetails) throws LmsEmailTooBigException, MessagingException {
+      sendEmail(emailDetails, null);
    }
 
-   public void sendEmail(EmailDetails emailDetails, boolean digitallySign, String unsignedToEmailToUseInPreProd, SENDING_METHOD sendingMethod) throws LmsEmailTooBigException, MessagingException {
+   public void sendEmail(EmailDetails emailDetails, String emailToUseInPreProd) throws LmsEmailTooBigException, MessagingException {
       String subject = emailDetails.getSubject();
       String body = emailDetails.getBody();
       String[] recipients = emailDetails.getRecipients();
@@ -110,8 +97,8 @@ public class EmailService {
 
       if (!emailServiceConfig.isEnabled()) {
          log.info("mail.enabled is false. Logging message\nrecipients: "
-               + StringUtils.arrayToCommaDelimitedString(recipients)
-               + "\nSubject: " + subject + "\nBody:\n" + body + "\n");
+                 + StringUtils.arrayToCommaDelimitedString(recipients)
+                 + "\nSubject: " + subject + "\nBody:\n" + body + "\n");
          return;
       }
 
@@ -123,106 +110,6 @@ public class EmailService {
          body += "\nThe message body exceeded " + BODY_MAX_LENGTH + " characters and this message was truncated!";
       }
 
-      if (SENDING_METHOD.PRIMARY.equals(sendingMethod)) {
-
-         int count = 0;
-         int maxTries = 3;
-         while (true) {
-            try {
-               Result result = new Result();
-               //Only call if signing is enabled
-               if (emailServiceConfig.isSigningEnabled()) {
-                  result = sendSignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, digitallySign, from);
-               }
-               if (!result.isSuccess() && ++count == maxTries) {
-                  sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from, unsignedToEmailToUseInPreProd);
-                  break;
-               } else if (result.isSuccess()) {
-                  break;
-               } else {
-                  log.warn("Retry attempt #" + count + " for the SIS Email Signing Service");
-               }
-            } catch (IOException e) {
-               log.error("Bad email!", e);
-               if (++count == maxTries) {
-                  sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from, unsignedToEmailToUseInPreProd);
-                  break;
-               }
-            }
-         }
-      } else {
-         sendUnsignedEmail(recipients, subject, body, emailServiceAttachmentList, enableHtml, priority, from, unsignedToEmailToUseInPreProd);
-      }
-   }
-
-   /**
-    * Send an email using the {@link SignedEmailService}
-    * @param recipients List of recipients
-    * @param subject Email subject
-    * @param body Email body
-    * @param emailServiceAttachmentList List of attachments
-    * @param enableHtml Flag indicating if it's html or plain text
-    * @param priority Priority used to send the message
-    * @return {@link Result}
-    * @throws IOException Exception is thrown when it is unable to fetch the attachment data
-    */
-   private Result sendSignedEmail(String[] recipients, String subject, String body,
-                                  List<EmailServiceAttachment> emailServiceAttachmentList, boolean enableHtml,
-                                  Priority priority, boolean digitallySign, String from) throws IOException {
-
-      List<Recipient> recipientList = new ArrayList<>(recipients.length);
-      List<Attachment> attachmentList = new ArrayList<>();
-      for (String address : recipients) {
-         recipientList.add(new Recipient(Recipient.TYPE.TO, address));
-      }
-
-      if (emailServiceAttachmentList != null && !emailServiceAttachmentList.isEmpty()) {
-         for (EmailServiceAttachment attachment : emailServiceAttachmentList) {
-            if (attachment.getFilename() != null && attachment.getUrl() != null) {
-               URLDataSource attachmentDataSource = new URLDataSource(attachment.getUrl());
-               log.debug("{} ({})", attachment.getFilename(), attachment.getUrl());
-               byte[] bytes = IOUtils.toByteArray(attachment.getUrl());
-
-               Attachment att = new Attachment(Attachment.TYPE.binary, attachmentDataSource.getContentType(),
-                     Base64.encodeBase64String(bytes));
-               att.setFileName(attachment.getFilename());
-               attachmentList.add(att);
-            }
-         }
-      }
-      Message message = new Message(from, subject, body, recipientList);
-      String messageType = "text/plain";
-      if (enableHtml) {
-         messageType = "text/html";
-      }
-      message.setContentType(messageType);
-
-      //Digitally sign?
-      if (digitallySign) {
-         message.setSignatureAddress("essnorep@iu.edu");
-      } else {
-         message.setSignatureAddress("donotsign@garbage.foo");
-      }
-
-      message.setTestEmailAddress("iu-uits-es-ess-lms-notify@exchange.iu.edu");
-      message.setAttach(attachmentList);
-      message.setPriority(translatePriority(priority));
-
-      return signedEmailService.postEmail(message);
-   }
-
-   /**
-    * Send an email using the normal, internal unsigned method
-    * @param recipients List of recipients
-    * @param subject Email subject
-    * @param body Email body
-    * @param emailServiceAttachmentList List of attachments
-    * @param enableHtml Flag indicating if it's html or plain text
-    * @param priority Priority used to send the message
-    * @throws LmsEmailTooBigException Exception thrown when the email body is too big to send
-    */
-   private void sendUnsignedEmail(String[] recipients, String subject, String body, List<EmailServiceAttachment> emailServiceAttachmentList,
-                                  boolean enableHtml, Priority priority, String from, String unsignedToEmailToUseInPreProd) throws LmsEmailTooBigException, MessagingException, MailException {
       log.warn("Sending unsigned email");
 
       if (! "prd".equals(emailServiceConfig.getEnv())) {
@@ -236,11 +123,9 @@ public class EmailService {
 
          body = preBody + "\r\n" + body;
 
-         recipients = new String[] {   unsignedToEmailToUseInPreProd != null &&
-               unsignedToEmailToUseInPreProd.trim().length() > 0
-               ? unsignedToEmailToUseInPreProd
-               : emailServiceConfig.getDefaultUnsignedTo() };
-
+         recipients = new String[] {   emailToUseInPreProd != null && emailToUseInPreProd.trim().length() > 0
+                 ? emailToUseInPreProd
+                 : emailServiceConfig.getDefaultUnsignedTo() };
       }
 
       MimeMessage message = javaMailSender.createMimeMessage();

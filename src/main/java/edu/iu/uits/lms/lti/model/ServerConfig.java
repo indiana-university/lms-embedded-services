@@ -41,9 +41,7 @@ import lombok.Data;
 public class ServerConfig {
     public final static String NOT_SET = "***NOT SET***";
 
-    private String rivetPath;
     private String accessDeniedViewName;
     private String errorContactName;
     private String errorContactLink;
-    private String rivetVersion;
 }

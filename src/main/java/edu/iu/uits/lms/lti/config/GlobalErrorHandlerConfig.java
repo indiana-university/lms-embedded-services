@@ -69,10 +69,8 @@ public class GlobalErrorHandlerConfig implements ImportAware {
                 .getAnnotationAttributes(EnableGlobalErrorHandler.class.getName());
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(attributeMap);
 
-        String rivetPath = attributes.getString("rivetPath");
         String accessDeniedViewName = attributes.getString("accessDeniedViewName");
-        String rivetVersion = attributes.getString("rivetVersion");
 
-        serverConfig = new ServerConfig(rivetPath, accessDeniedViewName, errorContactName, errorContactLink, rivetVersion);
+        serverConfig = new ServerConfig(accessDeniedViewName, errorContactName, errorContactLink);
     }
 }

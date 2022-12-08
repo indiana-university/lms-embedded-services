@@ -57,8 +57,7 @@ public class ApplicationErrorController {
     public String handleAccessDeniedException(Model model, Exception exception) {
         if (serverConfig == null || serverConfig.getAccessDeniedViewName() == null || serverConfig.getAccessDeniedViewName().equals(ServerConfig.NOT_SET)) {
             return handleAllExceptions(model, exception);
-        }
-        else {
+        } else {
             return serverConfig.getAccessDeniedViewName();
         }
     }
@@ -72,12 +71,6 @@ public class ApplicationErrorController {
 
         model.addAttribute("message", "An unexpected error has occurred.");
         model.addAttribute("error", stringWriter.toString());
-
-        if (serverConfig.getRivetVersion().equals("rivet2")) {
-            model.addAttribute("rivet2", true);
-        } else {
-            model.addAttribute("rivet2", false);
-        }
 
         return "error";
     }

@@ -1,10 +1,8 @@
-package edu.iu.uits.lms.lti.config;
-
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,45 +30,17 @@ package edu.iu.uits.lms.lti.config;
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+var coll = document.getElementsByClassName("collapsible");
+var i;
 
-import edu.iu.uits.lms.lti.model.ServerConfig;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ImportAware;
-import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.type.AnnotationMetadata;
-
-import java.util.Map;
-
-@Slf4j
-public class GlobalErrorHandlerConfig implements ImportAware {
-    private ServerConfig serverConfig;
-
-    @Bean
-    public ApplicationErrorController applicationErrorController() {
-        return new ApplicationErrorController();
-    }
-
-    @Bean
-    public ServerConfig serverConfig() {
-        return serverConfig;
-    }
-
-    @Value("${lti.errorcontact.name}")
-    private String errorContactName;
-
-    @Value("${lti.errorcontact.link}")
-    private String errorContactLink;
-
-    @Override
-    public void setImportMetadata(AnnotationMetadata annotationMetadata) {
-        Map<String, Object> attributeMap = annotationMetadata
-                .getAnnotationAttributes(EnableGlobalErrorHandler.class.getName());
-        AnnotationAttributes attributes = AnnotationAttributes.fromMap(attributeMap);
-
-        String accessDeniedViewName = attributes.getString("accessDeniedViewName");
-
-        serverConfig = new ServerConfig(accessDeniedViewName, errorContactName, errorContactLink);
-    }
+for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight) {
+            content.style.maxHeight = null;
+        } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+        }
+    });
 }

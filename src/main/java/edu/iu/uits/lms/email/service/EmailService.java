@@ -37,11 +37,8 @@ import edu.iu.uits.lms.email.config.EmailServiceConfig;
 import edu.iu.uits.lms.email.model.EmailDetails;
 import edu.iu.uits.lms.email.model.EmailServiceAttachment;
 import edu.iu.uits.lms.email.model.Priority;
-import edu.iu.uits.lms.email.model.sis.Message;
-import edu.iu.uits.lms.email.model.sis.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -50,7 +47,6 @@ import org.springframework.util.StringUtils;
 import javax.activation.URLDataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -157,26 +153,5 @@ public class EmailService {
 
       javaMailSender.send(message);
 
-   }
-
-   /**
-    * Translate a {@link Message.PRIORITY} into a {@link Message.PRIORITY}
-    * @param priority Input priority
-    * @return Translated priority
-    */
-   private Message.PRIORITY translatePriority(Priority priority) {
-      Message.PRIORITY result;
-      switch (priority) {
-         case LOW:
-            result = Message.PRIORITY.LOW;
-            break;
-         case HIGH:
-            result = Message.PRIORITY.HIGH;
-            break;
-         default:
-            result = Message.PRIORITY.NORMAL;
-            break;
-      }
-      return result;
    }
 }

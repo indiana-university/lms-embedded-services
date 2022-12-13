@@ -67,19 +67,7 @@ body {
     background-color: #eee;
 }
 
-.collapsible:before {
-    content: "\02795";
-    font-weight: bold;
-    float: left;
-    margin-right: 5px;
-}
-
-.active:before {
-    content: "\2796";
-}
-
 .content {
-    max-height: 0;
     overflow: hidden;
     border: 1px solid #ddd;
     padding-left: 18px;
@@ -108,4 +96,17 @@ footer {
     padding: 0;
     position: absolute;
     width: 1px;
+}
+
+.display-none {
+    display: none;
+}
+
+#collapsed, #expanded, #errorInfo {
+  vertical-align: middle;
+
+}
+
+.stack-trace h2 {
+    margin-bottom: 0;
 }

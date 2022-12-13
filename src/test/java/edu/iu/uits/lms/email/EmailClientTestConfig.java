@@ -34,7 +34,6 @@ package edu.iu.uits.lms.email;
  */
 
 import edu.iu.uits.lms.email.config.EmailServiceConfig;
-import edu.iu.uits.lms.email.service.SignedEmailService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -47,8 +46,4 @@ public class EmailClientTestConfig {
 
    @MockBean
    private EmailServiceConfig emailServiceConfig;
-
-   @MockBean
-   private SignedEmailService signedEmailService;
-
 }

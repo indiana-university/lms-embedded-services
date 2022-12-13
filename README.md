@@ -46,9 +46,6 @@ They can be set in a security.properties file, or overridden as environment vari
 | `lmsemail.signingEnabled`                          | true                                        | Enable/disable digitally signing emails           |
 | `lmsemail.defaultFrom`                             | essnorep@iu.edu                             | Default `from` address                            |
 | `lmsemail.defaultUnsignedTo`                       | iu-uits-es-ess-lms-notify@exchange.iu.edu   | Default recipient for emails in test environments |
-| `sis.rest.url`                                     |                                             | URL for the email signing service                 |
-| `sis.rest.region`                                  |                                             | Region for the email signing service              |
-| `sis.rest.apiToken`                                |                                             | API token for the email signing service           |
 
 ### Exposing the email REST endpoints
 If you would like to expose the email endpoints in a tool, you will

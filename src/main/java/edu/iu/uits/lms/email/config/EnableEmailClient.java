@@ -50,7 +50,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(EmailConfiguration.class)
 @Configuration(proxyBeanMethods = false)
 public @interface EnableEmailClient {
 }

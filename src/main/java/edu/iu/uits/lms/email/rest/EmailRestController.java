@@ -63,24 +63,12 @@ public class EmailRestController {
    @Autowired
    private EmailService emailService;
 
-   @PostMapping("/sendViaSecondary")
-   @PreAuthorize("hasAuthority('" + SEND_SCOPE + "')")
-   @Operation(summary = "Send an unsigned email via the secondary mechanism")
-   public void sendUnsignedEmail(@RequestBody EmailDetails emailDetails,
-                                 @RequestParam(name = "unsignedToEmailToUseInPreProd", required = false, defaultValue = "") String unsignedToEmailToUseInPreProd) throws LmsEmailTooBigException, MessagingException {
-
-
-      emailService.sendEmail(emailDetails, false, unsignedToEmailToUseInPreProd, EmailService.SENDING_METHOD.SECONDARY);
-   }
-
    @PostMapping("/send")
    @PreAuthorize("hasAuthority('" + SEND_SCOPE + "')")
    @Operation(summary = "Send an email")
    public void sendEmail(@RequestBody EmailDetails emailDetails,
-                         @RequestParam(name = "digitallySign", required = false, defaultValue = "true") boolean digitallySign,
-                         @RequestParam(name = "unsignedToEmailToUseInPreProd", required = false, defaultValue = "") String unsignedToEmailToUseInPreProd) throws LmsEmailTooBigException, MessagingException {
+                         @RequestParam(name = "emailToUseInPreProd", required = false, defaultValue = "") String emailToUseInPreProd) throws LmsEmailTooBigException, MessagingException {
 
-      emailService.sendEmail(emailDetails, digitallySign, unsignedToEmailToUseInPreProd, EmailService.SENDING_METHOD.PRIMARY);
+      emailService.sendEmail(emailDetails, emailToUseInPreProd);
    }
-
 }

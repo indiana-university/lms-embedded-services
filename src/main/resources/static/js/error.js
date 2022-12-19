@@ -31,8 +31,8 @@
  * #L%
  */
 
-var collapsed = document.getElementById("collapsed");
-var expanded = document.getElementById("expanded");
+var plusSign = document.getElementById("plusSign");
+var minusSign = document.getElementById("minusSign");
 
 document.getElementById('errorInfo').addEventListener("click", function() {
     this.classList.toggle("active");
@@ -47,8 +47,8 @@ document.getElementById('errorInfo').addEventListener("click", function() {
     }
 
     // switch if +/- is displayed
-    collapsed.classList.toggle("display-none");
-    expanded.classList.toggle("display-none");
+    plusSign.classList.toggle("display-none");
+    minusSign.classList.toggle("display-none");
 });
 
 

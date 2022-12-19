@@ -30,17 +30,25 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-var coll = document.getElementsByClassName("collapsible");
-var i;
 
-for (i = 0; i < coll.length; i++) {
-    coll[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var content = this.nextElementSibling;
-        if (content.style.maxHeight) {
-            content.style.maxHeight = null;
-        } else {
-            content.style.maxHeight = content.scrollHeight + "px";
-        }
-    });
-}
+var plusSign = document.getElementById("plusSign");
+var minusSign = document.getElementById("minusSign");
+
+document.getElementById('errorInfo').addEventListener("click", function() {
+    this.classList.toggle("active");
+    var open = this.classList.contains("active");
+    this.setAttribute('aria-expanded', open);
+
+    var content = document.getElementById("errorContent");
+    if (open) {
+      content.removeAttribute('hidden');
+    } else {
+      content.setAttribute('hidden', '');
+    }
+
+    // switch if +/- is displayed
+    plusSign.classList.toggle("display-none");
+    minusSign.classList.toggle("display-none");
+});
+
+

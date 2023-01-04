@@ -33,24 +33,15 @@ package edu.iu.uits.lms.email.config;
  * #L%
  */
 
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
- * Add this annotation to an {@code @Configuration} class to expose the
- * email API as a bean.
- * @since 4.0.3
+ * Configuration class for wiring in the email related services and beans
+ * Even though this class is "empty", it's still necessary for the service bean wiring!
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Import(EmailConfiguration.class)
-@Configuration(proxyBeanMethods = false)
-public @interface EnableEmailClient {
+@Configuration
+@ComponentScan(basePackages = "edu.iu.uits.lms.email")
+public class EmailConfiguration {
+
 }

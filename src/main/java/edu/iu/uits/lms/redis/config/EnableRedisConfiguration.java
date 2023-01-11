@@ -33,7 +33,6 @@ package edu.iu.uits.lms.redis.config;
  * #L%
  */
 
-import edu.iu.uits.lms.redis.RedisConfigInfoContributor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -52,7 +51,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({RedisConfiguration.class, RedisConfigInfoContributor.class})
+@Import(RedisConfiguration.class)
 @Configuration(proxyBeanMethods = false)
 public @interface EnableRedisConfiguration {
 

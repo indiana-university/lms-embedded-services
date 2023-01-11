@@ -1,3 +1,5 @@
+package edu.iu.uits.lms.common;
+
 /*-
  * #%L
  * lms-canvas-common-configuration
@@ -30,10 +32,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class makes the library's version information available via the /actuator/info endpoint
+ * The configuration is manually included into spring boot's auto configuration process via the META-INF/spring.factories file
+ */
 @Component
 public class CommonConfigInfoContributor implements InfoContributor {
 

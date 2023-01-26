@@ -45,6 +45,8 @@ import java.lang.annotation.Target;
 /**
  * Add this annotation to an {@code @Configuration} class to expose the
  * various lti APIs as beans.
+ * If you have a static list of tools that you need to register, use {@code toolKeys}.
+ * If you are going to have multiple instances of the same tool, use {@code toolKeyPrefix} and make sure all keys for the tools start with that prefix.
  * @since 4.0.5
  */
 @Target(ElementType.TYPE)
@@ -54,6 +56,15 @@ import java.lang.annotation.Target;
 @Configuration(proxyBeanMethods = false)
 public @interface EnableLtiClient {
 
-   String[] toolKeys();
+   /**
+    * List of static tool keys to be registered
+    */
+   String[] toolKeys() default {};
+
+   /**
+    * Prefix for any tool key to be registered
+    * @since 5.1.21
+    */
+   String toolKeyPrefix() default "";
 
 }

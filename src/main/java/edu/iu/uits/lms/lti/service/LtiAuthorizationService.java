@@ -38,14 +38,15 @@ import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class LtiAuthorizationService {
 
     @Autowired
     private LtiAuthorizationRepository ltiAuthorizationRepository = null;
 
-    public LmsLtiAuthz findByRegistrationEnvActive(String registrationId, String env) {
-        return ltiAuthorizationRepository.findByRegistrationEnvActive(registrationId, env);
+    public List<LmsLtiAuthz> findByRegistrationsPrefixesEnvActive(List<String> registrationIds, String registrationPrefix, String env) {
+        return ltiAuthorizationRepository.findByRegistrationsPrefixEnvActive(registrationIds, registrationPrefix, env);
     }
-
 }

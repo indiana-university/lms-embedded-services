@@ -61,7 +61,7 @@ public abstract class RedirectableLtiController extends OidcTokenAwareController
       String sisUserId = oidcTokenUtils.getSisUserId();
       String familyName = oidcTokenUtils.getPersonFamilyName();
       String givenName = oidcTokenUtils.getPersonGivenName();
-      String[] roles = oidcTokenUtils.getRoles();
+      String[] roles = oidcTokenUtils.getCustomInstructureMembershipRoles();
 
       MacroVariableMapper macroVariableMapper = new MacroVariableMapper();
 

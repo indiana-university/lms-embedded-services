@@ -71,7 +71,7 @@
         <java.version>11</java.version>
 <!--        <jdk.source>11</jdk.source>-->
 <!--        <jdk.target>11</jdk.target>-->
-        <lms-canvas-common-configuration.version>5.0.4</lms-canvas-common-configuration.version>
+        <lms-canvas-common-configuration.version>5.0.11-SNAPSHOT</lms-canvas-common-configuration.version>
         <reflections.version>0.10.2</reflections.version>
         <springdoc-openapi-ui.version>1.6.7</springdoc-openapi-ui.version>
         <spring-security-lti13.version>0.0.3</spring-security-lti13.version>

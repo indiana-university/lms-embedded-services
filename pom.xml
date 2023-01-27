@@ -66,7 +66,7 @@
     </scm>
 
     <properties>
-        <common-configuration.version>5.0.10</common-configuration.version>
+        <common-configuration.version>5.0.11-SNAPSHOT</common-configuration.version>
         <lms-canvas-services.version>5.0.11</lms-canvas-services.version>
         <lms-iuonly-impl.version>5.0.13</lms-iuonly-impl.version>
 

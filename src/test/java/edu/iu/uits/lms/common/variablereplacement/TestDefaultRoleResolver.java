@@ -42,6 +42,10 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.Arrays;
 import java.util.List;
 
+import static edu.iu.uits.lms.common.variablereplacement.RoleResolver.CANVAS_INSTRUCTOR_ROLE;
+import static edu.iu.uits.lms.common.variablereplacement.RoleResolver.CANVAS_OBSERVER_ROLE;
+import static edu.iu.uits.lms.common.variablereplacement.RoleResolver.CANVAS_TA_ROLE;
+
 /**
  * Created by chmaurer on 1/23/15.
  */
@@ -54,35 +58,35 @@ public class TestDefaultRoleResolver {
 
     @Test
     public void testGetLowestRole() throws Exception {
-        List<String> userRoles = Arrays.asList("TeacherEnrollment", "ObserverEnrollment");
+        List<String> userRoles = Arrays.asList(CANVAS_INSTRUCTOR_ROLE, CANVAS_OBSERVER_ROLE);
         String returnedRole = roleResolver.returnLowestRole(userRoles);
         Assertions.assertNotNull(returnedRole);
-        Assertions.assertEquals("ObserverEnrollment", returnedRole, "Role not a match");
+        Assertions.assertEquals(CANVAS_OBSERVER_ROLE, returnedRole, "Role not a match");
     }
 
     @Test
     public void testGetLowestRole2() throws Exception {
-        List<String> userRoles = Arrays.asList("TeacherEnrollment");
+        List<String> userRoles = Arrays.asList(CANVAS_INSTRUCTOR_ROLE);
         String returnedRole = roleResolver.returnLowestRole(userRoles);
         Assertions.assertNotNull(returnedRole);
-        Assertions.assertEquals("TeacherEnrollment", returnedRole, "Role not a match");
+        Assertions.assertEquals(CANVAS_INSTRUCTOR_ROLE, returnedRole, "Role not a match");
     }
 
     @Test
     public void testGetHighestRole() throws Exception {
-        List<String> userRoles = Arrays.asList("TaEnrollment", "ObserverEnrollment");
+        List<String> userRoles = Arrays.asList(CANVAS_TA_ROLE, CANVAS_OBSERVER_ROLE);
         String returnedRole = roleResolver.returnHighestRole(userRoles);
 
         Assertions.assertNotNull(returnedRole);
-        Assertions.assertEquals("TaEnrollment", returnedRole, "Role not a match");
+        Assertions.assertEquals(CANVAS_TA_ROLE, returnedRole, "Role not a match");
     }
 
     @Test
     public void testGetHighestRole2() throws Exception {
-        List<String> userRoles = Arrays.asList("ObserverEnrollment");
+        List<String> userRoles = Arrays.asList(CANVAS_OBSERVER_ROLE);
         String returnedRole = roleResolver.returnHighestRole(userRoles);
 
         Assertions.assertNotNull(returnedRole);
-        Assertions.assertEquals("ObserverEnrollment", returnedRole, "Role not a match");
+        Assertions.assertEquals(CANVAS_OBSERVER_ROLE, returnedRole, "Role not a match");
     }
 }

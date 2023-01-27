@@ -39,6 +39,14 @@ import java.util.List;
  * Created by chmaurer on 1/26/15.
  */
 public interface RoleResolver {
+
+    String CANVAS_INSTRUCTOR_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor";
+    String CANVAS_LEARNER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#Learner";
+    String CANVAS_TA_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership/Instructor#TeachingAssistant";
+    String CANVAS_DESIGNER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#ContentDeveloper";
+    String CANVAS_OBSERVER_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/membership#Mentor";
+    String CANVAS_ADMIN_ROLE = "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator";
+
     String returnHighestRole(List<String> userRoles);
 
     String returnLowestRole(List<String> userRoles);

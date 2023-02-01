@@ -39,7 +39,7 @@ import edu.iu.uits.lms.common.variablereplacement.DefaultRoleResolverImpl;
 import edu.iu.uits.lms.common.variablereplacement.MacroVariableMapper;
 import edu.iu.uits.lms.common.variablereplacement.RoleResolver;
 import edu.iu.uits.lms.common.variablereplacement.VariableReplacementService;
-import edu.iu.uits.lms.iuonly.services.SudsServiceImpl;
+import edu.iu.uits.lms.iuonly.services.SisServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,7 +69,7 @@ public class TestIUMacroVariableReplacement {
     private CourseService courseService;
 
     @MockBean
-    private SudsServiceImpl sudsService;
+    private SisServiceImpl sisService;
 
     private MacroVariableMapper macroVariableMapper = null;
 

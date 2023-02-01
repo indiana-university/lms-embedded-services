@@ -37,9 +37,9 @@ import edu.iu.uits.lms.canvas.model.Course;
 import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.common.variablereplacement.DefaultVariableReplacementServiceImpl;
 import edu.iu.uits.lms.common.variablereplacement.MacroVariableMapper;
-import edu.iu.uits.lms.iuonly.model.SudsClass;
-import edu.iu.uits.lms.iuonly.model.SudsCourse;
-import edu.iu.uits.lms.iuonly.services.SudsServiceImpl;
+import edu.iu.uits.lms.iuonly.model.SisClass;
+import edu.iu.uits.lms.iuonly.model.SisCourse;
+import edu.iu.uits.lms.iuonly.services.SisServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,7 @@ public class IUVariableReplacementServiceImpl extends DefaultVariableReplacement
     private CourseService courseService;
 
     @Autowired
-    private SudsServiceImpl sudsService;
+    private SisServiceImpl sisService;
 
    public IUVariableReplacementServiceImpl() {
       log.info("IUVariableReplacementServiceImpl()");
@@ -67,11 +67,11 @@ public class IUVariableReplacementServiceImpl extends DefaultVariableReplacement
       if (course != null) {
          macroVariableMapper.setSisCourseId(course.getSisCourseId());
 
-         SudsCourse sudsCourse = sudsService.getSudsCourseBySiteId(course.getSisCourseId());
+         SisCourse sudsCourse = sisService.getSisCourseBySiteId(course.getSisCourseId());
          if (sudsCourse != null) {
             macroVariableMapper.setSisTermId(sudsCourse.getSTerm());
             macroVariableMapper.setClassNumber(sudsCourse.getClassNumber());
-            SudsClass sudsClass = sudsService.getSudsClassByCourse(sudsCourse.getSTerm(), sudsCourse.getClassNumber(),
+            SisClass sudsClass = sisService.getSisClassByCourse(sudsCourse.getSTerm(), sudsCourse.getClassNumber(),
                   sudsCourse.getCampus(), true);
 
             if (sudsClass != null) {

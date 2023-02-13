@@ -34,7 +34,6 @@ package edu.iu.uits.lms.lti.config;
  */
 
 import com.nimbusds.jose.JOSEException;
-import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
@@ -47,7 +46,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -61,11 +59,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.ac.ox.ctl.lti13.KeyPairService;
 import uk.ac.ox.ctl.lti13.SingleKeyPairService;
@@ -75,13 +69,10 @@ import uk.ac.ox.ctl.lti13.nrps.NamesRoleService;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.security.KeyPair;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @ComponentScan(basePackages = "edu.iu.uits.lms.lti",
       excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
@@ -103,6 +94,8 @@ public class LtiClientConfig implements ImportAware {
 
    private List<String> toolKeys;
 
+   private String toolKeyPrefix;
+
    @Value("${app.env}")
    private String env;
 
@@ -121,6 +114,8 @@ public class LtiClientConfig implements ImportAware {
 
       String[] keys = attributes.getStringArray("toolKeys");
       toolKeys = Arrays.asList(keys);
+
+      toolKeyPrefix = attributes.getString("toolKeyPrefix");
    }
 
    @Bean
@@ -138,55 +133,8 @@ public class LtiClientConfig implements ImportAware {
 
    @Bean
    public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
-      List<ClientRegistration> registrations = toolKeys.stream()
-            .map(this::getRegistrationBuilder)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
-      // If the calling tool has configured any additional clients (via standard application.yml means), wire them in here as well.
-      List<ClientRegistration> additionalRegistrations = new ArrayList<>(
-            OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
-      registrations.addAll(additionalRegistrations);
-
-      if (registrations.isEmpty()) {
-         //Add a dummy registration since it cannot be empty
-         registrations.add(ClientRegistration.withRegistrationId("dummy")
-               .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-               .tokenUri("dummy")
-               .clientId("dummy")
-               .build());
-      }
-
-      return new InMemoryClientRegistrationRepository(registrations);
+      return new LmsClientRegistrationRepository(ltiClientRegistrationProperties, ltiAuthorizationService, env, toolKeys, toolKeyPrefix);
    }
-
-   public ClientRegistration getRegistrationBuilder(String toolKey) {
-      LtiClientRegistrationProperties.RegistrationDetails registrationDetails = ltiClientRegistrationProperties.getDefaultRegistrationDetails();
-
-      ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(toolKey)
-            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-            .authorizationGrantType(AuthorizationGrantType.IMPLICIT)
-//      builder.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE);
-//      builder.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS);
-
-            .redirectUri("{baseUrl}/lti/login")
-            .scope("openid")
-            .authorizationUri(registrationDetails.getAuthzUrl())
-            .tokenUri(registrationDetails.getTokenUri())
-            .jwkSetUri(registrationDetails.getJwkSetUri())
-            .issuerUri(registrationDetails.getIssuer())
-            .userNameAttributeName("sub")
-            .clientName(toolKey);
-
-      // Use toolKey to lookup client and secret
-      LmsLtiAuthz ltiAuthz = ltiAuthorizationService.findByRegistrationEnvActive(toolKey, env);
-      if (ltiAuthz != null) {
-         builder.clientId(ltiAuthz.getClientId())
-               .clientSecret(ltiAuthz.getSecret());
-      }
-      return builder.build();
-   }
-
 
    @ConditionalOnMissingBean
    @Bean(name = "ltiDataSource")

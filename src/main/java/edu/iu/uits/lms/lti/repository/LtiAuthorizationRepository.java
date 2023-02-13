@@ -34,9 +34,12 @@ package edu.iu.uits.lms.lti.repository;
  */
 
 import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public interface LtiAuthorizationRepository extends PagingAndSortingRepository<LmsLtiAuthz, Long> {
@@ -44,4 +47,18 @@ public interface LtiAuthorizationRepository extends PagingAndSortingRepository<L
     LmsLtiAuthz findByRegistrationEnvActive(@Param("registrationId") String registrationId, @Param("env") String env);
 
     LmsLtiAuthz findById(@Param("id") String id);
+
+    /**
+     * Get appropriate auth records.
+     *
+     * @param registrationIds List of registration IDs
+     * @param registrationPrefix Registration prefix
+     * @param env Environment
+     * @return List of authz records
+     */
+    @Query("from LmsLtiAuthz where ((registrationId LIKE :#{escape(#registrationPrefix)}% escape :#{escapeCharacter()} " +
+          "AND :registrationPrefix != '') OR registrationId in :registrationIds) and env = :env and active = true")
+    List<LmsLtiAuthz> findByRegistrationsPrefixEnvActive(@Param("registrationIds") List<String> registrationIds,
+                                                         @Param("registrationPrefix") String registrationPrefix,
+                                                         @Param("env") String env);
 }

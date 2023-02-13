@@ -37,8 +37,9 @@ import edu.iu.uits.lms.canvas.model.Course;
 import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.common.variablereplacement.DefaultRoleResolverImpl;
 import edu.iu.uits.lms.common.variablereplacement.MacroVariableMapper;
+import edu.iu.uits.lms.common.variablereplacement.RoleResolver;
 import edu.iu.uits.lms.common.variablereplacement.VariableReplacementService;
-import edu.iu.uits.lms.iuonly.services.SudsServiceImpl;
+import edu.iu.uits.lms.iuonly.services.SisServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -66,7 +69,7 @@ public class TestIUMacroVariableReplacement {
     private CourseService courseService;
 
     @MockBean
-    private SudsServiceImpl sudsService;
+    private SisServiceImpl sisService;
 
     private MacroVariableMapper macroVariableMapper = null;
 
@@ -79,7 +82,7 @@ public class TestIUMacroVariableReplacement {
         macroVariableMapper.setSisTermId("1234");
         macroVariableMapper.setSisCourseId("ASDF-1234-QWER-0987");
         macroVariableMapper.setUserNetworkId("jsmith");
-        macroVariableMapper.setUserRole("Learner");
+        macroVariableMapper.setUserRole(RoleResolver.CANVAS_LEARNER_ROLE);
         macroVariableMapper.setUserId("000123456789");
         macroVariableMapper.setClassNumber("9876");
         macroVariableMapper.setCanvasCourseId("1111111");
@@ -110,7 +113,7 @@ public class TestIUMacroVariableReplacement {
 
     @Test
     public void testExpandAll() throws Exception {
-        variableReplacementService.setupMapper(macroVariableMapper, new String[] {"Learner"});
+        variableReplacementService.setupMapper(macroVariableMapper, new String[] {RoleResolver.CANVAS_LEARNER_ROLE});
 
         Assertions.assertEquals("THE_SIS_COURSE_ID", macroVariableMapper.getSisCourseId(), "sis course id did not get set properly");
 
@@ -123,8 +126,8 @@ public class TestIUMacroVariableReplacement {
 //        String outputTemplate = "{0};{1};{2};{3};{4};{5};{6};{7};";
         String output = MessageFormat.format(template, macroVariableMapper.getUserFirstName(), macroVariableMapper.getUserLastName(),
                 macroVariableMapper.getSisCampus(), macroVariableMapper.getSisTermId(), macroVariableMapper.getSisCourseId(),
-                macroVariableMapper.getUserNetworkId(), macroVariableMapper.getUserRole(), macroVariableMapper.getUserId(),
-                macroVariableMapper.getClassNumber(), macroVariableMapper.getCanvasCourseId());
+                macroVariableMapper.getUserNetworkId(), URLEncoder.encode(macroVariableMapper.getUserRole(), StandardCharsets.UTF_8),
+                macroVariableMapper.getUserId(), macroVariableMapper.getClassNumber(), macroVariableMapper.getCanvasCourseId());
 
         String processed = variableReplacementService.performMacroVariableReplacement(macroVariableMapper, input);
 

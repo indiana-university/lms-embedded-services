@@ -44,7 +44,7 @@ import java.util.List;
 @Service
 public class DefaultRoleResolverImpl implements RoleResolver {
 
-    private static final String[] orderedRoles = {CANVAS_INSTRUCTOR_ROLE, CANVAS_TA_ROLE, CANVAS_DESIGNER_ROLE,
+    private static final String[] orderedRoles = {CANVAS_ADMIN_ROLE, CANVAS_INSTRUCTOR_ROLE, CANVAS_TA_ROLE, CANVAS_DESIGNER_ROLE,
           CANVAS_LEARNER_ROLE, CANVAS_OBSERVER_ROLE};
 
     @Override

@@ -141,7 +141,7 @@ public class OidcTokenUtils {
 
    /**
     * Get the Email out of the claim
-    * @return
+    * @return Email
     */
    public String getPersonEmail() {
       String name = (String) attrMap.get(CLAIMS_EMAIL_KEY);
@@ -153,7 +153,7 @@ public class OidcTokenUtils {
     * FYI, these contain ALL roles for the user, not just the ones for the launched context
     * @return Roles
     */
-   public String[] getRoles() {
+   public String[] getAllRoles() {
       JSONArray jsonObj = (JSONArray) attrMap.get(Claims.ROLES);
       return jsonObj.toArray(String[]::new);
    }

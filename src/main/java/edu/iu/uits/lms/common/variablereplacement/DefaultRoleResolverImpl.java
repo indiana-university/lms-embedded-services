@@ -44,8 +44,8 @@ import java.util.List;
 @Service
 public class DefaultRoleResolverImpl implements RoleResolver {
 
-    private static final String[] orderedRoles = {"TeacherEnrollment","Instructor","TaEnrollment","urn:lti:role:ims/lis/TeachingAssistant",
-          "DesignerEnrollment","ContentDeveloper","StudentEnrollment","Learner","ObserverEnrollment","urn:lti:instrole:ims/lis/Observer"};
+    private static final String[] orderedRoles = {CANVAS_ADMIN_ROLE, CANVAS_INSTRUCTOR_ROLE, CANVAS_TA_ROLE, CANVAS_DESIGNER_ROLE,
+          CANVAS_LEARNER_ROLE, CANVAS_OBSERVER_ROLE};
 
     @Override
     public String returnHighestRole(List<String> userRoles) {

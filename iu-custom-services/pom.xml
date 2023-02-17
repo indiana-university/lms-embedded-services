@@ -1,98 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.4</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <artifactId>lms-services-parent</artifactId>
+        <groupId>edu.iu.uits.lms</groupId>
+        <version>5.2.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>edu.iu.uits.lms</groupId>
     <artifactId>lms-canvas-iu-custom-services</artifactId>
     <name>lms-canvas-iu-custom-services</name>
     <packaging>jar</packaging>
-    <version>5.0.16-SNAPSHOT</version>
 
     <description>Shared services for the lms-canvas LTI tools to interact with custom IU things</description>
-    <url>https://github.com/indiana-university/lms-canvas-iu-custom-services</url>
-    <inceptionYear>2015</inceptionYear>
-
-    <organization>
-        <name>Indiana University</name>
-        <url>https://iu.edu</url>
-    </organization>
-
-    <developers>
-        <developer>
-            <name>Learning Management Systems Team</name>
-            <email>lmsreq@iu.edu</email>
-            <organization>Indiana University</organization>
-            <organizationUrl>https://iu.edu</organizationUrl>
-        </developer>
-    </developers>
-
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/indiana-university/lms-canvas-iu-custom-services/issues</url>
-    </issueManagement>
-
-    <licenses>
-        <license>
-            <name>BSD 3-Clause License</name>
-            <url>https://opensource.org/licenses/BSD-3-Clause</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <distributionManagement>
-        <repository>
-            <name>Sonatype OSS Repository</name>
-            <id>Sonatype-OSS</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-        <snapshotRepository>
-            <name>Sonatype OSS Snapshot Repository</name>
-            <id>Sonatype-OSS</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <scm>
-        <connection>scm:git:https://github.com/indiana-university/lms-canvas-iu-custom-services.git</connection>
-        <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-iu-custom-services.git</developerConnection>
-        <url>https://github.com/indiana-university/lms-canvas-iu-custom-services</url>
-        <tag>HEAD</tag>
-    </scm>
 
     <properties>
         <commons-collections4.version>4.4</commons-collections4.version>
-        <lms-canvas-common-configuration.version>5.0.11</lms-canvas-common-configuration.version>
-        <lms-canvas-services.version>5.0.12</lms-canvas-services.version>
-        <lms-email-service.version>5.0.6</lms-email-service.version>
-        <springdoc-openapi-ui.version>1.6.7</springdoc-openapi-ui.version>
-
-        <!-- plugins -->
-        <plugins.compiler.version>3.10.0</plugins.compiler.version>
-        <plugins.gpg.version>1.6</plugins.gpg.version>
-        <plugins.javadoc.version>3.0.1</plugins.javadoc.version>
-        <plugins.license.version>2.0.0</plugins.license.version>
-        <plugins.nexus-staging.version>1.6.13</plugins.nexus-staging.version>
-        <plugins.release.version>2.5.3</plugins.release.version>
-        <plugins.source.version>3.0.1</plugins.source.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-services</artifactId>
-            <version>${lms-canvas-services.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-email-service</artifactId>
-            <version>${lms-email-service.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -149,7 +83,6 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-common-configuration</artifactId>
-            <version>${lms-canvas-common-configuration.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -160,7 +93,6 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${springdoc-openapi-ui.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -181,20 +113,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${plugins.compiler.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>${plugins.license.version}</version>
                 <configuration>
-                    <licenseName>bsd_3</licenseName>
-                    <failOnMissingHeader>true</failOnMissingHeader>
-                    <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
                     <excludes>
                         <exclude>**/denodo.properties</exclude>
                         <exclude>**/derdack.properties</exclude>
@@ -204,12 +127,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven-jar-plugin.version}</version>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
                         <configuration>
                             <includes>
                                 <include>edu/iu/uits/lms/iuonly/jarexport/**</include>
@@ -221,24 +140,10 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>${plugins.nexus-staging.version}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>Sonatype-OSS</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>${plugins.release.version}</version>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <releaseProfiles>release</releaseProfiles>
-                    <goals>deploy</goals>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -251,45 +156,14 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>${plugins.source.version}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${plugins.javadoc.version}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <failOnError>false</failOnError>
-                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${plugins.gpg.version}</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>

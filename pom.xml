@@ -14,8 +14,8 @@
     <packaging>pom</packaging>
     <version>5.2.0-beta-SNAPSHOT</version>
 
-    <description>Shared services for the lms-canvas LTI tools to talk to Canvas</description>
-    <url>https://github.com/indiana-university/lms-canvas-services</url>
+    <description>Collection of services/configurations that can be embedded in Canvas-based LTI tools</description>
+    <url>https://github.com/indiana-university/lms-embedded-services</url>
     <inceptionYear>2015</inceptionYear>
 
     <organization>
@@ -34,7 +34,7 @@
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/indiana-university/lms-canvas-services/issues</url>
+        <url>https://github.com/indiana-university/lms-embedded-services/issues</url>
     </issueManagement>
 
     <licenses>
@@ -59,9 +59,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/indiana-university/lms-canvas-services.git</connection>
-        <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-services.git</developerConnection>
-        <url>https://github.com/indiana-university/lms-canvas-services</url>
+        <connection>scm:git:https://github.com/indiana-university/lms-embedded-services.git</connection>
+        <developerConnection>scm:git:https://github.com/indiana-university/lms-embedded-services.git</developerConnection>
+        <url>https://github.com/indiana-university/lms-embedded-services</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -75,7 +75,7 @@
         <plugins.gpg.version>1.6</plugins.gpg.version>
         <plugins.javadoc.version>3.0.1</plugins.javadoc.version>
         <plugins.license.version>2.0.0</plugins.license.version>
-        <plugins.nexus-staging.version>1.6.8</plugins.nexus-staging.version>
+        <plugins.nexus-staging.version>1.6.13</plugins.nexus-staging.version>
         <plugins.release.version>2.5.3</plugins.release.version>
         <plugins.source.version>3.0.1</plugins.source.version>
     </properties>

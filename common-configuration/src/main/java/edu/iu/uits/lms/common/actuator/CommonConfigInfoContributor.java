@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.common;
+package edu.iu.uits.lms.common.actuator;
 
 /*-
  * #%L

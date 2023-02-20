@@ -12,7 +12,7 @@
     <artifactId>lms-embedded-services-parent</artifactId>
     <groupId>edu.iu.uits.lms</groupId>
     <packaging>pom</packaging>
-    <version>5.2.1-beta-SNAPSHOT</version>
+    <version>5.2.0-beta2-SNAPSHOT</version>
 
     <description>Collection of services/configurations that can be embedded in Canvas-based LTI tools</description>
     <url>https://github.com/indiana-university/lms-embedded-services</url>
@@ -217,6 +217,7 @@
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <useReleaseProfile>false</useReleaseProfile>
                         <releaseProfiles>release</releaseProfiles>
+                        <tagNameFormat>@{project.version}</tagNameFormat>
                         <goals>deploy</goals>
                     </configuration>
                 </plugin>
@@ -267,4 +268,26 @@
 
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

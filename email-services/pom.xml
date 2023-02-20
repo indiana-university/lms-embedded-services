@@ -9,7 +9,7 @@
     <parent>
         <artifactId>lms-embedded-services-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>5.2.0-beta3</version>
+        <version>5.2.0-beta4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

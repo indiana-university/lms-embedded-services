@@ -35,6 +35,7 @@ package edu.iu.uits.lms.common.actuator;
 
 import org.apache.catalina.startup.Tomcat;
 import org.springframework.boot.SpringBootVersion;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.info.Info;
@@ -54,6 +55,7 @@ import java.util.Map;
 
 @Endpoint(id="lms")
 @Component
+@ConditionalOnAvailableEndpoint(endpoint = LmsCustomActuatorEndpoint.class)
 public class LmsCustomActuatorEndpoint {
 
    private final List<InfoContributor> infoContributors;

@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.common;
+package edu.iu.uits.lms.common.it12logging;
 
 /*-
  * #%L
@@ -33,22 +33,14 @@ package edu.iu.uits.lms.common;
  * #L%
  */
 
-import org.springframework.boot.actuate.info.Info;
-import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.request.RequestContextListener;
 
-/**
- * This class makes the library's version information available via the /actuator/info endpoint
- * The configuration is manually included into spring boot's auto configuration process via the META-INF/spring.factories file
- */
-@Component
-public class CommonConfigInfoContributor implements InfoContributor {
-
-   @Override
-   public void contribute(Info.Builder builder) {
-      Package pkg = this.getClass().getPackage();
-      String version =  pkg != null ? pkg.getImplementationVersion() : null;
-      builder.withDetail("common-config-service", version);
+@Configuration
+public class AuditConfig {
+   @Bean
+   public RequestContextListener requestContextListener(){
+      return new RequestContextListener();
    }
-
 }

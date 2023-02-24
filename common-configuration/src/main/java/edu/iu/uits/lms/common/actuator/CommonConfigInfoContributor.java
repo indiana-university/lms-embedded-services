@@ -49,6 +49,7 @@ public class CommonConfigInfoContributor implements InfoContributor {
       Package pkg = this.getClass().getPackage();
       String version =  pkg != null ? pkg.getImplementationVersion() : null;
       builder.withDetail("common-config-service", version);
+      builder.withDetail("embedded-services", version);
    }
 
 }

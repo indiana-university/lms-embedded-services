@@ -1,3 +1,4 @@
 edu.iu.uits.lms.common.actuator.CommonConfigInfoContributor
 edu.iu.uits.lms.common.actuator.ActuatorSecurityConfig
 edu.iu.uits.lms.common.actuator.LmsCustomActuatorEndpoint
+edu.iu.uits.lms.common.it12logging.AuditConfig

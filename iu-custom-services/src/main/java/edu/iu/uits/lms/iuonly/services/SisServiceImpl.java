@@ -40,6 +40,7 @@ import edu.iu.uits.lms.iuonly.model.SisFerpaEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -52,6 +53,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@Profile("denodo")
 @Service
 @Slf4j
 public class SisServiceImpl {

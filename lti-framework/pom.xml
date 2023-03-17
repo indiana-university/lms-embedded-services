@@ -14,6 +14,7 @@
     <description>Shared services for the lms-canvas LTI tools around the LTI tool launch</description>
 
     <properties>
+        <basiclti-util.version>22.2</basiclti-util.version>
         <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
         <commons-io.version>2.11.0</commons-io.version>
         <hibernate5-ddl-maven-plugin.version>2.3.0</hibernate5-ddl-maven-plugin.version>
@@ -96,6 +97,18 @@
             <artifactId>reflections</artifactId>
             <scope>test</scope>
             <version>${reflections.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sakaiproject.basiclti</groupId>
+            <artifactId>basiclti-util</artifactId>
+            <version>${basiclti-util.version}</version>
+            <!-- Need to exclude the nimbusds dependency from here since it's an older version, incompatible with our current stuff -->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.nimbusds</groupId>
+                    <artifactId>nimbus-jose-jwt</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

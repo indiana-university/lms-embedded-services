@@ -36,6 +36,7 @@ package edu.iu.uits.lms.lti.config;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.repository.KeyPairRepository;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
+import edu.iu.uits.lms.lti.repository.legacy.Lti11AuthorizationRepository;
 import edu.iu.uits.lms.lti.service.Lti13Service;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -52,6 +53,9 @@ public class LtiClientTestConfig {
 
    @MockBean
    protected LtiAuthorizationRepository ltiAuthorizationRepository;
+
+   @MockBean
+   protected Lti11AuthorizationRepository lti11AuthorizationRepository;
 
    @MockBean
    protected KeyPairRepository keyPairRepository;

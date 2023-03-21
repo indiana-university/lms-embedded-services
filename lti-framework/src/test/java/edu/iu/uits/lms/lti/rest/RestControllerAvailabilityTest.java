@@ -37,6 +37,7 @@ import edu.iu.uits.lms.lti.controller.JWKSController;
 import edu.iu.uits.lms.lti.controller.rest.LtiAuthorizationRestController;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
+import edu.iu.uits.lms.lti.repository.legacy.Lti11AuthorizationRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -122,6 +123,9 @@ public class RestControllerAvailabilityTest {
 
       @MockBean
       private LtiAuthorizationRepository ltiAuthorizationRepository;
+
+      @MockBean
+      private Lti11AuthorizationRepository lti11AuthorizationRepository;
 
       @MockBean
       private DefaultInstructorRoleRepository defaultInstructorRoleRepository;

@@ -69,10 +69,12 @@ import java.util.Map;
 
 /**
  * Created by chmaurer on 12/19/14.
+ * @deprecated This class was temporarily added and is not intended for long-term use.  Please use the 1.3 launch mechanism instead.
  */
 @Controller
 @Slf4j
-public abstract class LtiController {
+@Deprecated(since = "5.2.2", forRemoval = true)
+public abstract class Lti11Controller {
     private static final long serialVersionUID = -5793392467087229614L;
     private static final String OAUTH_MESSAGE = "oauth_message";
 
@@ -151,7 +153,7 @@ public abstract class LtiController {
         Claims claims = null;
         try {
             claims = validateAndAuthorize(payload);
-        } catch (LTIException e) {
+        } catch (LTI11Exception e) {
             log.error("validation error", e);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getLocalizedMessage());
             return;
@@ -232,9 +234,9 @@ public abstract class LtiController {
     /**
      * Ensure that this is a proper lti request and it is authorized
      * @param payload Map of the request parameters
-     * @throws LTIException
+     * @throws LTI11Exception
      */
-    protected Claims validateAndAuthorize(Map<String, Object> payload) throws LTIException {
+    protected Claims validateAndAuthorize(Map<String, Object> payload) throws LTI11Exception {
         //check parameters
         String ltiMessageType = (String) payload.get(BasicLTIConstants.LTI_MESSAGE_TYPE);
         String ltiVersion = (String) payload.get(BasicLTIConstants.LTI_VERSION);
@@ -244,16 +246,16 @@ public abstract class LtiController {
 
         log.debug("validate()");
         if(!BasicLTIUtil.equals(ltiMessageType, "basic-lti-launch-request")) {
-            throw new LTIException("launch.invalid", "lti_message_type="+ltiMessageType, null);
+            throw new LTI11Exception("launch.invalid", "lti_message_type="+ltiMessageType, null);
         }
         if(!BasicLTIUtil.equals(ltiVersion, "LTI-1p0")) {
-            throw new LTIException( "launch.invalid", "lti_version="+ltiVersion, null);
+            throw new LTI11Exception( "launch.invalid", "lti_version="+ltiVersion, null);
         }
         if(BasicLTIUtil.isBlank(oauthConsumerKey)) {
-            throw new LTIException( "launch.missing", "oauth_consumer_key", null);
+            throw new LTI11Exception( "launch.missing", "oauth_consumer_key", null);
         }
         if(BasicLTIUtil.isBlank(userId)) {
-            throw new LTIException( "launch.missing", "user_id", null);
+            throw new LTI11Exception( "launch.missing", "user_id", null);
         }
         log.debug("user_id=" + userId);
 
@@ -261,7 +263,7 @@ public abstract class LtiController {
         final LmsLti11Authz ltiAuthz = lti11AuthorizationService.findByKeyContextActive(oauthConsumerKey, getToolContext());
 
         if (ltiAuthz == null || ltiAuthz.getSecret() == null) {
-            throw new LTIException( "launch.key.notfound",oauthConsumerKey, null);
+            throw new LTI11Exception( "launch.key.notfound",oauthConsumerKey, null);
         }
         final OAuthMessage oam = (OAuthMessage) payload.get(OAUTH_MESSAGE);
         final OAuthValidator oav = new SimpleOAuthValidator();
@@ -278,9 +280,9 @@ public abstract class LtiController {
         try {
             oav.validateMessage(oam, acc);
         } catch (OAuthException e) {
-            throw new LTIException( "launch.no.validate", e.getLocalizedMessage(), e.getCause());
+            throw new LTI11Exception( "launch.no.validate", e.getLocalizedMessage(), e.getCause());
         } catch (IOException | URISyntaxException e) {
-            throw new LTIException( "launch.no.validate", contextId, e);
+            throw new LTI11Exception( "launch.no.validate", contextId, e);
         }
         return null;
     }

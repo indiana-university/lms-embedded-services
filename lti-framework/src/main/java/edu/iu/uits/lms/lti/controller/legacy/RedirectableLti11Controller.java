@@ -39,7 +39,11 @@ import org.tsugi.basiclti.BasicLTIConstants;
 
 import java.util.Map;
 
-public abstract class RedirectableLtiController extends LtiController {
+/**
+ * @deprecated This class was temporarily added and is not intended for long-term use.  Please use the 1.3 launch mechanism instead.
+ */
+@Deprecated(since = "5.2.2", forRemoval = true)
+public abstract class RedirectableLti11Controller extends Lti11Controller {
 
    public static final String CUSTOM_REDIRECT_URL_PROP = "custom_redirect_url";
 

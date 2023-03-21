@@ -38,7 +38,11 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
+/**
+ * @deprecated This class was temporarily added and is not intended for long-term use.  Please use the 1.3 launch mechanism instead.
+ */
 @Component
+@Deprecated(since = "5.2.2", forRemoval = true)
 public interface Lti11AuthorizationRepository extends PagingAndSortingRepository<LmsLti11Authz, Long> {
 
     LmsLti11Authz findByKeyContextActive(@Param("consumerKey") String consumerKey,

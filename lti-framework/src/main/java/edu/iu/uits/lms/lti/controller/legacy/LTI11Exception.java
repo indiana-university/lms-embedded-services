@@ -34,21 +34,15 @@ package edu.iu.uits.lms.lti.controller.legacy;
  */
 
 /**
- * Created with IntelliJ IDEA.
- * User: chmaurer
- * Date: 11/12/14
- * Time: 2:21 PM
- * To change this template use File | Settings | File Templates.
- */
-/**
  * Exception class for tracking certain types of errors
  * @author chmaurer
- *
+ * @deprecated This class was temporarily added and is not intended for long-term use.  Please use the 1.3 launch mechanism instead.
  */
-public class LTIException extends RuntimeException {
+@Deprecated(since = "5.2.2", forRemoval = true)
+public class LTI11Exception extends RuntimeException {
     private static final long serialVersionUID = -2890251603390152099L;
 
-    public LTIException(String msg, String detail, Throwable t) {
+    public LTI11Exception(String msg, String detail, Throwable t) {
         super(msg + ": " + detail, t);
     }
 }

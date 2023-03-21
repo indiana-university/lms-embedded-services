@@ -39,7 +39,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * @deprecated This class was temporarily added and is not intended for long-term use.  Please use the 1.3 launch mechanism instead.
+ */
 @Service
+@Deprecated(since = "5.2.2", forRemoval = true)
 public class Lti11AuthorizationService {
 
     @Autowired

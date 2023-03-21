@@ -56,10 +56,14 @@ import static edu.iu.uits.lms.lti.LTIConstants.LTIREST_PROFILE;
 import static edu.iu.uits.lms.lti.LTIConstants.READ_SCOPE;
 import static edu.iu.uits.lms.lti.LTIConstants.WRITE_SCOPE;
 
+/**
+ * @deprecated This class was temporarily added and is not intended for long-term use.  Please use the 1.3 launch mechanism instead.
+ */
 @Profile(LTIREST_PROFILE)
 @RestController
 @RequestMapping("/rest/lti/legacy/authz")
 @Tag(name = "Lti11AuthorizationRestController", description = "Interact with the LmsLti11Authz repository with CRUD operations")
+@Deprecated(since = "5.2.2", forRemoval = true)
 public class Lti11AuthorizationRestController {
 
     @Autowired

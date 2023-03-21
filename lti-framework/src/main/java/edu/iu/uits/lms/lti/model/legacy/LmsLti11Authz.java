@@ -51,6 +51,7 @@ import java.util.Date;
 
 /**
  * Created by chmaurer on 2/13/15.
+ * @deprecated This class was temporarily added and is not intended for long-term use.  Please use the 1.3 launch mechanism instead.
  */
 @Entity
 @Table(name = "LTI_AUTHZ")
@@ -63,6 +64,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Deprecated(since = "5.2.2", forRemoval = true)
 public class LmsLti11Authz {
 
     protected static final String CONTEXT_WILDCARD = "*";

@@ -36,6 +36,8 @@ package edu.iu.uits.lms.lti.config;
 import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import edu.iu.uits.lms.lti.service.LtiAuthorizationService;
 import lombok.AllArgsConstructor;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -54,6 +56,7 @@ import java.util.stream.Collectors;
 public class LmsClientRegistrationRepository implements ClientRegistrationRepository {
 
    private LtiClientRegistrationProperties ltiClientRegistrationProperties;
+   private OAuth2ClientProperties oAuth2ClientProperties;
    private LtiAuthorizationService ltiAuthorizationService;
    private String env;
    private List<String> toolKeys;
@@ -95,6 +98,12 @@ public class LmsClientRegistrationRepository implements ClientRegistrationReposi
             registrations.add(builder.build());
          }
       }
+
+      // If the calling tool has configured any additional clients (via standard application.yml means), wire them in here as well.
+      List<ClientRegistration> additionalRegistrations = new ArrayList<>(
+            OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(oAuth2ClientProperties).values());
+      registrations.addAll(additionalRegistrations);
+
       return registrations.stream().collect(Collectors.toMap(ClientRegistration::getRegistrationId, Function.identity()));
    }
 }

@@ -133,7 +133,7 @@ public class LtiClientConfig implements ImportAware {
 
    @Bean
    public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
-      return new LmsClientRegistrationRepository(ltiClientRegistrationProperties, ltiAuthorizationService, env, toolKeys, toolKeyPrefix);
+      return new LmsClientRegistrationRepository(ltiClientRegistrationProperties, properties, ltiAuthorizationService, env, toolKeys, toolKeyPrefix);
    }
 
    @ConditionalOnMissingBean

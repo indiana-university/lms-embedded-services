@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 public class LmsClientRegistrationRepository implements ClientRegistrationRepository {
 
    private LtiClientRegistrationProperties ltiClientRegistrationProperties;
-
    private OAuth2ClientProperties oAuth2ClientProperties;
    private LtiAuthorizationService ltiAuthorizationService;
    private String env;

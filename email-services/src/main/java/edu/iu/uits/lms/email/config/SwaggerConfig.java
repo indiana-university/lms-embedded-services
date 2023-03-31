@@ -38,6 +38,7 @@ import io.swagger.v3.oas.annotations.security.OAuthFlow;
 import io.swagger.v3.oas.annotations.security.OAuthFlows;
 import io.swagger.v3.oas.annotations.security.OAuthScope;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +63,7 @@ public class SwaggerConfig {
             .group(EMAIL_GROUP_CODE)
             .packagesToScan("edu.iu.uits.lms.email")
             .pathsToMatch("/rest/email/**")
+            .addOpenApiCustomiser(openApi -> openApi.addSecurityItem(new SecurityRequirement().addList("security_auth_email")))
             .build();
    }
 }

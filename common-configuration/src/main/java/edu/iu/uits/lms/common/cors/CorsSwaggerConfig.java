@@ -49,7 +49,7 @@ import org.springframework.web.filter.CorsFilter;
 @Profile("swagger")
 public class CorsSwaggerConfig {
 
-   @Value("${lms.swagger.cors.origin:DEFAULT_PLACEHOLDER}")
+   @Value("${lms.swagger.cors.origin}")
    private String corsSwaggerAllowedOrigin;
 
    @Bean

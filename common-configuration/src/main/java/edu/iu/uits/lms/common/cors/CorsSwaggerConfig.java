@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.config;
+package edu.iu.uits.lms.common.cors;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-common-configuration
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2023 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,38 +33,37 @@ package edu.iu.uits.lms.iuonly.config;
  * #L%
  */
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.OAuthFlow;
-import io.swagger.v3.oas.annotations.security.OAuthFlows;
-import io.swagger.v3.oas.annotations.security.OAuthScope;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import org.springdoc.core.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
-import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
-import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOM_GROUP_CODE;
-import static edu.iu.uits.lms.iuonly.IuCustomConstants.READ;
-import static edu.iu.uits.lms.iuonly.IuCustomConstants.WRITE;
+/**
+ * Configuration class that gets autoloaded if the swagger profile has been enabled.
+ * @since 5.2.4
+ */
+@Configuration
+@Profile("swagger")
+public class CorsSwaggerConfig {
 
-@Profile(IUCUSTOMREST_PROFILE + " & swagger")
-@Configuration("IuCustomSwaggerConfig")
-@SecurityScheme(name = "security_auth_iu", type = SecuritySchemeType.OAUTH2,
-      flows = @OAuthFlows(authorizationCode = @OAuthFlow(
-            authorizationUrl = "${springdoc.oAuthFlow.authorizationUrl}",
-            scopes = {@OAuthScope(name = READ), @OAuthScope(name = WRITE)},
-            tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
-public class SwaggerConfig {
+   @Value("${lms.swagger.cors.origin}")
+   private String corsSwaggerAllowedOrigin;
 
    @Bean
-   public GroupedOpenApi iuCustomOpenApi() {
-      return GroupedOpenApi.builder()
-            .group(IUCUSTOM_GROUP_CODE)
-            .packagesToScan("edu.iu.uits.lms.iuonly")
-            .pathsToMatch("/rest/iu/**")
-            .addOpenApiCustomiser(openApi -> openApi.addSecurityItem(new SecurityRequirement().addList("security_auth_iu")))
-            .build();
+   public CorsFilter corsFilter() {
+      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+      CorsConfiguration config = new CorsConfiguration();
+      config.setAllowCredentials(true);
+      //What origin will be calling the endpoints
+      config.addAllowedOrigin(corsSwaggerAllowedOrigin);
+      config.addAllowedHeader("*");
+      config.addAllowedMethod("*");
+
+      source.registerCorsConfiguration("/**", config);
+      return new CorsFilter(source);
    }
 }

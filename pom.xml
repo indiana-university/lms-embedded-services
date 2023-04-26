@@ -117,11 +117,6 @@
             </dependency>
             <dependency>
                 <groupId>edu.iu.uits.lms</groupId>
-                <artifactId>lms-canvas-redis-config</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>edu.iu.uits.lms</groupId>
                 <artifactId>lms-canvas-lti-framework</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -140,8 +135,6 @@
         <module>email-services</module>
         <module>iu-custom-services</module>
         <module>lti-framework</module>
-        <module>redis-config</module>
-<!--        <module>shared/rivet</module>-->
         <module>variable-replacement-service</module>
     </modules>
 

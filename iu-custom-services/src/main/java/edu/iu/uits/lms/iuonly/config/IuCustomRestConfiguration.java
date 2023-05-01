@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -58,6 +59,8 @@ public class IuCustomRestConfiguration {
             http.requestMatchers().antMatchers("/rest/iu/**")
                     .and()
                     .authorizeRequests()
+                    // In order to allow CORS preflight requests to succeed, we need to allow OPTIONS requests to the token endpoint
+                    .antMatchers(HttpMethod.OPTIONS, "/rest/iu/**").permitAll()
                     .antMatchers("/rest/iu/file/**").permitAll()
                     .antMatchers("/rest/iu/**")
                     .access("hasAuthority('" + READ_SCOPE + "') or hasAuthority('" + WRITE_SCOPE + "')")

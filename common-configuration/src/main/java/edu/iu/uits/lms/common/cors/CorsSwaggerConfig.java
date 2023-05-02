@@ -34,12 +34,10 @@ package edu.iu.uits.lms.common.cors;
  */
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Configuration class that gets autoloaded if the swagger profile has been enabled.
@@ -47,23 +45,17 @@ import org.springframework.web.filter.CorsFilter;
  */
 @Configuration
 @Profile("swagger")
-public class CorsSwaggerConfig {
+public class CorsSwaggerConfig implements WebMvcConfigurer {
 
    @Value("${lms.swagger.cors.origin}")
    private String corsSwaggerAllowedOrigin;
 
-   @Bean
-   public CorsFilter corsFilter() {
-      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-      CorsConfiguration config = new CorsConfiguration();
-      config.setAllowCredentials(true);
-      //What origin will be calling the endpoints
-      config.addAllowedOrigin(corsSwaggerAllowedOrigin);
-      config.addAllowedHeader("*");
-      config.addAllowedMethod("*");
-
-      source.registerCorsConfiguration("/**", config);
-      return new CorsFilter(source);
+   @Override
+   public void addCorsMappings(CorsRegistry registry) {
+      registry.addMapping("/rest/**")
+            .allowCredentials(true)
+            .allowedHeaders("*")
+            .allowedMethods("*")
+            .allowedOrigins(corsSwaggerAllowedOrigin);
    }
 }

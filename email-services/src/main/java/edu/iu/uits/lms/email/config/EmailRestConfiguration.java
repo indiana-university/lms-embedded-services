@@ -58,8 +58,6 @@ public class EmailRestConfiguration {
             http.requestMatchers().antMatchers("/rest/email/**")
                     .and()
                     .authorizeRequests()
-                    // In order to allow CORS preflight requests to succeed, we need to allow OPTIONS requests to the token endpoint
-                    .antMatchers(HttpMethod.OPTIONS, "/rest/email/**").permitAll()
                     .antMatchers("/rest/email/**")
                     .access("hasAuthority('" + SEND_SCOPE + "')")
                     .and()

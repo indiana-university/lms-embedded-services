@@ -59,8 +59,6 @@ public class IuCustomRestConfiguration {
             http.requestMatchers().antMatchers("/rest/iu/**")
                     .and()
                     .authorizeRequests()
-                    // In order to allow CORS preflight requests to succeed, we need to allow OPTIONS requests to the token endpoint
-                    .antMatchers(HttpMethod.OPTIONS, "/rest/iu/**").permitAll()
                     .antMatchers("/rest/iu/file/**").permitAll()
                     .antMatchers("/rest/iu/**")
                     .access("hasAuthority('" + READ_SCOPE + "') or hasAuthority('" + WRITE_SCOPE + "')")

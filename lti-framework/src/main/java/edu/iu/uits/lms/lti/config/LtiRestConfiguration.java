@@ -59,8 +59,6 @@ public class LtiRestConfiguration {
             http.requestMatchers().antMatchers("/rest/lti/**")
                     .and()
                     .authorizeRequests()
-                    // In order to allow CORS preflight requests to succeed, we need to allow OPTIONS requests to the token endpoint
-                    .antMatchers(HttpMethod.OPTIONS, "/rest/lti/**").permitAll()
                     .antMatchers("/rest/lti/**")
                     .access("hasAuthority('" + READ_SCOPE + "') or hasAuthority('" + WRITE_SCOPE + "')")
                     .and()

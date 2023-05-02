@@ -53,7 +53,7 @@ public class ActuatorSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http.requestMatchers().antMatchers("/actuator/**")
                   .and().authorizeRequests()
-                  .antMatchers("/actuator/health").permitAll()
+                  .antMatchers("/actuator/health/**").permitAll()
                   .antMatchers("/**").hasRole("LMS_REST_ADMINS")
                   .and()
                   .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

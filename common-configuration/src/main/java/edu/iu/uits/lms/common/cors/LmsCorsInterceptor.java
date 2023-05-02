@@ -45,7 +45,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated Use a CrossOrigin annotation on the appropriate controller/method instead.
+ * Something like this: {@code @CrossOrigin(origins = {"${lms.js.cors.origin}"})}
+ */
 @Slf4j
+@Deprecated(since = "5.2.6", forRemoval = true)
 public class LmsCorsInterceptor extends HandlerInterceptorAdapter {
 
     private Map<String, LmsCorsInterceptorConfiguration> lmsCorsInterceptorConfigurationMap;
@@ -58,7 +63,10 @@ public class LmsCorsInterceptor extends HandlerInterceptorAdapter {
      * @param methodList List of HttpMethods - Example: HttpMethod.GET, HttpMethod.POST,...
      * @param miscHeaderMap Optional (null is fine) Map of headers to add
      * @throws IllegalArgumentException Throws exception for missing required parameters
+     * @deprecated Use a CrossOrigin annotation on the appropriate controller/method instead.
+     * Something like this: {@code @CrossOrigin(origins = {"${lms.js.cors.origin}"})}
      */
+    @Deprecated(since = "5.2.6", forRemoval = true)
     public LmsCorsInterceptor(String matchUri, String allowedOrigin, List<HttpMethod> methodList, Map<String, String> miscHeaderMap) throws IllegalArgumentException {
         super();
 

@@ -55,8 +55,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
-import static edu.iu.uits.lms.iuonly.IuCustomConstants.READ;
-import static edu.iu.uits.lms.iuonly.IuCustomConstants.WRITE;
+import static edu.iu.uits.lms.iuonly.IuCustomConstants.READ_SCOPE;
+import static edu.iu.uits.lms.iuonly.IuCustomConstants.WRITE_SCOPE;
 
 @Profile(IUCUSTOMREST_PROFILE)
 @RestController
@@ -71,28 +71,28 @@ public class FeatureAccessController {
     private FeatureAccessServiceImpl featureAccessService = null;
 
     @GetMapping("/{id}")
-    @PreAuthorize("#oauth2.hasScope('" + READ + "')")
+    @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
     @Operation(summary = "Get a particular FeatureAccess object by id")
     public FeatureAccess getFeatureAccessById(@PathVariable("id") Long id) {
         return featureAccessRepository.findById(id).orElse(null);
     }
 
     @GetMapping("/featureid/{featureId}")
-    @PreAuthorize("#oauth2.hasScope('" + READ + "')")
+    @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
     @Operation(summary = "Get all FeatureAccess objects for a given featureId")
     public List<FeatureAccess> getAccessRecsForFeature(@PathVariable("featureId") String featureId) {
         return featureAccessRepository.findByFeatureId(featureId);
     }
 
     @GetMapping("/all")
-    @PreAuthorize("#oauth2.hasScope('" + READ + "')")
+    @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
     @Operation(summary = "Get all FeatureAccess objects")
     public List<FeatureAccess> getAllFeatureAccessRecs() {
         return (List<FeatureAccess>) featureAccessRepository.findAll();
     }
 
     @PutMapping("{id}")
-    @PreAuthorize("#oauth2.hasScope('" + WRITE + "')")
+    @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     @Operation(summary = "Update a FeatureAccess object with the given id")
     public FeatureAccess updateFeatureAccess(@PathVariable Long id, @RequestBody FeatureAccess featureAccess) {
         FeatureAccess updatedFeatureAccess = featureAccessRepository.findById(id).orElse(null);
@@ -113,7 +113,7 @@ public class FeatureAccessController {
     }
 
     @PostMapping
-    @PreAuthorize("#oauth2.hasScope('" + WRITE + "')")
+    @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     @Operation(summary = "Create a new FeatureAccess object")
     public FeatureAccess createFeatureAccess(@RequestBody FeatureAccess featureAccess) {
         FeatureAccess newAccess = new FeatureAccess();
@@ -124,7 +124,7 @@ public class FeatureAccessController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("#oauth2.hasScope('" + WRITE + "')")
+    @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     @Operation(summary = "Delete a FeatureAccess object with the given id")
     public String deleteFeatureAccess(@PathVariable("id") Long id) {
         featureAccessRepository.deleteById(id);
@@ -132,7 +132,7 @@ public class FeatureAccessController {
     }
 
     @DeleteMapping("/featureId/{featureId}")
-    @PreAuthorize("#oauth2.hasScope('" + WRITE + "')")
+    @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
     @Operation(summary = "Delete all FeatureAccess objects with the given featureId")
     public String deleteAllAccessForFeature(@PathVariable String featureId) {
         List<FeatureAccess> allAccessForFeature = featureAccessRepository.findByFeatureId(featureId);
@@ -149,7 +149,7 @@ public class FeatureAccessController {
     }
 
     @GetMapping("/{accountid}/{featureid}")
-    @PreAuthorize("#oauth2.hasScope('" + READ + "')")
+    @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
     @Operation(summary = "Check if a given featureId is enabled in the given account, optionally including additional parent account IDs to check")
     public boolean isFeatureEnabledForAccount(@PathVariable("featureid") String featureId, @PathVariable("accountid") String accountId,
                                               @RequestParam(value = "parentAccountIds", required = false) List<String> parentAccountIds) {

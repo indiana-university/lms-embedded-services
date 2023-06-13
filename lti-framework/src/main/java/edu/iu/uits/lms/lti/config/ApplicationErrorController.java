@@ -55,9 +55,10 @@ public class ApplicationErrorController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(AccessDeniedException.class)
     public String handleAccessDeniedException(Model model, Exception exception) {
-        if (serverConfig == null || serverConfig.getAccessDeniedViewName() == null || serverConfig.getAccessDeniedViewName().equals(ServerConfig.NOT_SET)) {
+        if (serverConfig == null || serverConfig.getAccessDeniedViewName() == null) {
             return handleAllExceptions(model, exception);
         } else {
+            // This will use the global access denied page, unless a tool has their own
             return serverConfig.getAccessDeniedViewName();
         }
     }

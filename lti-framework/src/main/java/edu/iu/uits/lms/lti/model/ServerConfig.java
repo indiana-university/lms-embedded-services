@@ -39,7 +39,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ServerConfig {
-    public final static String NOT_SET = "***NOT SET***";
+    public final static String GLOBAL_ACCESS_DENIED = "globalAccessDenied";
 
     private String accessDeniedViewName;
     private String errorContactName;

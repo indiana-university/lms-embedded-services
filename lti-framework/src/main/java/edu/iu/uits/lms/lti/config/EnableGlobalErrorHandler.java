@@ -53,5 +53,5 @@ import java.lang.annotation.Target;
 @Import(GlobalErrorHandlerConfig.class)
 @Configuration(proxyBeanMethods = false)
 public @interface EnableGlobalErrorHandler {
-    String accessDeniedViewName() default ServerConfig.NOT_SET;
+    String accessDeniedViewName() default ServerConfig.GLOBAL_ACCESS_DENIED;
 }

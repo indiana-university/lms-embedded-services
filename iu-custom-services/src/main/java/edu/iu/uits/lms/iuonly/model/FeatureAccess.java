@@ -33,6 +33,8 @@ package edu.iu.uits.lms.iuonly.model;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import edu.iu.uits.lms.common.date.DateFormatUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -68,9 +70,11 @@ public class FeatureAccess implements Serializable {
     @Column(name = "ACCOUNT_ID")
     private String accountId;
 
+    @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)
     @Column
     private Date created;
 
+    @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)
     @Column
     private Date modified;
 

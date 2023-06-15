@@ -36,8 +36,90 @@
       xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <title>Application Error</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/app/css/error.css}"/>
 </head>
+<style>
+    body {
+        color: #333;
+        font-family: BentonSans,Helvetica Neue,Helvetica,"sans-serif";
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+    }
+
+    .errorContainer {
+        max-width: 100%;
+        padding-right: 1.5rem;
+        padding-left: 1.5rem;
+    }
+
+    .errorTitle {
+        font-size: 1.625rem !important;
+        font-weight: 400;
+        margin: 0;
+    }
+
+    .collapsible {
+        margin-top: .5rem !important;
+        background-color: #f7f7f7;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: .25rem;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+        align-items: center;
+        display: flex;
+    }
+
+    .active, .collapsible:hover {
+        background-color: #eee;
+    }
+
+    .content {
+        overflow: hidden;
+        border: 1px solid #ddd;
+        padding-left: 18px;
+        transition: max-height 0.2s ease-out;
+    }
+
+    pre {
+        font-family: monospace,monospace;
+        font-size: 1em;
+    }
+
+    footer {
+        font-size: .75rem !important;
+        max-width: 100%;
+        padding-right: 1.5rem;
+        padding-left: 1.5rem;
+        margin-top: 2rem !important;
+    }
+
+    .sr-only {
+        border: 0;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+
+    .display-none {
+        display: none;
+    }
+
+    .stack-trace h2 {
+        margin-bottom: 0;
+    }
+
+    #plusSign, #minusSign {
+        padding-right: 0.3rem;
+    }
+</style>
 <body>
 <div>
     <div class="errorContainer">
@@ -86,6 +168,26 @@
     <div id="footer" th:text="${@serverInfo}"></div>
 </footer>
 
-<script type="text/javascript" th:src="@{/app/js/error.js}"></script>
+<script type="text/javascript">
+    var plusSign = document.getElementById("plusSign");
+    var minusSign = document.getElementById("minusSign");
+
+    document.getElementById('errorInfo').addEventListener("click", function() {
+        this.classList.toggle("active");
+        var open = this.classList.contains("active");
+        this.setAttribute('aria-expanded', open);
+
+        var content = document.getElementById("errorContent");
+        if (open) {
+            content.removeAttribute('hidden');
+        } else {
+            content.setAttribute('hidden', '');
+        }
+
+        // switch if +/- is displayed
+        plusSign.classList.toggle("display-none");
+        minusSign.classList.toggle("display-none");
+    });
+</script>
 </body>
 </html>

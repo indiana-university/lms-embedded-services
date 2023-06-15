@@ -54,8 +54,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
-import static edu.iu.uits.lms.iuonly.IuCustomConstants.READ;
-import static edu.iu.uits.lms.iuonly.IuCustomConstants.WRITE;
+import static edu.iu.uits.lms.iuonly.IuCustomConstants.READ_SCOPE;
+import static edu.iu.uits.lms.iuonly.IuCustomConstants.WRITE_SCOPE;
 
 @Profile(IUCUSTOMREST_PROFILE)
 @RestController
@@ -68,35 +68,35 @@ public class DeptAuthUserController {
    private DeptProvisioningUserRepository deptProvisioningUserRepository;
 
    @GetMapping("/{id}")
-   @PreAuthorize("#oauth2.hasScope('" + READ + "')")
+   @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
    @Operation(summary = "Get DeptProvisioningUser by id")
    public DeptProvisioningUser getFromId(@PathVariable Long id) {
       return deptProvisioningUserRepository.findById(id).orElse(null);
    }
 
    @GetMapping("/username/{username}")
-   @PreAuthorize("#oauth2.hasScope('" + READ + "')")
+   @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
    @Operation(summary = "Get DeptProvisioningUser by username")
    public DeptProvisioningUser getByUsername(@PathVariable String username) {
       return deptProvisioningUserRepository.findByUsername(username);
    }
 
    @GetMapping("/canvasId/{canvasId}")
-   @PreAuthorize("#oauth2.hasScope('" + READ + "')")
+   @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
    @Operation(summary = "Get DeptProvisioningUser by canvas user id")
    public DeptProvisioningUser getByCanvasUserId(@PathVariable String canvasId) {
       return deptProvisioningUserRepository.findByCanvasUserId(canvasId);
    }
 
    @GetMapping("/all")
-   @PreAuthorize("#oauth2.hasScope('" + READ + "')")
+   @PreAuthorize("hasAuthority('" + READ_SCOPE + "')")
    @Operation(summary = "Get all DeptProvisioningUsers")
    public List<DeptProvisioningUser> getAll() {
       return (List<DeptProvisioningUser>) deptProvisioningUserRepository.findAll();
    }
 
    @PutMapping("/{id}")
-   @PreAuthorize("#oauth2.hasScope('" + WRITE + "')")
+   @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
    @Operation(summary = "Update an existing DeptProvisioningUser by id")
    public DeptProvisioningUser update(@PathVariable Long id, @RequestBody DeptProvisioningUserBooleanOverride user) {
       DeptProvisioningUser updatingUser = deptProvisioningUserRepository.findById(id).orElse(null);
@@ -126,7 +126,7 @@ public class DeptAuthUserController {
    }
 
    @PostMapping("/")
-   @PreAuthorize("#oauth2.hasScope('" + WRITE + "')")
+   @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
    @Operation(summary = "Create a new DeptProvisioningUser")
    public DeptProvisioningUser create(@RequestBody DeptProvisioningUser user) {
       DeptProvisioningUser newUser = new DeptProvisioningUser();
@@ -141,7 +141,7 @@ public class DeptAuthUserController {
    }
 
    @DeleteMapping("/{id}")
-   @PreAuthorize("#oauth2.hasScope('" + WRITE + "')")
+   @PreAuthorize("hasAuthority('" + WRITE_SCOPE + "')")
    @Operation(summary = "Delete a DeptProvisioningUser by id")
    public String delete(@PathVariable Long id) {
       deptProvisioningUserRepository.deleteById(id);

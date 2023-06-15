@@ -32,13 +32,40 @@
   #L%
   -->
 
-
 <html lang="en-US"
       xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <title>Access Denied</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/app/css/error.css}"/>
 </head>
+<style>
+    body {
+        color: #333;
+        font-family: BentonSans,Helvetica Neue,Helvetica,"sans-serif";
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+    }
+
+    .errorContainer {
+        max-width: 100%;
+        padding-right: 1.5rem;
+        padding-left: 1.5rem;
+    }
+
+    .errorTitle {
+       font-size: 1.625rem !important;
+        font-weight: 400;
+        margin: 0;
+    }
+
+    footer {
+        font-size: .75rem !important;
+        max-width: 100%;
+        padding-right: 1.5rem;
+        padding-left: 1.5rem;
+        margin-top: 2rem !important;
+    }
+</style>
 <body>
 <div>
     <div class="errorContainer">

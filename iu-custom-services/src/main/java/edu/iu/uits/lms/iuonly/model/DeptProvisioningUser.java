@@ -33,6 +33,8 @@ package edu.iu.uits.lms.iuonly.model;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import edu.iu.uits.lms.common.date.DateFormatUtil;
 import lombok.Data;
 
 import javax.persistence.CollectionTable;
@@ -90,9 +92,11 @@ public class DeptProvisioningUser implements Serializable {
    @Column(name = "OVERRIDE_RESTRICTIONS")
    private boolean overrideRestrictions;
 
+   @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)
    @Column(name = "CREATEDON")
    private Date createdOn;
 
+   @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)
    @Column(name = "MODIFIEDON")
    private Date modifiedOn;
 

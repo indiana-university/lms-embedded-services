@@ -81,6 +81,7 @@ public class ContentMigrationCreateWrapper implements Serializable {
       private Integer insertIntoModulePosition;
       private Integer moveToAssignmentGroupId;
       private List<String> importerSkips;
+      private Boolean importBlueprintSettings;
 
    }
 

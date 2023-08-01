@@ -34,6 +34,7 @@ package edu.iu.uits.lms.lti.config;
  */
 
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.RSAKey;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
@@ -120,8 +121,9 @@ public class LtiClientConfig implements ImportAware {
 
    @Bean
    public NamesRoleService namesRoleService(OAuth2ClientProperties properties) throws JOSEException {
-      KeyPair keyPair = lti13Service.getJKS().toKeyPair();
-      KeyPairService keyPairService = new SingleKeyPairService(keyPair);
+      RSAKey jks = lti13Service.getJKS();
+      KeyPair keyPair = jks.toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
       TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
       return new NamesRoleService(clientRegistrationRepository(properties), tokenRetriever);
    }

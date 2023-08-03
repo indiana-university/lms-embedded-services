@@ -16,8 +16,9 @@
     <description>Shared services for the lms-canvas LTI tools to send email</description>
 
     <properties>
-        <commons-io.version>2.11.0</commons-io.version>
-        <commons-codec.version>1.15</commons-codec.version>
+        <commons-io.version>2.13.0</commons-io.version>
+        <commons-codec.version>1.16.0</commons-codec.version>
+        <reflections.version>0.10.2</reflections.version>
     </properties>
 
     <dependencies>
@@ -75,7 +76,7 @@
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <scope>test</scope>
-            <version>0.10.2</version>
+            <version>${reflections.version}</version>
         </dependency>
     </dependencies>
 

@@ -80,6 +80,7 @@ public class LTIConstants {
     public static final String CLAIMS_KEY_CUSTOM = "https://purl.imsglobal.org/spec/lti/claim/custom";
     public static final String CLAIMS_KEY_ROLES = "https://purl.imsglobal.org/spec/lti/claim/roles";
     public static final String CLAIMS_KEY_NAMESROLESERVICE = "https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice";
+    public static final String CLAIMS_KEY_DEPLOYMENT_ID = "https://purl.imsglobal.org/spec/lti/claim/deployment_id";
 
     public static final String CLAIMS_NAMEROLESERVICE_MEMBERSHIPS_URL_KEY = "context_memberships_url";
 

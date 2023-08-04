@@ -225,4 +225,63 @@ public class ExternalToolsService extends SpringBaseService {
 
       return null;
    }
+
+   /**
+    * Create a new external tool in the given course based on the given client id
+    * @param courseId CourseId where the new tool should be created
+    * @param clientId ClientId
+    * @return The newly created ExternalTool
+    */
+   public ExternalTool createExternalTool(String courseId, String clientId) {
+      URI uri = EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+      log.debug("{}", uri);
+
+      try {
+         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+         builder.queryParam("client_id", clientId);
+
+         HttpEntity<ExternalTool> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, null, ExternalTool.class);
+         log.debug("{}", responseEntity);
+
+         if (responseEntity != null) {
+            return responseEntity.getBody();
+         }
+      } catch (HttpClientErrorException | HttpServerErrorException hcee) {
+         log.error("Unable to POST the new external tool", hcee);
+      }
+
+      return null;
+   }
+
+   /**
+    * Update an external tool with the given properties
+    * @param courseId CourseId containing the tool placement
+    * @param toolId External tool id
+    * @param properties Map of properties that will be updated in the tool
+    * @return The updated ExternalTool
+    */
+   public ExternalTool updateExternalToolProperties(String courseId, String toolId, MultiValueMap<String, String> properties) {
+      URI uri = EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+      UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+      builder.path("/" + toolId);
+      URI builtUri = builder.build().toUri();
+      log.debug("{}", builtUri);
+
+      try {
+         HttpHeaders headers = new HttpHeaders();
+         headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+
+         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(properties, headers);
+         HttpEntity<ExternalTool> responseEntity = this.restTemplate.exchange(builtUri, HttpMethod.PUT, requestEntity, ExternalTool.class);
+         log.debug("{}", responseEntity);
+
+         if (responseEntity != null) {
+            return responseEntity.getBody();
+         }
+      } catch (HttpClientErrorException | HttpServerErrorException hcee) {
+         log.error("Unable to PUT the external tool changes", hcee);
+      }
+
+      return null;
+   }
 }

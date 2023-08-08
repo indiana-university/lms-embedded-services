@@ -52,6 +52,7 @@ import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FAMILY_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FULL_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_GIVEN_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_PLATFORM_GUID_KEY;
+import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_ACCOUNT_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_ID_KEY;
@@ -105,11 +106,19 @@ public class OidcTokenUtils {
    }
 
    /**
-    * Get the Canvas User SIS ID out of the custom claoms
+    * Get the Canvas User SIS ID out of the custom claims
     * @return Canvas User SIS ID
     */
    public String getSisUserId() {
       return getCustomValue(CUSTOM_CANVAS_USER_SIS_ID_KEY);
+   }
+
+   /**
+    * Get the Canvas Account ID out of the custom claims
+    * @return Canvas Account ID
+    */
+   public String getCustomCanvasAccountId() {
+      return getCustomValue(CUSTOM_CANVAS_ACCOUNT_ID_KEY);
    }
 
    /**
@@ -131,7 +140,7 @@ public class OidcTokenUtils {
    }
 
    /**
-    * Get the full Name out of the claom
+    * Get the full Name out of the claim
     * @return Name
     */
    public String getPersonFullName() {

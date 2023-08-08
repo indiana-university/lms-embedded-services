@@ -71,6 +71,7 @@ public class TestMacroVariableReplacement {
         macroVariableMapper.setUserId("000123456789");
         macroVariableMapper.setClassNumber("9876");
         macroVariableMapper.setCanvasCourseId("1111111");
+        macroVariableMapper.setCanvasAccountId("ABCDE");
     }
 
     @Test
@@ -94,17 +95,17 @@ public class TestMacroVariableReplacement {
 
     @Test
     public void testExpandAll() throws Exception {
-        String template = "{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};";
+        String template = "{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};";
         String input = MessageFormat.format(template, MacroVariableMapper.MACRO_USER_FIRST_NAME, MacroVariableMapper.MACRO_USER_LAST_NAME,
                 MacroVariableMapper.MACRO_SIS_CAMPUS, MacroVariableMapper.MACRO_SIS_TERM_ID, MacroVariableMapper.MACRO_SIS_COURSE_ID,
                 MacroVariableMapper.MACRO_USER_EID, MacroVariableMapper.MACRO_USER_ROLE, MacroVariableMapper.MACRO_USER_ID,
-                MacroVariableMapper.MACRO_CLASS_NBR, MacroVariableMapper.MACRO_CANVAS_COURSE_ID);
+                MacroVariableMapper.MACRO_CLASS_NBR, MacroVariableMapper.MACRO_CANVAS_COURSE_ID, MacroVariableMapper.MACRO_CANVAS_ACCOUNT_ID);
 
 //        String outputTemplate = "{0};{1};{2};{3};{4};{5};{6};{7};";
         String output = MessageFormat.format(template, macroVariableMapper.getUserFirstName(), macroVariableMapper.getUserLastName(),
                 macroVariableMapper.getSisCampus(), macroVariableMapper.getSisTermId(), macroVariableMapper.getSisCourseId(),
                 macroVariableMapper.getUserNetworkId(), macroVariableMapper.getUserRole(), macroVariableMapper.getUserId(),
-                macroVariableMapper.getClassNumber(), macroVariableMapper.getCanvasCourseId());
+                macroVariableMapper.getClassNumber(), macroVariableMapper.getCanvasCourseId(), macroVariableMapper.getCanvasAccountId());
 
         String processed = variableReplacementService.performMacroVariableReplacement(macroVariableMapper, input);
 

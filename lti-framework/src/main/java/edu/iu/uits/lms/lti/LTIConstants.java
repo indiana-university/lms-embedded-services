@@ -96,6 +96,7 @@ public class LTIConstants {
 
     public static final String CLAIMS_PLATFORM_GUID_KEY = "guid";
 
+    public static final String CUSTOM_CANVAS_ACCOUNT_ID_KEY = "canvas_account_id";
     public static final String CUSTOM_CANVAS_COURSE_ID_KEY = "canvas_course_id";
     public static final String CUSTOM_CANVAS_USER_ID_KEY = "canvas_user_id";
     public static final String CUSTOM_CANVAS_USER_LOGIN_ID_KEY = "canvas_user_login_id";

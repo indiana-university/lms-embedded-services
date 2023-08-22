@@ -256,7 +256,7 @@ public class BlueprintService extends SpringBaseService {
     }
 
     /**
-     * Gat all migrations for a given associated course
+     * Get all migrations for a given associated course
      * @param courseId "Child" course
      * @param subscriptionId Template to use
      * @return List of BlueprintMigration objects
@@ -267,7 +267,7 @@ public class BlueprintService extends SpringBaseService {
     }
 
     /**
-     * Gat all subscriptions for a given associated course
+     * Get all subscriptions for a given associated course
      * @param courseId "Child" course
      * @return List of BlueprintSubscription objects
      */

@@ -40,6 +40,7 @@ import edu.iu.uits.lms.canvas.model.BlueprintCourseUpdateStatus;
 import edu.iu.uits.lms.canvas.model.BlueprintMigration;
 import edu.iu.uits.lms.canvas.model.BlueprintMigrationStatus;
 import edu.iu.uits.lms.canvas.model.BlueprintRestriction;
+import edu.iu.uits.lms.canvas.model.BlueprintSubscription;
 import edu.iu.uits.lms.canvas.model.BlueprintTemplate;
 import edu.iu.uits.lms.canvas.model.BlueprintUpdateStatus;
 import edu.iu.uits.lms.canvas.model.Course;
@@ -67,8 +68,8 @@ public class BlueprintService extends SpringBaseService {
 
     private String BASE_URI = "{url}/courses/{course_id}";
     private String BLUEPRINT_URI = BASE_URI + "/blueprint_templates/{template_id}";
-    private String BLUEPRINT_SUBSCRIPTIONS_URI = BASE_URI + "/blueprint_subscriptions/{template_id}";
-
+    private String BLUEPRINT_SUBSCRIPTIONS_BASE_URI = BASE_URI + "/blueprint_subscriptions";
+    private String BLUEPRINT_SUBSCRIPTIONS_URI = BLUEPRINT_SUBSCRIPTIONS_BASE_URI + "/{template_id}";
 
     private UriTemplate GET_BY_COURSE_AND_TEMPLATE = new UriTemplate(BLUEPRINT_URI);
     private UriTemplate GET_COURSES = new UriTemplate(BLUEPRINT_URI + "/associated_courses");
@@ -77,6 +78,7 @@ public class BlueprintService extends SpringBaseService {
     private UriTemplate UPDATE_COURSE = new UriTemplate(BASE_URI);
 
     private UriTemplate SUBSCRIPTIONS = new UriTemplate(BLUEPRINT_SUBSCRIPTIONS_URI + "/migrations");
+    private UriTemplate ALL_COURSE_SUBSCRIPTIONS = new UriTemplate(BLUEPRINT_SUBSCRIPTIONS_BASE_URI);
 
     /**
      * Get the blueprint template
@@ -262,6 +264,16 @@ public class BlueprintService extends SpringBaseService {
     public List<BlueprintMigration> getSubscriptions(String courseId, String subscriptionId) {
         URI uri = SUBSCRIPTIONS.expand(canvasConfiguration.getBaseApiUrl(), courseId, subscriptionId);
         return doGet(uri, BlueprintMigration[].class);
+    }
+
+    /**
+     * Gat all migrations for a given associated course
+     * @param courseId "Child" course
+     * @return List of BlueprintMigration objects
+     */
+    public List<BlueprintSubscription> getSubscriptions(String courseId) {
+        URI uri = ALL_COURSE_SUBSCRIPTIONS.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+        return doGet(uri, BlueprintSubscription[].class);
     }
 
     @Data

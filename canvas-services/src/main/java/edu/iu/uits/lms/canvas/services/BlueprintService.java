@@ -267,9 +267,9 @@ public class BlueprintService extends SpringBaseService {
     }
 
     /**
-     * Gat all migrations for a given associated course
+     * Gat all subscriptions for a given associated course
      * @param courseId "Child" course
-     * @return List of BlueprintMigration objects
+     * @return List of BlueprintSubscription objects
      */
     public List<BlueprintSubscription> getSubscriptions(String courseId) {
         URI uri = ALL_COURSE_SUBSCRIPTIONS.expand(canvasConfiguration.getBaseApiUrl(), courseId);

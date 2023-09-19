@@ -169,6 +169,41 @@ public class SisServiceImpl {
         return sisCourse;
     }
 
+    public String getIuSiteIdFromStrmAndClassNumber(String strm, String classNumber) {
+        if (strm == null || strm.isEmpty() || classNumber == null || classNumber.isEmpty()) {
+            return null;
+        }
+
+        String iuSiteId = null;
+
+        Connection conn = getConnection();
+
+        String sql = String.format("select %s from %s where strm = ? and class_nbr = ?",
+                SIS_COURSE_LOOKUP_COLUMNS, SIS_COURSE_LOOKUP);
+        log.debug(String.format("Executing SQL: %s with strm = %s and class_nbr = %s",
+                sql, strm, classNumber));
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, strm);
+            stmt.setString(2, classNumber);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                iuSiteId = rs.getString("iu_site_id");
+            }
+        } catch (SQLException e) {
+            log.error("Error getting sis course", e);
+            throw new IllegalStateException();
+        } finally {
+            close(conn, stmt, rs);
+        }
+
+        return iuSiteId;
+    }
+
     public SisClass getSisClassByCourse(String strm, String classNumber, String campus, boolean includeCampus) {
         long start = System.currentTimeMillis();
 

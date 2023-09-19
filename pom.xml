@@ -12,7 +12,7 @@
     <artifactId>lms-embedded-services-parent</artifactId>
     <groupId>edu.iu.uits.lms</groupId>
     <packaging>pom</packaging>
-    <version>5.2.16-SNAPSHOT</version>
+    <version>5.2.15.1-SNAPSHOT</version>
 
     <description>Collection of services/configurations that can be embedded in Canvas-based LTI tools</description>
     <url>https://github.com/indiana-university/lms-embedded-services</url>
@@ -261,6 +261,13 @@
                             <goals>
                                 <goal>sign</goal>
                             </goals>
+                            <configuration>
+                                <!-- Prevent `gpg` from using pinentry programs -->
+                                <gpgArguments>
+                                    <arg>--pinentry-mode</arg>
+                                    <arg>loopback</arg>
+                                </gpgArguments>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

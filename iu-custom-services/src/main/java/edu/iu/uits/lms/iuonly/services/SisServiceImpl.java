@@ -101,6 +101,46 @@ public class SisServiceImpl {
         return sisCourse;
     }
 
+    /**
+     * Given a siteId this searches the ps_sis_lookup view (which has more terms in it than the getSisCourseBySiteId()
+     * which uses the ps_iu_oncext_clas view)
+     * @param siteId
+     * @return - SisCourse. Note: only iuSiteId, term and classNumber will be populated for this returned object
+     */
+    public SisCourse getLegacySisCourseBySiteId(String siteId) {
+        SisCourse sisCourse = null;
+        Connection conn = getConnection();
+
+        String sql = "select " + SIS_COURSE_LOOKUP_COLUMNS + " from " + SIS_COURSE_LOOKUP + " where iu_site_id = ?";
+        log.debug("Executing SQL: " + sql + " with query parameters: " + siteId);
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, siteId);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                sisCourse = new SisCourse();
+                sisCourse.setIuSiteId(rs.getString("iu_site_id"));
+                sisCourse.setTerm(rs.getString("strm"));
+                sisCourse.setClassNumber(rs.getString("class_nbr"));
+            }
+            if (sisCourse == null) {
+                log.warn("Could not find SisCourseBySiteId:" + siteId);
+                return null;
+            }
+        } catch (SQLException e) {
+            log.error("Error getting sis course", e);
+            throw new IllegalStateException();
+        } finally {
+            close(conn, stmt, rs);
+        }
+
+        return sisCourse;
+    }
+
     public List<SisFerpaEntry> getFerpaEntriesByListOfSisUserIds(ListWrapper listWrapper, boolean justYs) {
         long start = System.currentTimeMillis();
         List<SisFerpaEntry> entries = new ArrayList<>();

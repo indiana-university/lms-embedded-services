@@ -37,6 +37,7 @@ import edu.iu.uits.lms.canvas.model.Account;
 import edu.iu.uits.lms.canvas.model.AccountAdmin;
 import edu.iu.uits.lms.canvas.model.AccountAdminCreate;
 import edu.iu.uits.lms.canvas.model.CanvasRole;
+import edu.iu.uits.lms.canvas.model.Favorite;
 import edu.iu.uits.lms.canvas.model.Saml;
 import edu.iu.uits.lms.canvas.model.SsoSettings;
 import edu.iu.uits.lms.canvas.model.SsoSettingsWrapper;
@@ -276,6 +277,40 @@ public class AccountService extends SpringBaseService {
         builder.queryParam("per_page", "50");
 
         return doGet(builder.build().toUri(), Account[].class);
+    }
+
+    /**
+     * Account with this accountId to use to set the sisAccountId value
+     * @param accountId - the accountId to use to set
+     * @param sisAccountId - the sisAccountId value to set for account with accountId
+     * @return - the account changed
+     */
+    public Account setSisAccountId(String accountId, String sisAccountId) {
+        if (accountId == null || accountId.isEmpty() || sisAccountId == null || sisAccountId.isEmpty()) {
+            throw new RuntimeException("Null parameters");
+        }
+
+        URI uri = ACCOUNT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), accountId);
+        log.debug("uri: {}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.queryParam("account[sis_account_id]", sisAccountId);
+
+        try {
+            ResponseEntity<Account> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, Account.class);
+            log.debug("{}", response);
+
+            if (response.getStatusCode() != HttpStatus.OK) {
+                throw new RuntimeException("Request to Canvas was not successful. Response code: "
+                        + response.getStatusCode() + ", reason: " + response.getStatusCode().getReasonPhrase()
+                        + ", body: " + response.getBody());
+            }
+
+            return response.getBody();
+        } catch (HttpClientErrorException hcee) {
+            log.error("cannot set sisAccountId", hcee);
+            throw new RuntimeException("cannot set sisAccountId", hcee);
+        }
     }
 
     /**

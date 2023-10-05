@@ -287,7 +287,7 @@ public class AccountService extends SpringBaseService {
      */
     public Account setSisAccountId(String accountId, String sisAccountId) {
         if (accountId == null || accountId.isEmpty() || sisAccountId == null || sisAccountId.isEmpty()) {
-            return null;
+            throw new RuntimeException("Null parameters");
         }
 
         URI uri = ACCOUNT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), accountId);

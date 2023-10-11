@@ -16,11 +16,11 @@
     <properties>
         <basiclti-util.version>23.0</basiclti-util.version>
         <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
-        <commons-io.version>2.13.0</commons-io.version>
+        <commons-io.version>2.14.0</commons-io.version>
         <hibernate5-ddl-maven-plugin.version>2.3.0</hibernate5-ddl-maven-plugin.version>
         <httpclient.version>4.5.14</httpclient.version>
         <reflections.version>0.10.2</reflections.version>
-        <spring-security-lti13.version>0.1.6</spring-security-lti13.version>
+        <spring-security-lti13.version>0.1.7</spring-security-lti13.version>
 
     </properties>
 

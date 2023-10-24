@@ -115,13 +115,13 @@ public class CanvasDataServiceImpl {
 
             List<String> subListIuUsernames = iuUsernames.subList(startIndex, endIndex);
 
-            String whereUsernameClause = LmsSqlUtils.buildWhereInClause("pseudonym_dim.unique_name", subListIuUsernames, false, true);
+            String whereUsernameClause = LmsSqlUtils.buildWhereInClause("pseudonyms.unique_id", subListIuUsernames, false, true);
 
             String sql =
-                    "SELECT  user_dim.canvas_id AS canvas_id, pseudonym_dim.unique_name AS iu_username, pseudonym_dim.workflow_state AS status " +
-                            "FROM canvas_warehouse.user_dim user_dim " +
-                            "INNER JOIN canvas_warehouse.pseudonym_dim pseudonym_dim ON user_dim.id = pseudonym_dim.user_id " +
-                            "WHERE " + whereUsernameClause + " and pseudonym_dim.workflow_state = 'active'";
+                    "SELECT users.user_id AS canvas_id, pseudonyms.unique_id AS iu_username, pseudonyms.workflow_state AS status " +
+                            "FROM iu_la_dev.cd_users_flt users " +
+                            "INNER JOIN iu_la_dev.cd_pseudonyms_flt pseudonyms ON users.user_id = pseudonyms.user_id " +
+                            "WHERE " + whereUsernameClause + " AND pseudonyms.workflow_state = 'active'";
 
             PreparedStatement ps = null;
             ResultSet rs = null;
@@ -154,25 +154,25 @@ public class CanvasDataServiceImpl {
     }
 
     public List<Enrollment> getRosterStatusInfo(String canvasCourseId) throws CanvasDataServiceException {
-        String sql = "select " +
-              "    user_dim.canvas_id AS canvas_user_id," +
-              "    user_dim.sortable_name AS name, " +
-              "    pseudonym_dim.unique_name AS username, " +
-              "    role_dim.name AS role, " +
-              "    course_section_dim.name AS section, " +
-              "    enrollment_dim.workflow_state AS status, " +
-              "    enrollment_dim.created_at As createdDate, " +
-              "    enrollment_dim.updated_at AS updatedDate " +
-              "FROM course_dim course_dim " +
-              "  INNER JOIN course_section_dim course_section_dim ON (course_dim.id = course_section_dim.course_id) " +
-              "  INNER JOIN enrollment_dim enrollment_dim ON (course_section_dim.id = enrollment_dim.course_section_id) " +
-              "  INNER JOIN enrollment_fact enrollment_fact ON (enrollment_dim.id = enrollment_fact.enrollment_id) " +
-              "  INNER JOIN user_dim user_dim ON (enrollment_fact.user_id = user_dim.id) " +
-              "  INNER JOIN pseudonym_dim pseudonym_dim ON (user_dim.id = pseudonym_dim.user_id) " +
-              "  INNER JOIN role_dim role_dim ON (enrollment_dim.role_id = role_dim.id) " +
-              "where course_dim.canvas_id = ? and user_dim.sortable_name != 'Student, Test' " +
-              "  AND pseudonym_dim.workflow_state = 'active' " +
-              "ORDER BY user_dim.sortable_name, user_dim.canvas_id, course_section_dim.name, role_dim.name desc, pseudonym_dim.unique_name desc";
+        String sql = """
+                select users.user_id AS canvas_user_id,
+                      users.sortable_name AS name,
+                      pseudonyms.unique_id AS username,
+                      roles.name AS role,
+                      course_sections.name AS section,
+                      enrollments.workflow_state AS status,
+                      enrollments.created_at As createdDate,
+                      enrollments.updated_at AS updatedDate
+                  FROM iu_la_dev.cd_courses_flt courses
+                    INNER JOIN iu_la_dev.cd_course_sections_flt course_sections ON (courses.course_id = course_sections.course_id)
+                    INNER JOIN iu_la_dev.cd_enrollments_flt enrollments ON (course_sections.course_section_id = enrollments.course_section_id)
+                    INNER JOIN iu_la_dev.cd_users_flt users ON (enrollments.user_id = users.user_id)
+                    INNER JOIN iu_la_dev.cd_pseudonyms_flt pseudonyms ON (users.user_id = pseudonyms.user_id)
+                    INNER JOIN iu_la_dev.cd_roles_flt roles ON (enrollments.role_id = roles.roles_id)
+                  where courses.course_id = ? and users.sortable_name != 'Student, Test'
+                    AND pseudonyms.workflow_state = 'active'
+                  ORDER BY users.sortable_name, users.user_id, course_sections.name, roles.name desc, pseudonyms.unique_id desc
+                """;
 
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -184,7 +184,7 @@ public class CanvasDataServiceImpl {
 
         try {
             ps = conn.prepareStatement(sql);
-            ps.setString(1, canvasCourseId);
+            ps.setInt(1, Integer.parseInt(canvasCourseId));
             rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -254,28 +254,29 @@ public class CanvasDataServiceImpl {
 
     public List<CloseExpireCourse> getManuallyCreatedCoursesWithTerm() throws CanvasDataServiceException {
         List<CloseExpireCourse> notificationCourses = new ArrayList<>();
-        String sql = "select distinct " +
-              "course_dim.canvas_id AS canvas_id, " +
-              "course_dim.name AS coursename, " +
-              "course_dim.conclude_at AS end_date, " +
-              "enrollment_term_dim.canvas_id AS canvas_term_id, " +
-              "communication_channel_dim.address AS emailAdress " +
-              "FROM course_dim course_dim " +
-              "INNER JOIN course_section_dim course_section_dim ON (course_dim.id = course_section_dim.course_id) " +
-              "INNER JOIN enrollment_dim enrollment_dim ON (course_section_dim.id = enrollment_dim.course_section_id) " +
-              "INNER JOIN enrollment_fact enrollment_fact ON (enrollment_dim.id = enrollment_fact.enrollment_id) " +
-              "INNER JOIN user_dim user_dim ON (enrollment_fact.user_id = user_dim.id) " +
-              "INNER JOIN pseudonym_dim pseudonym_dim ON (user_dim.id = pseudonym_dim.user_id) " +
-              "INNER JOIN role_dim role_dim ON (enrollment_dim.role_id = role_dim.id) " +
-              "INNER JOIN enrollment_term_dim enrollment_term_dim ON (course_dim.enrollment_term_id = enrollment_term_dim.id) " +
-              "INNER JOIN communication_channel_dim communication_channel_dim ON (communication_channel_dim.user_id = user_dim.id) " +
-              "where  course_dim.sis_source_id is null "  +
-              "and role_dim.base_role_type='TeacherEnrollment' " +
-              "and course_dim.workflow_state != 'deleted' " +
-              "and role_dim.workflow_state != 'deleted' " +
-              "and enrollment_dim.workflow_state = 'active' " +
-              "and communication_channel_dim.position=1 " +
-              "order by course_dim.canvas_id ";
+        String sql = """
+                select distinct
+                  courses.course_id AS canvas_id,
+                  courses.name AS coursename,
+                  courses.conclude_at AS end_date,
+                  enrollment_terms.enrollment_terms_id AS canvas_term_id,
+                  communication_channels.path AS emailAddress
+                FROM iu_la_dev.cd_courses_flt courses
+                  INNER JOIN iu_la_dev.cd_course_sections_flt course_sections ON (courses.course_id = course_sections.course_id)
+                  INNER JOIN iu_la_dev.cd_enrollments_flt enrollments ON (course_sections.course_section_id = enrollments.course_section_id)
+                  INNER JOIN iu_la_dev.cd_users_flt users ON (enrollments.user_id = users.user_id)
+                  INNER JOIN iu_la_dev.cd_pseudonyms_flt pseudonyms ON (users.user_id = pseudonyms.user_id)
+                  INNER JOIN iu_la_dev.cd_roles_flt roles ON (enrollments.role_id = roles.roles_id)
+                  INNER JOIN iu_la_dev.cd_enrollment_terms_flt enrollment_terms ON (courses.enrollment_term_id = enrollment_terms.enrollment_terms_id)
+                  INNER JOIN iu_la_dev.cd_communication_channels_flt communication_channels ON (communication_channels.user_id = users.user_id)
+                where courses.sis_source_id is null
+                  and roles.base_role_type='TeacherEnrollment'
+                  and courses.workflow_state != 'deleted'
+                  and roles.workflow_state != 'deleted'
+                  and enrollments.workflow_state = 'active'
+                  and communication_channels.position=1
+                order by courses.course_id
+                """;
 
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -293,7 +294,7 @@ public class CanvasDataServiceImpl {
                 course.setCourseName(rs.getString("coursename"));
                 course.setEndDate(rs.getTimestamp("end_date", cal));
                 course.setTermId(rs.getString("canvas_term_id"));
-                course.setEmailAddress(rs.getString("emailAdress"));
+                course.setEmailAddress(rs.getString("emailAddress"));
                 notificationCourses.add(course);
             }
         } catch (SQLException e) {

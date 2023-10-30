@@ -62,8 +62,10 @@ public class ExternalToolsService extends SpringBaseService {
    private static final String ACCOUNT_URI = ACCOUNTS_BASE_URI + "/{id}";
    private static final String EXTERNAL_TOOLS_URI = ACCOUNT_URI + "/external_tools/{toolId}";
    private static final String EXTERNAL_TOOLS_VIA_COURSES_URI = "{url}/courses/{id}/external_tools";
+   private static final String EXTERNAL_TOOLS_VIA_ACCOUNTS_URI = "{url}/accounts/{id}/external_tools";
    private static final UriTemplate EXTERNAL_TOOLS_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_URI);
    private static final UriTemplate EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_VIA_COURSES_URI);
+   private static final UriTemplate EXTERNAL_TOOLS_VIA_ACCOUNTS_URI_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_VIA_ACCOUNTS_URI);
 
    /**
     *
@@ -133,6 +135,61 @@ public class ExternalToolsService extends SpringBaseService {
       } catch (HttpClientErrorException hcee) {
          log.error("Error deleting external tool", hcee);
          throw new RuntimeException("Error deleting external tool", hcee);
+      }
+
+      return null;
+   }
+
+   /**
+    * Delete an external tool from an account
+    * @param accountId Account where the tool is placed
+    * @param toolId External tool id to delete
+    * @return Tool that was deleted, or null of none was deleted
+    */
+   public ExternalTool deleteExternalToolFromAccount(String accountId, String toolId) {
+      return deleteExternalToolFromAccount(canvasConfiguration.getBaseApiUrl(), accountId, toolId);
+   }
+
+   /**
+    * Delete an external tool from an account
+    * @param serverUrl Server where the api should be called from
+    * @param accountId Account where the tool is placed
+    * @param toolId External tool id to delete
+    * @return Tool that was deleted, or null of none was deleted
+    */
+   public ExternalTool deleteExternalToolFromAccount(String serverUrl, String accountId, String toolId) {
+      URI uri = EXTERNAL_TOOLS_VIA_ACCOUNTS_URI_TEMPLATE.expand(serverUrl, accountId);
+
+      UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+      builder.path("/" + toolId);
+
+      try {
+         HttpHeaders headers = new HttpHeaders();
+         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+
+         log.debug("Uri to DELETE: {}", builder.build().toUri());
+         HttpEntity<ExternalTool> externalToolResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
+         log.debug("{}", externalToolResponse);
+
+         ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) externalToolResponse;
+
+         if (responseEntity.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Request to Canvas was not successful. Response code: "
+                    + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                    + ", body: " + responseEntity.getBody());
+         }
+
+         if (externalToolResponse != null) {
+            log.info("Deleted ExternalTool toolId " + toolId + " from Canvas accountId: " + accountId);
+            return externalToolResponse.getBody();
+         }
+      } catch (HttpClientErrorException hcee) {
+         if (HttpStatus.NOT_FOUND.equals(hcee.getStatusCode())) {
+            log.warn("External tool not found for accountId {} and toolId {} on {}", accountId, toolId, serverUrl);
+         } else {
+            log.error("Error deleting external tool", hcee);
+            throw new RuntimeException("Error deleting external tool", hcee);
+         }
       }
 
       return null;

@@ -119,8 +119,8 @@ public class CanvasDataServiceImpl {
 
             String sql =
                     "SELECT users.user_id AS canvas_id, pseudonyms.unique_id AS iu_username, pseudonyms.workflow_state AS status " +
-                            "FROM iu_la_dev.cd_users_flt users " +
-                            "INNER JOIN iu_la_dev.cd_pseudonyms_flt pseudonyms ON users.user_id = pseudonyms.user_id " +
+                            "FROM iu_la.cd_users_flt users " +
+                            "INNER JOIN iu_la.cd_pseudonyms_flt pseudonyms ON users.user_id = pseudonyms.user_id " +
                             "WHERE " + whereUsernameClause + " AND pseudonyms.workflow_state = 'active'";
 
             PreparedStatement ps = null;
@@ -163,12 +163,12 @@ public class CanvasDataServiceImpl {
                       enrollments.workflow_state AS status,
                       enrollments.created_at As createdDate,
                       enrollments.updated_at AS updatedDate
-                  FROM iu_la_dev.cd_courses_flt courses
-                    INNER JOIN iu_la_dev.cd_course_sections_flt course_sections ON (courses.course_id = course_sections.course_id)
-                    INNER JOIN iu_la_dev.cd_enrollments_flt enrollments ON (course_sections.course_section_id = enrollments.course_section_id)
-                    INNER JOIN iu_la_dev.cd_users_flt users ON (enrollments.user_id = users.user_id)
-                    INNER JOIN iu_la_dev.cd_pseudonyms_flt pseudonyms ON (users.user_id = pseudonyms.user_id)
-                    INNER JOIN iu_la_dev.cd_roles_flt roles ON (enrollments.role_id = roles.roles_id)
+                  FROM iu_la.cd_courses_flt courses
+                    INNER JOIN iu_la.cd_course_sections_flt course_sections ON (courses.course_id = course_sections.course_id)
+                    INNER JOIN iu_la.cd_enrollments_flt enrollments ON (course_sections.course_section_id = enrollments.course_section_id)
+                    INNER JOIN iu_la.cd_users_flt users ON (enrollments.user_id = users.user_id)
+                    INNER JOIN iu_la.cd_pseudonyms_flt pseudonyms ON (users.user_id = pseudonyms.user_id)
+                    INNER JOIN iu_la.cd_roles_flt roles ON (enrollments.role_id = roles.roles_id)
                   where courses.course_id = ? and users.sortable_name != 'Student, Test'
                     AND pseudonyms.workflow_state = 'active'
                   ORDER BY users.sortable_name, users.user_id, course_sections.name, roles.name desc, pseudonyms.unique_id desc
@@ -261,14 +261,14 @@ public class CanvasDataServiceImpl {
                   courses.conclude_at AS end_date,
                   enrollment_terms.enrollment_terms_id AS canvas_term_id,
                   communication_channels.path AS emailAddress
-                FROM iu_la_dev.cd_courses_flt courses
-                  INNER JOIN iu_la_dev.cd_course_sections_flt course_sections ON (courses.course_id = course_sections.course_id)
-                  INNER JOIN iu_la_dev.cd_enrollments_flt enrollments ON (course_sections.course_section_id = enrollments.course_section_id)
-                  INNER JOIN iu_la_dev.cd_users_flt users ON (enrollments.user_id = users.user_id)
-                  INNER JOIN iu_la_dev.cd_pseudonyms_flt pseudonyms ON (users.user_id = pseudonyms.user_id)
-                  INNER JOIN iu_la_dev.cd_roles_flt roles ON (enrollments.role_id = roles.roles_id)
-                  INNER JOIN iu_la_dev.cd_enrollment_terms_flt enrollment_terms ON (courses.enrollment_term_id = enrollment_terms.enrollment_terms_id)
-                  INNER JOIN iu_la_dev.cd_communication_channels_flt communication_channels ON (communication_channels.user_id = users.user_id)
+                FROM iu_la.cd_courses_flt courses
+                  INNER JOIN iu_la.cd_course_sections_flt course_sections ON (courses.course_id = course_sections.course_id)
+                  INNER JOIN iu_la.cd_enrollments_flt enrollments ON (course_sections.course_section_id = enrollments.course_section_id)
+                  INNER JOIN iu_la.cd_users_flt users ON (enrollments.user_id = users.user_id)
+                  INNER JOIN iu_la.cd_pseudonyms_flt pseudonyms ON (users.user_id = pseudonyms.user_id)
+                  INNER JOIN iu_la.cd_roles_flt roles ON (enrollments.role_id = roles.roles_id)
+                  INNER JOIN iu_la.cd_enrollment_terms_flt enrollment_terms ON (courses.enrollment_term_id = enrollment_terms.enrollment_terms_id)
+                  INNER JOIN iu_la.cd_communication_channels_flt communication_channels ON (communication_channels.user_id = users.user_id)
                 where courses.sis_source_id is null
                   and roles.base_role_type='TeacherEnrollment'
                   and courses.workflow_state != 'deleted'

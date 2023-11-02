@@ -68,11 +68,6 @@ public class ExternalToolsService extends SpringBaseService {
    private static final UriTemplate EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE = new UriTemplate("{url}" + EXTERNAL_TOOLS_VIA_COURSES_URI);
    private static final UriTemplate EXTERNAL_TOOLS_VIA_ACCOUNTS_URI_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_VIA_ACCOUNTS_URI);
    private static final UriTemplate EXTERNAL_TOOL_VIA_COURSES_URI_TEMPLATE = new UriTemplate(CANVAS_BASE_URI + EXTERNAL_TOOL_VIA_COURSES_URI);
-   private static final String EXTERNAL_TOOLS_VIA_COURSES_URI = "{url}/courses/{id}/external_tools";
-   private static final String EXTERNAL_TOOLS_VIA_ACCOUNTS_URI = "{url}/accounts/{id}/external_tools";
-   private static final UriTemplate EXTERNAL_TOOLS_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_URI);
-   private static final UriTemplate EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_VIA_COURSES_URI);
-   private static final UriTemplate EXTERNAL_TOOLS_VIA_ACCOUNTS_URI_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_VIA_ACCOUNTS_URI);
 
    /**
     *

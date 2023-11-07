@@ -61,11 +61,13 @@ public class ExternalToolsService extends SpringBaseService {
    private static final String ACCOUNTS_BASE_URI = CANVAS_BASE_URI + "/accounts";
    private static final String ACCOUNT_URI = ACCOUNTS_BASE_URI + "/{id}";
    private static final String EXTERNAL_TOOLS_URI = ACCOUNT_URI + "/external_tools/{toolId}";
-   private static final String EXTERNAL_TOOLS_VIA_COURSES_URI = "{url}/courses/{id}/external_tools";
+   private static final String EXTERNAL_TOOLS_VIA_COURSES_URI = "/courses/{id}/external_tools";
+   private static final String EXTERNAL_TOOL_VIA_COURSES_URI = EXTERNAL_TOOLS_VIA_COURSES_URI + "/{toolId}";
    private static final String EXTERNAL_TOOLS_VIA_ACCOUNTS_URI = "{url}/accounts/{id}/external_tools";
    private static final UriTemplate EXTERNAL_TOOLS_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_URI);
-   private static final UriTemplate EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_VIA_COURSES_URI);
+   private static final UriTemplate EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE = new UriTemplate("{url}" + EXTERNAL_TOOLS_VIA_COURSES_URI);
    private static final UriTemplate EXTERNAL_TOOLS_VIA_ACCOUNTS_URI_TEMPLATE = new UriTemplate(EXTERNAL_TOOLS_VIA_ACCOUNTS_URI);
+   private static final UriTemplate EXTERNAL_TOOL_VIA_COURSES_URI_TEMPLATE = new UriTemplate(CANVAS_BASE_URI + EXTERNAL_TOOL_VIA_COURSES_URI);
 
    /**
     *
@@ -254,15 +256,40 @@ public class ExternalToolsService extends SpringBaseService {
    }
 
    /**
-    *
-    * @param canvasServer
-    * @param accountId
-    * @param toolId
-    * @param ltiSettings
-    * @return
+    * Update an external tool in an account
+    * @param canvasServer Url of the canvas server
+    * @param accountId Account id where the tool is placed
+    * @param toolId Tool id to update
+    * @param ltiSettings Settings to update
+    * @return ExternalTool result
     */
-   public ExternalTool updateExternalTool(String canvasServer, String accountId, String toolId, LtiSettings ltiSettings) {
-      URI uri = EXTERNAL_TOOLS_TEMPLATE.expand(canvasServer, accountId, toolId);
+   public ExternalTool updateExternalToolForAccount(String canvasServer, String accountId, String toolId, LtiSettings ltiSettings) {
+      return updateExternalTool(canvasServer, accountId, toolId, ltiSettings, EXTERNAL_TOOLS_TEMPLATE);
+   }
+
+   /**
+    * Update an external tool in a course
+    * @param canvasServer Url of the canvas server
+    * @param courseId Course id where the tool is placed
+    * @param toolId Tool id to update
+    * @param ltiSettings Settings to update
+    * @return ExternalTool result
+    */
+   public ExternalTool updateExternalToolForCourse(String canvasServer, String courseId, String toolId, LtiSettings ltiSettings) {
+      return updateExternalTool(canvasServer, courseId, toolId, ltiSettings, EXTERNAL_TOOL_VIA_COURSES_URI_TEMPLATE);
+   }
+
+   /**
+    * Update an external tool in a context
+    * @param canvasServer Url of the canvas server
+    * @param contextId Context id (account or course) where the tool is placed
+    * @param toolId Tool id to update
+    * @param ltiSettings Settings to update
+    * @param uriTemplate UriTemplate used to make the rest call to canvas
+    * @return ExternalTool result
+    */
+   private ExternalTool updateExternalTool(String canvasServer, String contextId, String toolId, LtiSettings ltiSettings, UriTemplate uriTemplate) {
+      URI uri = uriTemplate.expand(canvasServer, contextId, toolId);
       log.debug("{}", uri);
 
       try {

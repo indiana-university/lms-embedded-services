@@ -33,15 +33,148 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LtiSettings {
 
-   @JsonProperty("config_type")
-   private String configType;
+   private String clientId;
+   private String name;
+   private String privacyLevel;
+   private String consumerKey;
+   private String sharedSecret;
+   private String description;
+   private String url;
+   private String domain;
+   private String iconUrl;
+   private String text;
 
-   @JsonProperty("config_url")
+   //TODO - how to handle customFields
+   //   private Map<String, String> customFields;
+
+   private AccountNavigation accountNavigation;
+   private UserNavigation userNavigation;
+   private CourseHomeSubNavigation courseHomeSubNavigation;
+   private CourseNavigation courseNavigation;
+   private EditorButton editorButton;
+   private HomeworkSubmission homeworkSubmission;
+   private LinkSelection linkSelection;
+   private MigrationSelection migrationSelection;
+   private ToolConfiguration toolConfiguration;
+   private ResourceSelection resourceSelection;
+
+   private String configType;
+   private String configXml;
    private String configUrl;
+   private boolean notSelectable;
+   private boolean oauthCompliant;
+
+
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class AccountNavigation implements Serializable {
+      private String url;
+      private boolean enabled;
+      private String text;
+      private String selectionWidth;
+      private String selectionHeight;
+      private String displayType;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class UserNavigation implements Serializable {
+      private String url;
+      private boolean enabled;
+      private String text;
+      private String visibility;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class CourseHomeSubNavigation implements Serializable {
+      private String url;
+      private boolean enabled;
+      private String text;
+      private String iconUrl;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class CourseNavigation implements Serializable {
+      private boolean enabled;
+      private String text;
+      private String visibility;
+      private String windowTarget;
+
+      @JsonProperty("default")
+      private String defaults;
+      private String displayType;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class EditorButton implements Serializable {
+      private String url;
+      private boolean enabled;
+      private String iconUrl;
+      private String selectionWidth;
+      private String selectionHeight;
+      private String messageType;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class HomeworkSubmission implements Serializable {
+      private String url;
+      private boolean enabled;
+      private String text;
+      private String messageType;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class LinkSelection implements Serializable {
+      private String url;
+      private boolean enabled;
+      private String text;
+      private String messageType;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class MigrationSelection implements Serializable {
+      private String url;
+      private boolean enabled;
+      private String messageType;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class ToolConfiguration implements Serializable {
+      private String url;
+      private boolean enabled;
+      private String messageType;
+      private boolean preferSisEmail;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class ResourceSelection implements Serializable {
+      private String url;
+      private boolean enabled;
+      private String iconUrl;
+      private String selectionWidth;
+      private String selectionHeight;
+   }
+
 }

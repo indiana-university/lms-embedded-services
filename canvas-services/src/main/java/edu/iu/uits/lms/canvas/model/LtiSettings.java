@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Map;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -57,12 +58,12 @@ public class LtiSettings {
    private String iconUrl;
    private String text;
 
-   //TODO - how to handle customFields
-   //   private Map<String, String> customFields;
+   private Map<String, String> customFields;
 
    private AccountNavigation accountNavigation;
    private UserNavigation userNavigation;
    private CourseHomeSubNavigation courseHomeSubNavigation;
+   private CourseSettingsSubNavigation courseSettingsSubNavigation;
    private CourseNavigation courseNavigation;
    private EditorButton editorButton;
    private HomeworkSubmission homeworkSubmission;
@@ -106,6 +107,17 @@ public class LtiSettings {
       private boolean enabled;
       private String text;
       private String iconUrl;
+   }
+
+   @Data
+   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   public static class CourseSettingsSubNavigation implements Serializable {
+      private boolean enabled;
+      private String placement;
+      private String label;
+      private String messageType;
+      private String selectionWidth;
+      private String selectionHeight;
    }
 
    @Data

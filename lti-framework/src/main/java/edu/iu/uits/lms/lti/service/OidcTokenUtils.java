@@ -247,6 +247,16 @@ public class OidcTokenUtils {
    }
 
    /**
+    * Get the specified key out of the root claim
+    * @param key Key
+    * @return Value of given key from the root claim
+    */
+   public String getClaimValue(String key) {
+      String claimValue = (String) attrMap.get(key);
+      return claimValue;
+   }
+
+   /**
     * According to the LTI spec, when a user has the TA role, since it is a sub-type of Instructor, both roles are sent.
     * This makes it impossible to distinguish between the two.  So, this will strip out the "extra" occurrence of the Instructor role.
     * It should still support legit cases where a user is a TA in one section and an Instructor in a different section.

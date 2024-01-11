@@ -61,7 +61,7 @@ public class CourseTemplatingService {
       return templatedCourseRepository.findBySisCourseId(sisCourseId);
    }
 
-   private TemplatedCourse getTemplatedCourse(String courseId) {
+   public TemplatedCourse getTemplatedCourse(String courseId) {
       return templatedCourseRepository.findById(courseId).orElse(null);
    }
 

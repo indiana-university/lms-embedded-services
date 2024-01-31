@@ -62,7 +62,7 @@ public class CanvasService extends SpringBaseService implements InitializingBean
 
 
    /**
-    * Get the host of the remote Canvas instance (used mostly for provisioning emails
+    * Get the host of the remote Canvas instance (used mostly for provisioning emails)
     * @return
     */
    public String getHost() {

@@ -61,6 +61,14 @@ public class CanvasService extends SpringBaseService implements InitializingBean
    }
 
 
+   /**
+    * Get the host of the remote Canvas instance (used mostly for provisioning emails)
+    * @return
+    */
+   public String getHost() {
+      return canvasConfiguration.getHost();
+   }
+
    @Override
    public void afterPropertiesSet() throws Exception {
       log.debug("Base Url: {}", canvasConfiguration.getBaseUrl());

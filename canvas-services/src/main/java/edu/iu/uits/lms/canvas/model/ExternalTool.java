@@ -52,4 +52,7 @@ public class ExternalTool {
 
    @JsonProperty("course_navigation")
    private Map<String, Object> courseNavigation;
+
+   @JsonProperty("deployment_id")
+   private String deploymentId;
 }

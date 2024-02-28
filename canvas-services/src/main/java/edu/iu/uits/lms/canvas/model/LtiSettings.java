@@ -125,6 +125,7 @@ public class LtiSettings {
    public static class CourseNavigation implements Serializable {
       private boolean enabled;
       private String text;
+      private String label;
       private String visibility;
       private String windowTarget;
 

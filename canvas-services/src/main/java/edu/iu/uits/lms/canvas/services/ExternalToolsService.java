@@ -114,7 +114,7 @@ public class ExternalToolsService extends SpringBaseService {
       }
 
       if (placement != null) {
-         builder.queryParam("search_term", searchTerm);
+         builder.queryParam("placement", placement);
       }
 
       builder.queryParam("per_page", "100");
@@ -342,6 +342,12 @@ public class ExternalToolsService extends SpringBaseService {
 
    }
 
+   /**
+    * Create an external tool (1.1 or 1.3) in a course
+    * @param courseId Course id
+    * @param ltiSettings LtiSettings
+    * @return The created ExternalTool
+    */
    public ExternalTool createExternalToolForCourse(String courseId, LtiSettings ltiSettings) {
       URI uri = EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 

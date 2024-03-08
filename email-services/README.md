@@ -33,19 +33,19 @@ If choosing to use properties files for the configuration values, the default lo
 The following properties need to be set to configure the communication with a database.
 They can be set in a security.properties file, or overridden as environment variables.
 
-| Property                                           | Default Value                               | Description                                       |
-|----------------------------------------------------|---------------------------------------------|---------------------------------------------------|
-| `spring.mail.host`                                 | mail-relay.iu.edu                           | Hostname of the mail relay                        |
-| `spring.mail.port`                                 | 587                                         | Port of the mail relay                            |
-| `spring.mail.username`                             | lmssmtp                                     | Username for sending email                        |
-| `smtpPassword`                                     |                                             | Password for sending email                        |
-| `spring.mail.password`                             | `${smtpPassword}`                           | Password for sending email                        |
-| `spring.mail.properties.mail.smtp.auth`            | true                                        | Additional JavaMail Session properties                                                  |
-| `spring.mail.properties.mail.smtp.starttls.enable` | true                                        | Additional JavaMail Session properties                                                  |
-| `lmsemail.enabled`                                 | true                                        | Enable/disable email sending                      |
-| `lmsemail.signingEnabled`                          | true                                        | Enable/disable digitally signing emails           |
-| `lmsemail.defaultFrom`                             | essnorep@iu.edu                             | Default `from` address                            |
-| `lmsemail.defaultUnsignedTo`                       | iu-uits-es-ess-lms-notify@exchange.iu.edu   | Default recipient for emails in test environments |
+| Property                                           | Default Value                             | Description                                       |
+|----------------------------------------------------|-------------------------------------------|---------------------------------------------------|
+| `spring.mail.host`                                 | mail-relay.iu.edu                         | Hostname of the mail relay                        |
+| `spring.mail.port`                                 | 587                                       | Port of the mail relay                            |
+| `spring.mail.username`                             | lmssmtp                                   | Username for sending email                        |
+| `smtpPassword`                                     |                                           | Password for sending email                        |
+| `spring.mail.password`                             | `${smtpPassword}`                         | Password for sending email                        |
+| `spring.mail.properties.mail.smtp.auth`            | true                                      | Additional JavaMail Session properties                                                  |
+| `spring.mail.properties.mail.smtp.starttls.enable` | true                                      | Additional JavaMail Session properties                                                  |
+| `lmsemail.enabled`                                 | true                                      | Enable/disable email sending                      |
+| `lmsemail.signingEnabled`                          | true                                      | Enable/disable digitally signing emails           |
+| `lmsemail.defaultFrom`                             | noreply@iu.edu                            | Default `from` address                            |
+| `lmsemail.defaultUnsignedTo`                       | iu-uits-es-ess-lms-notify@exchange.iu.edu | Default recipient for emails in test environments |
 
 ### Exposing the email REST endpoints
 If you would like to expose the email endpoints in a tool, you will

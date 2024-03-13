@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -43,6 +44,7 @@ import java.util.List;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Module implements Serializable {
 
   private String id;
@@ -50,14 +52,14 @@ public class Module implements Serializable {
   private String position;
   private String name;
   private Date unlockAt;
-  private boolean requireSequentialProgress;
+  private Boolean requireSequentialProgress;
   private List<String> prerequisiteModuleIds;
   private String itemsCount;
   private String itemsUrl;
-  private List<ModuleItemCreateWrapper> items;
+  private List<ModuleItem> items;
   private String state;
   private Date completedAt;
   private Boolean publishFinalGrade;
-  private boolean published;
+  private Boolean published;
 
 }

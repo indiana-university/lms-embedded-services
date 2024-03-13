@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -41,6 +42,7 @@ import java.io.Serializable;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ModuleItem implements Serializable {
 
     private String id;
@@ -54,21 +56,23 @@ public class ModuleItem implements Serializable {
     private String url;
     private String pageUrl;
     private String externalUrl;
-    private boolean newTab;
+    private Boolean newTab;
     private CompletionRequirement completionRequirement;
     private ContentDetails contentDetails;
-    private boolean published;
+    private Boolean published;
 
     @Data
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class CompletionRequirement implements Serializable {
         private String type;
         private String minScore;
-        private boolean completed;
+        private Boolean completed;
     }
 
     @Data
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ContentDetails implements Serializable {
         private String pointsPossible;
         private String dueAt;
@@ -79,6 +83,7 @@ public class ModuleItem implements Serializable {
 
     @Data
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Iframe implements Serializable {
         private String width;
         private String height;

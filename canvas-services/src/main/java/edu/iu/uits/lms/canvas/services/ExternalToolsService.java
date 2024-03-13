@@ -353,7 +353,7 @@ public class ExternalToolsService extends SpringBaseService {
 
       try {
          HttpHeaders headers = new HttpHeaders();
-         headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
          HttpEntity<LtiSettings> requestEntity = new HttpEntity<>(ltiSettings, headers);
 
          ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, requestEntity, ExternalTool.class);

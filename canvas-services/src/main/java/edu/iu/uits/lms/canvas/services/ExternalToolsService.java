@@ -89,14 +89,33 @@ public class ExternalToolsService extends SpringBaseService {
    }
 
    /**
-    *
-    * @param courseId
-    * @return
+    * Get all external tools for a course
+    * @param courseId Course id
+    * @return List of ExternalTools
     */
    public List<ExternalTool> getExternalTools(@NonNull String courseId) {
+      return getExternalTools(courseId, null, null);
+   }
+
+   /**
+    * Get all external tools for a course
+    * @param courseId Course id
+    * @param searchTerm Search term that will be used as a partial match for the tool name
+    * @param placement Placement type that will be used as a filter for the results
+    * @return List of ExternalTools matching the provided criteria
+    */
+   public List<ExternalTool> getExternalTools(@NonNull String courseId, String searchTerm, String placement) {
       URI uri = EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
       UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+      if (searchTerm != null) {
+         builder.queryParam("search_term", searchTerm);
+      }
+
+      if (placement != null) {
+         builder.queryParam("placement", placement);
+      }
 
       builder.queryParam("per_page", "100");
 
@@ -308,5 +327,65 @@ public class ExternalToolsService extends SpringBaseService {
       }
 
       return null;
+   }
+
+   /**
+    * Create an external tool (1.3) in a course
+    * @param courseId Course id
+    * @param clientId Client id of the LTI developer key
+    * @return The created ExternalTool
+    */
+   public ExternalTool createExternalToolForCourse(String courseId, String clientId) {
+      LtiSettings ltiSettings = new LtiSettings();
+      ltiSettings.setClientId(clientId);
+      return createExternalToolForCourse(courseId, ltiSettings);
+
+   }
+
+   /**
+    * Create an external tool (1.1 or 1.3) in a course
+    * @param courseId Course id
+    * @param ltiSettings LtiSettings
+    * @return The created ExternalTool
+    */
+   public ExternalTool createExternalToolForCourse(String courseId, LtiSettings ltiSettings) {
+      URI uri = EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+
+      try {
+         HttpHeaders headers = new HttpHeaders();
+         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+         HttpEntity<LtiSettings> requestEntity = new HttpEntity<>(ltiSettings, headers);
+
+         ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, requestEntity, ExternalTool.class);
+         log.debug("{}", responseEntity);
+
+         if (responseEntity.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Request to Canvas was not successful. Response code: "
+                    + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                    + ", body: " + responseEntity.getBody());
+         }
+
+         if (responseEntity != null) {
+            log.info("Created ExternalTool for Canvas courseId: " + courseId);
+            return responseEntity.getBody();
+         }
+      } catch (HttpClientErrorException hcee) {
+         log.error("Error creating external tool", hcee);
+         throw new RuntimeException("Error creating external tool", hcee);
+      }
+
+      return null;
+   }
+
+   /**
+    * Get the first matching external tool
+    * @param courseId Course id
+    * @param toolName Tool name to look up
+    * @param placement Placement type (optional)
+    * @return First matching ExternalTool (or null, if none found)
+    */
+   public ExternalTool getExternalToolByName(String courseId, String toolName, String placement) {
+      List<ExternalTool> tools = getExternalTools(courseId, toolName, placement);
+      return tools.stream().filter(et -> toolName.equals(et.getName())).findFirst().orElse(null);
    }
 }

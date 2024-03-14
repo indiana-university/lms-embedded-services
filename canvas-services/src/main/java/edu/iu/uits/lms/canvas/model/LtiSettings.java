@@ -45,7 +45,7 @@ import java.util.Map;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LtiSettings {
+public class LtiSettings implements Serializable {
 
    private String clientId;
    private String name;
@@ -75,13 +75,14 @@ public class LtiSettings {
    private String configType;
    private String configXml;
    private String configUrl;
-   private boolean notSelectable;
-   private boolean oauthCompliant;
+   private Boolean notSelectable;
+   private Boolean oauthCompliant;
 
 
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class AccountNavigation implements Serializable {
       private String url;
       private boolean enabled;
@@ -93,6 +94,7 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class UserNavigation implements Serializable {
       private String url;
       private boolean enabled;
@@ -102,6 +104,7 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class CourseHomeSubNavigation implements Serializable {
       private String url;
       private boolean enabled;
@@ -111,6 +114,7 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class CourseSettingsSubNavigation implements Serializable {
       private boolean enabled;
       private String placement;
@@ -122,9 +126,11 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class CourseNavigation implements Serializable {
       private boolean enabled;
       private String text;
+      private String label;
       private String visibility;
       private String windowTarget;
 
@@ -135,6 +141,7 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class EditorButton implements Serializable {
       private String url;
       private boolean enabled;
@@ -146,6 +153,7 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class HomeworkSubmission implements Serializable {
       private String url;
       private boolean enabled;
@@ -155,6 +163,7 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class LinkSelection implements Serializable {
       private String url;
       private boolean enabled;
@@ -164,6 +173,7 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class MigrationSelection implements Serializable {
       private String url;
       private boolean enabled;
@@ -172,6 +182,7 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class ToolConfiguration implements Serializable {
       private String url;
       private boolean enabled;
@@ -181,6 +192,7 @@ public class LtiSettings {
 
    @Data
    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+   @JsonInclude(JsonInclude.Include.NON_NULL)
    public static class ResourceSelection implements Serializable {
       private String url;
       private boolean enabled;

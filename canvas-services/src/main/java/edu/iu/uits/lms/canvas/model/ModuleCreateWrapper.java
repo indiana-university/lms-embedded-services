@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.model;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2024 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,26 +33,16 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
-import java.util.Map;
+import java.io.Serializable;
 
 @Data
-public class ExternalTool {
-   private String id;
-   private String name;
-   private String url;
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class ModuleCreateWrapper implements Serializable {
 
-   @JsonProperty("workflow_state")
-   private String workflowState;
+    private Module module;
 
-   @JsonProperty("custom_fields")
-   private Map<String, String> customFields;
-
-   @JsonProperty("course_navigation")
-   private Map<String, Object> courseNavigation;
-
-   @JsonProperty("deployment_id")
-   private String deploymentId;
 }

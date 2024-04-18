@@ -34,47 +34,31 @@ package edu.iu.uits.lms.canvas.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @JsonIgnoreProperties (ignoreUnknown=true)
 @Data
-
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Enrollment implements Serializable {
 
 	private String id;
-
 	private String type;
-
 	private String role;
-
-	@JsonProperty("role_id")
 	private String roleId;
-
-	@JsonProperty("enrollment_state")
 	private String enrollmentState;
-
-	@JsonProperty("course_id")
 	private String courseId;
-
-	@JsonProperty("course_section_id")
 	private String courseSectionId;
-
-	@JsonProperty("limit_privileges_to_course_section")
 	private boolean limitPrivilegesToCourseSection;
-
-	@JsonProperty("user_id")
 	private String userId;
-
 	private Grades grades;
-
 	private User user;
-
-	@JsonProperty("sis_import_id")
 	private String sisImportId;
-
-
+	private String createdAt;
+	private String updatedAt;
+	private String lastActivityAt;
 
 }

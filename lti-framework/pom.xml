@@ -14,9 +14,9 @@
     <description>Shared services for the lms-canvas LTI tools around the LTI tool launch</description>
 
     <properties>
-        <basiclti-util.version>23.0</basiclti-util.version>
+        <basiclti-util.version>23.1</basiclti-util.version>
         <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
-        <commons-io.version>2.15.1</commons-io.version>
+        <commons-io.version>2.16.1</commons-io.version>
         <hibernate5-ddl-maven-plugin.version>2.3.0</hibernate5-ddl-maven-plugin.version>
         <httpclient.version>4.5.14</httpclient.version>
         <reflections.version>0.10.2</reflections.version>

@@ -40,6 +40,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -152,13 +153,13 @@ public class AnnouncementService extends SpringBaseService {
 
         try {
             HttpEntity<Announcement> announcementsEntity = restTemplate.postForEntity(builder.build().toUri(), requestEntity, Announcement.class);
-            HttpStatus responseStatus = ((ResponseEntity<Announcement>) announcementsEntity).getStatusCode();
+            HttpStatusCode responseStatus = ((ResponseEntity<Announcement>) announcementsEntity).getStatusCode();
 
             if (HttpStatus.OK.equals(responseStatus)) {
                 return announcementsEntity.getBody();
             } else {
                 throw new RuntimeException("Error creating announcement. Request to Canvas was not successful. Response code: "
-                        + responseStatus + ", reason: " + responseStatus.getReasonPhrase()
+                        + responseStatus + ", reason: " + ((HttpStatus)responseStatus).getReasonPhrase()
                         + ", entity: " + announcementsEntity);
             }
 

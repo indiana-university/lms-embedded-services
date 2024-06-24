@@ -33,7 +33,6 @@ package edu.iu.uits.lms.lti.config;
  * #L%
  */
 
-import com.nimbusds.jose.shaded.json.JSONObject;
 import edu.iu.uits.lms.common.test.CommonTestUtils;
 import edu.iu.uits.lms.lti.LTIConstants;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -45,23 +44,24 @@ import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenti
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_AUTHORITY;
+import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_ROLE;
 
 public class TestUtils extends CommonTestUtils {
 
    public static String defaultRole() {
-      return BASE_USER_AUTHORITY;
+      return BASE_USER_ROLE;
    }
 
    public static OidcAuthenticationToken buildToken(String username, String courseId, String role) {
-      JSONObject customMap = new JSONObject();
+      Map<String, Object> customMap = new HashMap<>();
       customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, courseId);
 
       return buildToken(username, role, new HashMap<>(), customMap);
    }
 
-   public static OidcAuthenticationToken buildToken(String username, String role, Map<String, Object> extraAttributes, JSONObject extraCustomAttributes) {
+   public static OidcAuthenticationToken buildToken(String username, String role, Map<String, Object> extraAttributes, Map<String, Object> extraCustomAttributes) {
       final String nameAttributeKey = "sub";
       Map<String, Object> attributeMap = new HashMap<>();
       attributeMap.put(nameAttributeKey, username);
@@ -70,8 +70,12 @@ public class TestUtils extends CommonTestUtils {
          attributeMap.putAll(extraAttributes);
       }
 
-      JSONObject customMap = (JSONObject) attributeMap.computeIfAbsent(Claims.CUSTOM, k -> new JSONObject());
-      customMap.merge(extraCustomAttributes);
+      Map customMap = (Map) attributeMap.computeIfAbsent(Claims.CUSTOM, k -> new HashMap<>());
+      Set<String> keys = extraCustomAttributes.keySet();
+      for (String key : keys) {
+         customMap.put(key, extraCustomAttributes.get(key));
+      }
+//      customMap.merge(extraCustomAttributes);
 
       OAuth2User oAuth2User = new DefaultOAuth2User(Collections.emptyList(), attributeMap, nameAttributeKey);
       OidcAuthenticationToken token = new OidcAuthenticationToken(oAuth2User,

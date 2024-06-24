@@ -37,7 +37,6 @@ import edu.iu.uits.lms.canvas.model.Account;
 import edu.iu.uits.lms.canvas.model.AccountAdmin;
 import edu.iu.uits.lms.canvas.model.AccountAdminCreate;
 import edu.iu.uits.lms.canvas.model.CanvasRole;
-import edu.iu.uits.lms.canvas.model.Favorite;
 import edu.iu.uits.lms.canvas.model.Saml;
 import edu.iu.uits.lms.canvas.model.SsoSettings;
 import edu.iu.uits.lms.canvas.model.SsoSettingsWrapper;
@@ -302,7 +301,7 @@ public class AccountService extends SpringBaseService {
 
             if (response.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                        + response.getStatusCode() + ", reason: " + response.getStatusCode().getReasonPhrase()
+                        + response.getStatusCode() + ", reason: " + ((HttpStatus)response.getStatusCode()).getReasonPhrase()
                         + ", body: " + response.getBody());
             }
 
@@ -417,7 +416,7 @@ public class AccountService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                      + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                       + ", body: " + responseEntity.getBody());
             }
         } catch (RuntimeException re) {

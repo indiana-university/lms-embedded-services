@@ -33,7 +33,6 @@ package edu.iu.uits.lms.lti.service;
  * #L%
  */
 
-import com.nimbusds.jose.shaded.json.JSONObject;
 import edu.iu.uits.lms.lti.LTIConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -72,15 +71,15 @@ public class OidcTokenUtilsTest {
    @Test
    void testEmptySplit() {
       Map<String, Object> attrMap = new HashMap<>();
-      attrMap.put(Claims.CUSTOM, new JSONObject());
+      attrMap.put(Claims.CUSTOM, new HashMap());
 
       OidcTokenUtils tokenUtils = new OidcTokenUtils(attrMap);
       String[] roles = tokenUtils.getCustomInstructureMembershipRolesRaw();
       Assertions.assertArrayEquals(new String[] {}, roles);
 
-      Map<String, Object> customStuff = new HashMap<>();
-      customStuff.put(CUSTOM_INSTRUCTURE_MEMBERSHIP_ROLES_KEY, "foobar");
-      attrMap.put(Claims.CUSTOM, new JSONObject(customStuff));
+      Map<String, Object> customMap = new HashMap<>();
+      customMap.put(CUSTOM_INSTRUCTURE_MEMBERSHIP_ROLES_KEY, "foobar");
+      attrMap.put(Claims.CUSTOM, customMap);
       tokenUtils = new OidcTokenUtils(attrMap);
       roles = tokenUtils.getCustomInstructureMembershipRolesRaw();
       Assertions.assertArrayEquals(new String[]{"foobar"}, roles);

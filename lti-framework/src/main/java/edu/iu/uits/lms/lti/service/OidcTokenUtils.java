@@ -33,14 +33,14 @@ package edu.iu.uits.lms.lti.service;
  * #L%
  */
 
-import com.nimbusds.jose.shaded.json.JSONArray;
-import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import edu.iu.uits.lms.lti.LTIConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.ox.ctl.lti13.lti.Claims;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -162,9 +162,8 @@ public class OidcTokenUtils {
     * FYI, these contain ALL roles for the user, not just the ones for the launched context
     * @return Roles
     */
-   public String[] getAllRoles() {
-      JSONArray jsonObj = (JSONArray) attrMap.get(Claims.ROLES);
-      return jsonObj.toArray(String[]::new);
+   public String[] getAllRoles() throws ParseException {
+      return JSONObjectUtils.getStringArray(attrMap, Claims.ROLES);
    }
 
    /**
@@ -172,8 +171,8 @@ public class OidcTokenUtils {
     * @return Canvas Membership Roles
     */
    public String[] getCustomCanvasMembershipRoles() {
-      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
-      String roleStr = jsonObj.getAsString(CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY);
+      Map jsonObj = (Map) attrMap.get(Claims.CUSTOM);
+      String roleStr = (String)jsonObj.get(CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY);
       return null2Empty(StringUtils.split(roleStr, ","));
    }
 
@@ -182,8 +181,8 @@ public class OidcTokenUtils {
     * @return Instructure Membership Roles
     */
    public String[] getCustomInstructureMembershipRolesRaw() {
-      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
-      String roleStr = jsonObj.getAsString(CUSTOM_INSTRUCTURE_MEMBERSHIP_ROLES_KEY);
+      Map jsonObj = (Map) attrMap.get(Claims.CUSTOM);
+      String roleStr = (String)jsonObj.get(CUSTOM_INSTRUCTURE_MEMBERSHIP_ROLES_KEY);
       return null2Empty(StringUtils.split(roleStr, ","));
    }
 
@@ -201,8 +200,8 @@ public class OidcTokenUtils {
     * @return Platform GUID
     */
    public String getPlatformGuid() {
-      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.PLATFORM_INSTANCE);
-      return jsonObj.getAsString(CLAIMS_PLATFORM_GUID_KEY);
+      Map jsonObj = (Map) attrMap.get(Claims.PLATFORM_INSTANCE);
+      return (String)jsonObj.get(CLAIMS_PLATFORM_GUID_KEY);
    }
 
    /**
@@ -211,8 +210,8 @@ public class OidcTokenUtils {
     * @return Value of given key from the Custom claim
     */
    public String getCustomValue(String key) {
-      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
-      return jsonObj.getAsString(key);
+      Map jsonObj = (Map) attrMap.get(Claims.CUSTOM);
+      return (String)jsonObj.get(key);
    }
 
    /**
@@ -220,10 +219,9 @@ public class OidcTokenUtils {
     * @param key Key
     * @return String[] of given key from the Custom claim.  Returns an empty array if key is not found.
     */
-   public String[] getCustomArray(String key) {
-      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CUSTOM);
-      JSONArray jsonArray = (JSONArray) jsonObj.get(key);
-      return jsonArray != null ? jsonArray.toArray(String[]::new) : new String[]{};
+   public String[] getCustomArray(String key) throws ParseException {
+      Map jsonObj = (Map) attrMap.get(Claims.CUSTOM);
+      return JSONObjectUtils.getStringArray(jsonObj, key);
    }
 
    /**
@@ -232,8 +230,8 @@ public class OidcTokenUtils {
     * @return Value of given key from the Context claim
     */
    public String getContextValue(String key) {
-      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.CONTEXT);
-      return jsonObj.getAsString(key);
+      Map jsonObj = (Map) attrMap.get(Claims.CONTEXT);
+      return (String)jsonObj.get(key);
    }
 
    /**
@@ -242,8 +240,8 @@ public class OidcTokenUtils {
     * @return Value of given key from the LIS claim
     */
    public String getLisValue(String key) {
-      JSONObject jsonObj = (JSONObject) attrMap.get(Claims.LIS);
-      return jsonObj.getAsString(key);
+      Map jsonObj = (Map) attrMap.get(Claims.LIS);
+      return (String)jsonObj.get(key);
    }
 
    /**

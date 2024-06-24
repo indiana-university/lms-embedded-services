@@ -41,6 +41,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -99,13 +100,13 @@ public class CatalogListingService extends CatalogSpringBaseService {
             HttpEntity<String> createEnrollmentResponse = this.restTemplate.exchange(uri, HttpMethod.POST, enrollmentWrapperHttpEntity, String.class);
             log.debug(createEnrollmentResponse.toString());
 
-            HttpStatus responseStatus = ((ResponseEntity<String>) createEnrollmentResponse).getStatusCode();
+            HttpStatusCode responseStatus = ((ResponseEntity<String>) createEnrollmentResponse).getStatusCode();
 
             if (HttpStatus.CREATED.equals(responseStatus)) {
                 return true;
             } else {
                 log.error("Error creating enrollment term. Request to Canvas was not successful. Response code: "
-                        + responseStatus + ", reason: " + responseStatus.getReasonPhrase()
+                        + responseStatus + ", reason: " + ((HttpStatus)responseStatus).getReasonPhrase()
                         + ", entity: " + createEnrollmentResponse);
             }
 

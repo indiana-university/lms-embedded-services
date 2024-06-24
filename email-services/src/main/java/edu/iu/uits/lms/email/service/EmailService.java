@@ -37,6 +37,9 @@ import edu.iu.uits.lms.email.config.EmailServiceConfig;
 import edu.iu.uits.lms.email.model.EmailDetails;
 import edu.iu.uits.lms.email.model.EmailServiceAttachment;
 import edu.iu.uits.lms.email.model.Priority;
+import jakarta.activation.URLDataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -44,9 +47,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.activation.URLDataSource;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.util.List;
 
 @Service

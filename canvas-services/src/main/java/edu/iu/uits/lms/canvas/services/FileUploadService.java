@@ -41,6 +41,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -213,7 +214,7 @@ public class FileUploadService extends SpringBaseService {
 
         try {
             HttpEntity responseEntity = restTemplateNoBuffer.postForEntity(uri, requestEntity, Object.class);
-            HttpStatus httpStatus = ((ResponseEntity) responseEntity).getStatusCode();
+            HttpStatusCode httpStatus = ((ResponseEntity) responseEntity).getStatusCode();
 
             if (httpStatus.equals(HttpStatus.OK)) {
                 // upload was successful and no further action necessary
@@ -237,7 +238,7 @@ public class FileUploadService extends SpringBaseService {
                     errorEntity = responseEntity.getBody().toString();
                 }
                 throw new RuntimeException("File Upload to Canvas was not successful. Response code: "
-                        + ((ResponseEntity) responseEntity).getStatusCodeValue() + ", reason: " + httpStatus.getReasonPhrase()
+                        + ((ResponseEntity) responseEntity).getStatusCodeValue() + ", reason: " + ((HttpStatus)httpStatus).getReasonPhrase()
                         + ", entity: " + errorEntity);
             }
 

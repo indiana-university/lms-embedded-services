@@ -35,22 +35,22 @@ package edu.iu.uits.lms.iuonly.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import edu.iu.uits.lms.common.date.DateFormatUtil;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Data;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -58,7 +58,7 @@ import java.util.List;
 @Entity
 @Table(name = "DEPT_PROV_USERS")
 @NamedQueries({
-        @NamedQuery(name = "DeptProvisioningUser.findByCanvasUserId", query = "from DeptProvisioningUser where canvas_user_id = :canvasUserId"),
+        @NamedQuery(name = "DeptProvisioningUser.findByCanvasUserId", query = "from DeptProvisioningUser where canvasUserId = :canvasUserId"),
 })
 @SequenceGenerator(name = "DEPT_PROV_USERS_ID_SEQ", sequenceName = "DEPT_PROV_USERS_ID_SEQ", allocationSize = 1)
 @Data

@@ -37,19 +37,18 @@ import edu.iu.uits.lms.lti.controller.JWKSController;
 import edu.iu.uits.lms.lti.controller.rest.LtiAuthorizationRestController;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
-import edu.iu.uits.lms.lti.repository.legacy.Lti11AuthorizationRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.NestedTestConfiguration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,9 +58,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static edu.iu.uits.lms.lti.LTIConstants.LTIREST_PROFILE;
-import static org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration.INHERIT;
 
-@NestedTestConfiguration(INHERIT)
+@ContextConfiguration
 @SpringBootTest
 public class RestControllerAvailabilityTest {
 
@@ -117,15 +115,12 @@ public class RestControllerAvailabilityTest {
       }
    }
 
-   @SpringBootConfiguration
+   @Configuration
    @ComponentScan(basePackageClasses = LtiAuthorizationRestController.class)
    static class LtiTestContextConfiguration {
 
       @MockBean
       private LtiAuthorizationRepository ltiAuthorizationRepository;
-
-      @MockBean
-      private Lti11AuthorizationRepository lti11AuthorizationRepository;
 
       @MockBean
       private DefaultInstructorRoleRepository defaultInstructorRoleRepository;

@@ -34,6 +34,7 @@ package edu.iu.uits.lms.iuonly.repository;
  */
 
 import edu.iu.uits.lms.iuonly.model.FeatureAccess;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component("FeatureAccessRepository")
-public interface FeatureAccessRepository extends PagingAndSortingRepository<FeatureAccess, Long> {
+public interface FeatureAccessRepository extends PagingAndSortingRepository<FeatureAccess, Long>, ListCrudRepository<FeatureAccess, Long> {
     List<FeatureAccess> findByFeatureId(@Param("featureId") String featureId);
 }

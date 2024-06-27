@@ -35,7 +35,6 @@ package edu.iu.uits.lms.common.actuator;
 
 import edu.iu.uits.lms.common.it12logging.RestSecurityLoggingConfig;
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -46,28 +45,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class ActuatorSecurityConfig {
 
-//    @Configuration
-//    @Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-//    public static class ActuatorSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-//
-//        @Override
-//        protected void configure(HttpSecurity http) throws Exception {
-//            http.requestMatchers().antMatchers("/actuator/**")
-//                  .and().authorizeRequests()
-//                  .antMatchers("/actuator/health/**").permitAll()
-//                  .antMatchers("/**").hasRole("LMS_REST_ADMINS")
-//                  .and()
-//                  .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                  .and()
-//                  .oauth2ResourceServer()
-//                  .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
-//            http.apply(new RestSecurityLoggingConfig());
-//        }
-//
-//    }
-
     @Bean
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
+    @Order(1)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/actuator/**")
                 .authorizeHttpRequests((authz) -> authz
@@ -80,20 +59,4 @@ public class ActuatorSecurityConfig {
                 .with(new RestSecurityLoggingConfig(), log -> {});
         return http.build();
     }
-
-//    @Bean
-//    public SecurityFilterChain filterChain2(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .anyRequest().authenticated()
-//                        .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
-//                            public <O extends FilterSecurityInterceptor> O postProcess(
-//                                    O fsi) {
-//                                fsi.setPublishAuthorizationSuccess(true);
-//                                return fsi;
-//                            }
-//                        })
-//                );
-//        return http.build();
-//    }
 }

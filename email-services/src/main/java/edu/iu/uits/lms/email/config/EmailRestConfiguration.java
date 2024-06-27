@@ -35,7 +35,6 @@ package edu.iu.uits.lms.email.config;
 
 import edu.iu.uits.lms.common.it12logging.RestSecurityLoggingConfig;
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
@@ -51,7 +50,7 @@ import static edu.iu.uits.lms.email.EmailConstants.SEND_SCOPE;
 public class EmailRestConfiguration {
 
     @Bean
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4999)
+    @Order(1)
     public SecurityFilterChain emailRestFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/rest/email/**")
                 .authorizeHttpRequests((authz) -> authz
@@ -67,7 +66,7 @@ public class EmailRestConfiguration {
 
     @Profile(EMAILREST_PROFILE + " & swagger")
     @Bean
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4998)
+    @Order(1)
     public SecurityFilterChain emailApiFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/api/email/**")
                 .authorizeHttpRequests((authz) -> authz

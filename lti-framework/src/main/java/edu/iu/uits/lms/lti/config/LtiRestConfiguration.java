@@ -35,7 +35,6 @@ package edu.iu.uits.lms.lti.config;
 
 import edu.iu.uits.lms.common.it12logging.RestSecurityLoggingConfig;
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
@@ -51,7 +50,7 @@ import static edu.iu.uits.lms.lti.LTIConstants.WRITE_SCOPE;
 @EnableWebSecurity
 public class LtiRestConfiguration {
 
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 5000)
+    @Order(1)
     @Bean("ltiRestFilterChain")
     public SecurityFilterChain ltiRestFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/rest/lti/**")
@@ -68,7 +67,7 @@ public class LtiRestConfiguration {
     }
 
     @Profile(LTIREST_PROFILE + " & swagger")
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 5001)
+    @Order(1)
     @Bean("ltiApiFilterChain")
     public SecurityFilterChain ltiApiFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/api/lti/**")

@@ -45,24 +45,11 @@ import java.util.concurrent.ScheduledExecutorService;
 @Profile("batch")
 public class SchedulerConfig {
 
-   @Bean
+   @Bean(destroyMethod="shutdown")
    public ScheduledExecutorService taskExecutor() {
       ScheduledExecutorService delegateExecutor = Executors.newSingleThreadScheduledExecutor();
-      SecurityContext schedulerContext = createSchedulerSecurityContext();
+      SecurityContext schedulerContext = SecurityContextHolder.createEmptyContext();
       return new DelegatingSecurityContextScheduledExecutorService(delegateExecutor, schedulerContext);
    }
 
-   private SecurityContext createSchedulerSecurityContext() {
-      SecurityContext context = SecurityContextHolder.createEmptyContext();
-
-//      Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(AuthoritiesUtil.ROLE_RAC_ADMIN);
-//      Authentication authentication = new UsernamePasswordAuthenticationToken(
-//            batchUsername,
-//            "N/A",
-//            authorities
-//      );
-//      context.setAuthentication(authentication);
-
-      return context;
-   }
 }

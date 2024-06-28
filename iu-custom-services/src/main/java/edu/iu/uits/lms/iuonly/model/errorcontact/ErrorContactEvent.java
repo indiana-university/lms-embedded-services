@@ -34,24 +34,24 @@ package edu.iu.uits.lms.iuonly.model.errorcontact;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -64,7 +64,7 @@ import java.util.Date;
                         "FROM ErrorContactEvent errorContactEvent " +
                         "WHERE errorContactJobProfile.jobCode = :jobCode AND " +
                                "errorContactJobProfile.active = true AND " +
-                               "sysdate - :minutes / (24*60) <= errorContactEvent.created")
+                               "CURRENT_DATE - :minutes MINUTE <= errorContactEvent.created")
 })
 @SequenceGenerator(name = "ERROR_CONTACT_EVENT_ID_SEQ", sequenceName = "ERROR_CONTACT_EVENT_ID_SEQ", allocationSize = 1)
 @Data

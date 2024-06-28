@@ -35,18 +35,12 @@ package edu.iu.uits.lms.canvas.config;
 
 import edu.iu.uits.lms.canvas.security.CanvasTokenAuthorizationInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URI;
 
 /**
  * Created by chmaurer on 6/14/17.
@@ -60,55 +54,20 @@ public class CanvasEnvironmentConfiguration {
 
     @Bean(name = "CanvasRestTemplate")
     public RestTemplate restTemplate() {
-//        RestTemplate restTemplate = new RestTemplate();
-
         RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
 
         restTemplate.getInterceptors().add(new CanvasTokenAuthorizationInterceptor(canvasConfiguration.getToken()));
 //        restTemplate.getInterceptors().add(new LoggingRequestInterceptor());
-
-        //This RequestFactory allows us to have get requests that contain a body
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestWithBodyFactory());
-
-//        List<HttpMessageConverter<?>> list = new ArrayList<HttpMessageConverter<?>>();
-//        list.add(new MappingJackson2HttpMessageConverter());
-//        restTemplate.setMessageConverters(list);
-
 //        restTemplate.setErrorHandler(new CanvasErrorHandler());
         return restTemplate;
     }
 
     @Bean(name = "restTemplateNoBuffer")
     public RestTemplate restTemplateNoBuffer() {
-
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setBufferRequestBody(false);
-
-        RestTemplate restTemplate = new RestTemplate(requestFactory);
+        RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
 
         restTemplate.getInterceptors().add(new CanvasTokenAuthorizationInterceptor(canvasConfiguration.getToken()));
-
         return restTemplate;
     }
 
-    private static final class HttpComponentsClientHttpRequestWithBodyFactory extends HttpComponentsClientHttpRequestFactory {
-        @Override
-        protected HttpUriRequest createHttpUriRequest(HttpMethod httpMethod, URI uri) {
-            if (httpMethod == HttpMethod.GET) {
-                return new HttpGetRequestWithEntity(uri);
-            }
-            return super.createHttpUriRequest(httpMethod, uri);
-        }
-    }
-
-    private static final class HttpGetRequestWithEntity extends HttpEntityEnclosingRequestBase {
-        public HttpGetRequestWithEntity(final URI uri) {
-            super.setURI(uri);
-        }
-
-        @Override
-        public String getMethod() {
-            return HttpMethod.GET.name();
-        }
-    }
 }

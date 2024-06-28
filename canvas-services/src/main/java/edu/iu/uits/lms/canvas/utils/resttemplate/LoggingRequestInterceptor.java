@@ -36,7 +36,7 @@ package edu.iu.uits.lms.canvas.utils.resttemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
@@ -105,7 +105,7 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
         //There's a strange bug that sometimes presents itself as an IOException when getting the response body.
         //If you do a getStatusCode first, it "works"
         // See https://stackoverflow.com/questions/30356491/resttemplate-clienthttpresponse-getbody-throws-i-o-error
-        HttpStatus status = response.getStatusCode();
+        HttpStatusCode status = response.getStatusCode();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getBody(), "UTF-8"));
         String line = bufferedReader.readLine();
         while (line != null) {

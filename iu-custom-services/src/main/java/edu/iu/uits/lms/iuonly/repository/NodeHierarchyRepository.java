@@ -34,12 +34,13 @@ package edu.iu.uits.lms.iuonly.repository;
  */
 
 import edu.iu.uits.lms.iuonly.model.nodehierarchy.NodeWrapper;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public interface NodeHierarchyRepository extends PagingAndSortingRepository<NodeWrapper, Long> {
+public interface NodeHierarchyRepository extends PagingAndSortingRepository<NodeWrapper, Long>, ListCrudRepository<NodeWrapper, Long> {
 
     @Transactional(transactionManager = "postgresdbTransactionMgr")
     NodeWrapper findTop1ByOrderByModifiedDesc();

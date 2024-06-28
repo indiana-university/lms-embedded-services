@@ -42,23 +42,29 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import static edu.iu.uits.lms.lti.LTIConstants.LTI_GROUP_CODE_PATH;
-import static org.springdoc.core.Constants.DEFAULT_API_DOCS_URL;
-import static org.springdoc.core.Constants.DEFAULT_SWAGGER_UI_PATH;
+import static org.springdoc.core.utils.Constants.DEFAULT_API_DOCS_URL;
+import static org.springdoc.core.utils.Constants.DEFAULT_SWAGGER_UI_PATH;
+import static org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration.INHERIT;
 
 @AutoConfigureMockMvc
 @EnableAutoConfiguration(exclude = {HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
       MailHealthContributorAutoConfiguration.class})
+@NestedTestConfiguration(INHERIT)
 @Slf4j
 public abstract class SwaggerBase {
 
    @Autowired
    protected MockMvc mvc;
+
+   @Autowired
+   public SwaggerTestingBean swaggerTestingBean;
 
    @Value("${springdoc.swagger-ui.path:#{null}}")
    protected String swagPath;
@@ -121,7 +127,9 @@ public abstract class SwaggerBase {
     * @return Default list contains the path to the lti-framework
     */
    protected List<String> getEmbeddedSwaggerToolPaths() {
-      return Collections.singletonList(LTI_GROUP_CODE_PATH);
+      List<String> expandedList = new ArrayList<>(swaggerTestingBean.getEmbeddedSwaggerToolPaths());
+      expandedList.addFirst(LTI_GROUP_CODE_PATH);
+      return expandedList;
    }
 
 }

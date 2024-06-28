@@ -35,6 +35,7 @@ package edu.iu.uits.lms.lti.repository;
 
 import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
@@ -42,7 +43,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public interface LtiAuthorizationRepository extends PagingAndSortingRepository<LmsLtiAuthz, Long> {
+public interface LtiAuthorizationRepository extends PagingAndSortingRepository<LmsLtiAuthz, Long>, ListCrudRepository<LmsLtiAuthz, Long> {
 
     LmsLtiAuthz findByRegistrationEnvActive(@Param("registrationId") String registrationId, @Param("env") String env);
 

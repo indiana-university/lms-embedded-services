@@ -40,6 +40,7 @@ import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.lti.service.Lti13Service;
 import edu.iu.uits.lms.lti.service.LtiAuthorizationService;
+import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -62,12 +63,12 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import uk.ac.ox.ctl.lti13.KeyPairService;
 import uk.ac.ox.ctl.lti13.SingleKeyPairService;
 import uk.ac.ox.ctl.lti13.TokenRetriever;
 import uk.ac.ox.ctl.lti13.nrps.NamesRoleService;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.security.KeyPair;
 import java.util.Arrays;
@@ -78,6 +79,7 @@ import java.util.Map;
 @ComponentScan(basePackages = "edu.iu.uits.lms.lti",
       excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
             classes = {GlobalErrorHandlerConfig.class, ApplicationErrorController.class}))
+@EnableTransactionManagement
 @EnableJpaRepositories(entityManagerFactoryRef = "ltiEntityMgrFactory",
       transactionManagerRef = "ltiTransactionMgr",
       basePackageClasses = LtiAuthorizationRepository.class)

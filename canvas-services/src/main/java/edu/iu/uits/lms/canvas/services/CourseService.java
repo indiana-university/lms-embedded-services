@@ -55,6 +55,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
@@ -299,7 +300,7 @@ public class CourseService extends SpringBaseService {
 
             if (response.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + response.getStatusCode() + ", reason: " + response.getStatusCode().getReasonPhrase()
+                      + response.getStatusCode() + ", reason: " + ((HttpStatus)response.getStatusCode()).getReasonPhrase()
                       + ", body: " + response.getBody());
             }
 
@@ -328,7 +329,7 @@ public class CourseService extends SpringBaseService {
 
             if (response.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + response.getStatusCode() + ", reason: " + response.getStatusCode().getReasonPhrase()
+                      + response.getStatusCode() + ", reason: " + ((HttpStatus)response.getStatusCode()).getReasonPhrase()
                       + ", body: " + response.getBody());
             }
 
@@ -410,7 +411,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                      + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                       + ", body: " + responseEntity.getBody());
             }
         } catch (HttpClientErrorException hcee) {
@@ -445,7 +446,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                        + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                        + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                         + ", body: " + responseEntity.getBody());
             } else {
                 return updateCourseNameAndSisCourseIdResponse.getBody();
@@ -535,7 +536,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                        + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                        + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                         + ", body: " + responseEntity.getBody());
             } else {
                 return updateTermAndCourseEndDateResponse.getBody();
@@ -574,7 +575,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                        + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                        + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                         + ", body: " + responseEntity.getBody());
             }
         } catch (HttpClientErrorException hcee) {
@@ -666,7 +667,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                      + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                       + ", body: " + responseEntity.getBody());
             }
 
@@ -701,7 +702,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                      + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                       + ", body: " + responseEntity.getBody());
             }
 
@@ -744,7 +745,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                      + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                       + ", body: " + responseEntity.getBody());
             }
 
@@ -784,7 +785,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                      + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                       + ", body: " + responseEntity.getBody());
             }
 
@@ -852,7 +853,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                        + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                        + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                         + ", body: " + responseEntity.getBody());
             }
 
@@ -904,7 +905,7 @@ public class CourseService extends SpringBaseService {
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                      + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                       + ", body: " + responseEntity.getBody());
             }
         } catch (HttpClientErrorException hcee) {
@@ -1024,7 +1025,7 @@ public class CourseService extends SpringBaseService {
     @Data
     @AllArgsConstructor
     public static class ExternalCourseToolResult implements Serializable {
-        public HttpStatus httpStatus;
+        public HttpStatusCode httpStatus;
         public int httpStatusCode;
         public ExternalTool externalTool;
     }

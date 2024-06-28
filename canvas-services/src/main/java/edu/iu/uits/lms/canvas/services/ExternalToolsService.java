@@ -145,7 +145,7 @@ public class ExternalToolsService extends SpringBaseService {
 
          if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                    + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                    + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                     + ", body: " + responseEntity.getBody());
          }
 
@@ -196,7 +196,7 @@ public class ExternalToolsService extends SpringBaseService {
 
          if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                    + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                    + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                     + ", body: " + responseEntity.getBody());
          }
 
@@ -258,7 +258,7 @@ public class ExternalToolsService extends SpringBaseService {
 
          if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                    + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                    + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                     + ", body: " + responseEntity.getBody());
          }
 
@@ -361,7 +361,7 @@ public class ExternalToolsService extends SpringBaseService {
 
          if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                    + responseEntity.getStatusCode() + ", reason: " + responseEntity.getStatusCode().getReasonPhrase()
+                    + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                     + ", body: " + responseEntity.getBody());
          }
 

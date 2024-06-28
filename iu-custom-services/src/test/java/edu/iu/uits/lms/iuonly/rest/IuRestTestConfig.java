@@ -50,8 +50,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootConfiguration
-@ComponentScan(basePackageClasses = BatchEmailRestController.class)
-public class RestTestConfig {
+@ComponentScan(basePackageClasses = BatchEmailRestController.class, value = "IuRestTestConfig")
+public class IuRestTestConfig {
 
    @MockBean
    public DeptProvisioningUserRepository deptProvisioningUserRepository;

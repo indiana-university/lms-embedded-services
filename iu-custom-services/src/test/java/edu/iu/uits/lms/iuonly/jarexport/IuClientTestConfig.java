@@ -44,21 +44,20 @@ import edu.iu.uits.lms.iuonly.repository.LmsBatchEmailRepository;
 import edu.iu.uits.lms.iuonly.repository.NodeHierarchyRepository;
 import edu.iu.uits.lms.iuonly.repository.TemplatedCourseRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
-@TestConfiguration
+//@TestConfiguration
 public class IuClientTestConfig {
 
    @MockBean
    @Qualifier("postgresdbEntityMgrFactory")
-   public LocalContainerEntityManagerFactoryBean ltiEntityMgrFactory;
+   public LocalContainerEntityManagerFactoryBean iuEntityMgrFactory;
 
    @MockBean
    @Qualifier("postgresdbTransactionMgr")
-   public PlatformTransactionManager ltiTransactionMgr;
+   public PlatformTransactionManager iuTransactionMgr;
 
    /*
       Mock all the repositories

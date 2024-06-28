@@ -43,6 +43,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -184,13 +185,13 @@ public class TermService extends SpringBaseService {
 			HttpEntity<CanvasTerm> createTermResponse = this.restTemplate.exchange(uri, HttpMethod.POST, termCreateWrapperRequestEntity, CanvasTerm.class);
 			log.debug("{}", createTermResponse);
 
-			HttpStatus responseStatus = ((ResponseEntity<CanvasTerm>) createTermResponse).getStatusCode();
+			HttpStatusCode responseStatus = ((ResponseEntity<CanvasTerm>) createTermResponse).getStatusCode();
 
 			if (HttpStatus.OK.equals(responseStatus)) {
 				savedTerm = createTermResponse.getBody();
 			} else {
 				log.error("Error creating enrollment term. Request to Canvas was not successful. Response code: "
-						+ responseStatus + ", reason: " + responseStatus.getReasonPhrase()
+						+ responseStatus + ", reason: " + ((HttpStatus)responseStatus).getReasonPhrase()
 						+ ", entity: " + createTermResponse);
 			}
 

@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.lti.repository.legacy;
+package edu.iu.uits.lms.email.rest;
 
 /*-
  * #%L
- * LMS Canvas LTI Framework Services
+ * lms-email-service
  * %%
- * Copyright (C) 2015 - 2023 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,20 +33,16 @@ package edu.iu.uits.lms.lti.repository.legacy;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.model.legacy.LmsLti11Authz;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Component;
+import edu.iu.uits.lms.email.service.EmailService;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 
-/**
- * @deprecated This class was temporarily added and is not intended for long-term use.  Please use the 1.3 launch mechanism instead.
- */
-@Component
-@Deprecated(since = "5.2.2", forRemoval = true)
-public interface Lti11AuthorizationRepository extends PagingAndSortingRepository<LmsLti11Authz, Long> {
+@SpringBootConfiguration
+@ComponentScan(basePackageClasses = EmailRestController.class, value = "EmailRestTestConfig")
+public class EmailRestTestConfig {
 
-    LmsLti11Authz findByKeyContextActive(@Param("consumerKey") String consumerKey,
-                                       @Param("context") String context);
+   @MockBean
+   public EmailService emailService;
 
-    LmsLti11Authz findById(@Param("id") String id);
 }

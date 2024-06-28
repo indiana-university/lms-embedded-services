@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,9 +50,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static edu.iu.uits.lms.email.EmailConstants.EMAILREST_PROFILE;
-import static org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration.INHERIT;
 
-@NestedTestConfiguration(INHERIT)
+//@NestedTestConfiguration(INHERIT)
 @SpringBootTest
 public class RestControllerAvailabilityTest {
 

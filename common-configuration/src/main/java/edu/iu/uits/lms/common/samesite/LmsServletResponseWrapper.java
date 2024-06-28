@@ -33,11 +33,10 @@ package edu.iu.uits.lms.common.samesite;
  * #L%
  */
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 
 @Slf4j
 public class LmsServletResponseWrapper extends HttpServletResponseWrapper {
@@ -53,6 +52,7 @@ public class LmsServletResponseWrapper extends HttpServletResponseWrapper {
          log.debug("Rewriting session cookie to have SameSite=None");
          //This is specifically for the spring session cookie, but will do any others it finds as well
          newValue = value.replace("Lax", "None");
+
       }
 
       super.addHeader(name, newValue);

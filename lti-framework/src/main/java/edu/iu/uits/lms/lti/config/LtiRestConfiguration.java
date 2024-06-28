@@ -35,14 +35,13 @@ package edu.iu.uits.lms.lti.config;
 
 import edu.iu.uits.lms.common.it12logging.RestSecurityLoggingConfig;
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 
 import static edu.iu.uits.lms.lti.LTIConstants.LTIREST_PROFILE;
 import static edu.iu.uits.lms.lti.LTIConstants.READ_SCOPE;
@@ -50,36 +49,32 @@ import static edu.iu.uits.lms.lti.LTIConstants.WRITE_SCOPE;
 
 @EnableWebSecurity
 public class LtiRestConfiguration {
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 5000)
-    public static class LtiRestWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/rest/lti/**")
-                    .and()
-                    .authorizeRequests()
-                    .antMatchers("/rest/lti/**")
-                    .access("hasAuthority('" + READ_SCOPE + "') or hasAuthority('" + WRITE_SCOPE + "')")
-                    .and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .oauth2ResourceServer()
-                    .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
 
-            http.apply(new RestSecurityLoggingConfig());
-        }
+    @Order(1)
+    @Bean("ltiRestFilterChain")
+    public SecurityFilterChain ltiRestFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/rest/lti/**")
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/rest/lti/**").hasAnyAuthority(READ_SCOPE, WRITE_SCOPE)
+                )
+                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(oauth -> oauth.jwt(jwt ->
+                        jwt.jwtAuthenticationConverter(new CustomJwtAuthenticationConverter())))
+                .with(new RestSecurityLoggingConfig(), log -> {
+                });
+
+        return http.build();
     }
 
     @Profile(LTIREST_PROFILE + " & swagger")
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 5001)
-    public static class LtiApiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/api/lti/**")
-                  .and()
-                  .authorizeRequests()
-                  .antMatchers("/api/lti/**").permitAll();
-        }
+    @Order(1)
+    @Bean("ltiApiFilterChain")
+    public SecurityFilterChain ltiApiFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/api/lti/**")
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/api/lti/**").permitAll()
+                );
+
+        return http.build();
     }
 }

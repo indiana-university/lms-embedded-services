@@ -35,49 +35,44 @@ package edu.iu.uits.lms.email.config;
 
 import edu.iu.uits.lms.common.it12logging.RestSecurityLoggingConfig;
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 
 import static edu.iu.uits.lms.email.EmailConstants.EMAILREST_PROFILE;
 import static edu.iu.uits.lms.email.EmailConstants.SEND_SCOPE;
 
 @EnableWebSecurity
 public class EmailRestConfiguration {
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4999)
-    public static class EmailRestWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/rest/email/**")
-                    .and()
-                    .authorizeRequests()
-                    .antMatchers("/rest/email/**")
-                    .access("hasAuthority('" + SEND_SCOPE + "')")
-                    .and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .oauth2ResourceServer()
-                    .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
-            http.apply(new RestSecurityLoggingConfig());
-        }
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain emailRestFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/rest/email/**")
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/rest/email/**").hasAuthority(SEND_SCOPE)
+                )
+                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(oauth -> oauth.jwt(jwt ->
+                        jwt.jwtAuthenticationConverter(new CustomJwtAuthenticationConverter())))
+                .with(new RestSecurityLoggingConfig(), log -> {});
+
+        return http.build();
     }
 
     @Profile(EMAILREST_PROFILE + " & swagger")
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4998)
-    public static class EmailApiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/api/email/**")
-                  .and()
-                  .authorizeRequests()
-                  .antMatchers("/api/email/**").permitAll();
-        }
+    @Bean
+    @Order(1)
+    public SecurityFilterChain emailApiFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/api/email/**")
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/api/email/**").permitAll()
+                );
+
+        return http.build();
     }
 }

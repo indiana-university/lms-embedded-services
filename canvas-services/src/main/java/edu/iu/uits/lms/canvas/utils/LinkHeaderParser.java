@@ -34,8 +34,8 @@ package edu.iu.uits.lms.canvas.utils;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.net.URLEncodedUtils;
 import org.glassfish.jersey.message.internal.JerseyLink;
 import org.springframework.http.HttpHeaders;
 

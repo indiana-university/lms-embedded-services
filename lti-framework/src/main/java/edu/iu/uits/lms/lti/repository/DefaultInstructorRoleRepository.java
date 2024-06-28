@@ -35,13 +35,14 @@ package edu.iu.uits.lms.lti.repository;
 
 import edu.iu.uits.lms.lti.model.DefaultInstructorRole;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public interface DefaultInstructorRoleRepository extends PagingAndSortingRepository<DefaultInstructorRole, Long> {
+public interface DefaultInstructorRoleRepository extends PagingAndSortingRepository<DefaultInstructorRole, Long>, ListCrudRepository<DefaultInstructorRole, Long> {
 
    @Query("select d.role from DefaultInstructorRole d")
    List<String> findInstructorRoles();

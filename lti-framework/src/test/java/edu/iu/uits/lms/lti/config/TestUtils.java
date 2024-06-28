@@ -44,7 +44,6 @@ import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenti
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_ROLE;
 
@@ -71,11 +70,11 @@ public class TestUtils extends CommonTestUtils {
       }
 
       Map customMap = (Map) attributeMap.computeIfAbsent(Claims.CUSTOM, k -> new HashMap<>());
-      Set<String> keys = extraCustomAttributes.keySet();
-      for (String key : keys) {
-         customMap.put(key, extraCustomAttributes.get(key));
-      }
-//      customMap.merge(extraCustomAttributes);
+//      Set<String> keys = extraCustomAttributes.keySet();
+//      for (String key : keys) {
+//         customMap.put(key, extraCustomAttributes.get(key));
+//      }
+      customMap.putAll(extraCustomAttributes);
 
       OAuth2User oAuth2User = new DefaultOAuth2User(Collections.emptyList(), attributeMap, nameAttributeKey);
       OidcAuthenticationToken token = new OidcAuthenticationToken(oAuth2User,

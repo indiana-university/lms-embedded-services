@@ -85,11 +85,11 @@ public class CatalogListingService extends CatalogSpringBaseService {
         return null;
     }
 
-    public boolean addUserToListing(String canvasUserId, String listingId) {
+    public boolean addUserToListing(String canvasUserId, String listingId, boolean sendEmail) {
         URI uri = CATALOG_LISTING_TEMPLATE.expand(catalogConfiguration.getBaseApiUrl());
         log.debug(uri.toString());
 
-        EnrollmentPostWrapper enrollmentPostWrapper = new EnrollmentPostWrapper(new CatalogEnrollment(canvasUserId, listingId));
+        EnrollmentPostWrapper enrollmentPostWrapper = new EnrollmentPostWrapper(new CatalogEnrollment(canvasUserId, listingId), sendEmail);
 
         try {
             HttpHeaders headers = new HttpHeaders();

@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.model.catalog;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -42,4 +43,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class EnrollmentPostWrapper implements Serializable {
     private CatalogEnrollment enrollment;
+
+    @JsonProperty("send_email")
+    private boolean sendEmail;
 }

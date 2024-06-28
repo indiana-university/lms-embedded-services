@@ -42,6 +42,8 @@ import edu.iu.uits.lms.canvas.model.EnrollmentCreateWrapper;
 import edu.iu.uits.lms.canvas.model.ExternalTool;
 import edu.iu.uits.lms.canvas.model.Favorite;
 import edu.iu.uits.lms.canvas.model.FeatureFlag;
+import edu.iu.uits.lms.canvas.model.Page;
+import edu.iu.uits.lms.canvas.model.PageCreateWrapper;
 import edu.iu.uits.lms.canvas.model.QuotaInfo;
 import edu.iu.uits.lms.canvas.model.Section;
 import edu.iu.uits.lms.canvas.model.SectionCreateWrapper;
@@ -50,6 +52,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -95,6 +98,7 @@ public class CourseService extends SpringBaseService {
     private static final String COURSE_SECTIONS_BASE_URI = COURSE_URI + "/sections";
     private static final String SECTIONS_BASE_URI = "{url}/sections";
     private static final String SECTION_ENROLLMENTS_URI = SECTIONS_BASE_URI + "/{id}/enrollments";
+    private static final String COURSE_PAGES_URI = COURSE_URI + "/pages";
 
     private UriTemplate ACCOUNTS_COURSES_TEMPLATE = new UriTemplate(ACCOUNTS_COURSES_URI);
     private UriTemplate COURSE_BASE_TEMPLATE = new UriTemplate(COURSES_BASE_URI);
@@ -106,6 +110,7 @@ public class CourseService extends SpringBaseService {
     private UriTemplate USERS_TEMPLATE = new UriTemplate(USERS_URI);
     private UriTemplate COURSE_SECTIONS_TEMPLATE = new UriTemplate(COURSE_SECTIONS_BASE_URI);
     private UriTemplate SECTION_ENROLLMENTS_TEMPLATE = new UriTemplate(SECTION_ENROLLMENTS_URI);
+    private UriTemplate COURSE_PAGES_TEMPLATE = new UriTemplate(COURSE_PAGES_URI);
 
     // feel free to pass in "sis_course_id:1234" for the courseId if you need the SIS id instead of Canvas's course id
     public Course getCourse(String courseId) {
@@ -1011,6 +1016,36 @@ public class CourseService extends SpringBaseService {
         }
 
         return externalCourseToolResult;
+    }
+
+    public List<Page> getPages(String courseId) {
+        URI uri = COURSE_PAGES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        return doGet(builder.build().toUri(), Page[].class);
+    }
+
+    public Page createPage(PageCreateWrapper newPage) {
+        Page savedPage = null;
+
+        URI uri = COURSE_PAGES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), newPage.getCourseId());
+        log.debug("{}", uri);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+
+            HttpEntity<PageCreateWrapper> createNewPageRequest = new HttpEntity<>(newPage, headers);
+            HttpEntity<Page> createNewPageResponse = this.restTemplate.exchange(uri, HttpMethod.POST, createNewPageRequest, Page.class);
+            log.debug("{}", createNewPageResponse);
+
+            savedPage = createNewPageResponse.getBody();
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error creating course", hcee);
+            throw new RuntimeException("Error creating course", hcee);
+        }
+
+        return savedPage;
     }
 
     private class ClientErrorHandler extends DefaultResponseErrorHandler {

@@ -45,19 +45,6 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class Page implements Serializable {
-	private String pageId;
-	private String url;
-	private String title;
-	private String createdAt;
-	private String updatedAt;
-	private String editingRoles; // "teachers, students"
-	private PageLastEditedBy lastEditedBy;
-	private String body;
-	private boolean published;
-	private String publishAt; //date
-	private boolean frontPage;
-	private boolean lockedForUser;
-	private String lockInfo;
-	private String lockExplanation;
+public class CourseSyllabusBody implements Serializable {
+	private String syllabusBody;
 }

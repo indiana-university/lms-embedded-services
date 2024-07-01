@@ -37,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -44,12 +45,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties (ignoreUnknown=true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PageLastEditedBy implements Serializable {
-	private String id;
-	private String anonymousId;
-	private String displayName;
-	private String avatarImageUrl;
-	private String htmlUrl;
-	private String pronouns;
+public class AssignmentCreateWrapper implements Serializable {
+    private Assignment assignment;
 }

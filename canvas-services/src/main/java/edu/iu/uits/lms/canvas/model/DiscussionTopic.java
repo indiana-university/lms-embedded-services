@@ -187,4 +187,6 @@ public class DiscussionTopic implements Serializable {
      */
     private List<CanvasFile> attachments;
 
+    @JsonProperty("is_announcement")
+    private boolean isAnnouncement;
 }

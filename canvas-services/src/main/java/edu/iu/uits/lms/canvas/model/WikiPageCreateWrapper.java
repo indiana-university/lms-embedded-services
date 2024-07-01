@@ -47,10 +47,6 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PageCreateWrapper implements Serializable {
-    // Not needed by canvas but sent into this so our code can get the course id easily for creation for our own uses.
-    // Canvas seems fine ignoring this value
-    private String courseId;
-
-    private Page wikiPage;
+public class WikiPageCreateWrapper implements Serializable {
+    private WikiPage wikiPage;
 }

@@ -131,6 +131,10 @@ public class AnnouncementService extends SpringBaseService {
         map.add("published", announcement.isPublished());
         map.add("is_announcement", true);
 
+        if (announcement.getDelayedPostAt() != null) {
+            map.add("delayed_post_at", announcement.getDelayedPostAt());
+        }
+
         if (asUser != null) {
             map.add("as_user_id", asUser);
         }

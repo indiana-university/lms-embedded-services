@@ -42,19 +42,13 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 @JsonIgnoreProperties (ignoreUnknown=true)
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class AssignmentGroup implements Serializable {
-    private Integer id;
-    private String name;
-    private Integer position;
-    private Float groupWeight;
-    private String sisSourseId;
-    private Map<String, String> integrationData;
-    private List<String> assignments;
-    private GradingRules rules;
+public class GradingRules implements Serializable {
+    private Integer dropLowest;
+    private Integer dropHighest;
+    private List<Integer> neverDrop;
 }

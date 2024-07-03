@@ -33,9 +33,13 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.ToString;
 
 import java.io.Serializable;
@@ -48,6 +52,20 @@ import java.util.List;
  * A DiscussionTopic in Canvas represents both DiscussionTopics and Announcements
  */
 public class DiscussionTopic implements Serializable {
+    public enum TYPE {
+        SIDE_COMMENT,
+        THREADED;
+
+        @JsonCreator
+        public static TYPE fromString(String value) {
+            return TYPE.valueOf(value.toUpperCase());
+        }
+
+        @JsonValue
+        public String toValue() {
+            return this.name().toLowerCase();
+        }
+    }
 
     /**
      * The ID of this topic
@@ -114,7 +132,7 @@ public class DiscussionTopic implements Serializable {
      * discussions.
      */
     @JsonProperty("discussion_type")
-    private String discussionType;
+    private TYPE discussionType;
 
     /**
      * The datetime to lock the topic (if ever)

@@ -49,6 +49,7 @@ import java.util.List;
 public class Assignment implements Serializable {
     private String id;
     private String name;
+    private String description;
 
     @JsonProperty("allowed_extensions")
     private List<String> allowedExtensions;

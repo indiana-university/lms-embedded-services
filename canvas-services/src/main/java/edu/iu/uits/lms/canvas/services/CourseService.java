@@ -1035,9 +1035,11 @@ public class CourseService extends SpringBaseService {
      * Create a course Wiki Page
      * @param courseId Canvas course id
      * @param newWikiPage Wiki page to create
+     * @param asUser optional - masquerade as this user when creating the Wiki Page. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
      * @return a newly created WikiPage from Canvas
      */
-    public WikiPage createWikiPage(String courseId, WikiPageCreateWrapper newWikiPage) {
+    public WikiPage createWikiPage(String courseId, WikiPageCreateWrapper newWikiPage, String asUser) {
         if (courseId == null) {
             throw new IllegalArgumentException("Null id passed to createWikiPage.");
         }
@@ -1047,12 +1049,18 @@ public class CourseService extends SpringBaseService {
         URI uri = COURSE_WIKI_PAGES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
         log.debug("{}", uri);
 
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
+
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<WikiPageCreateWrapper> createNewWikiPageRequest = new HttpEntity<>(newWikiPage, headers);
-            HttpEntity<WikiPage> createNewWikiPageResponse = this.restTemplate.exchange(uri, HttpMethod.POST, createNewWikiPageRequest, WikiPage.class);
+            HttpEntity<WikiPage> createNewWikiPageResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, createNewWikiPageRequest, WikiPage.class);
             log.debug("{}", createNewWikiPageResponse);
 
             savedWikiPage = createNewWikiPageResponse.getBody();

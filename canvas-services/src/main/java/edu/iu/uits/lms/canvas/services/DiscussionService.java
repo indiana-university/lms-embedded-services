@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.DiscussionTopic;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -52,6 +53,14 @@ public class DiscussionService extends SpringBaseService {
 
     private static final UriTemplate BASE_TEMPLATE = new UriTemplate(BASE_URI);
 
+    /**
+     *
+     * @param courseId courseId to create discussion topic in
+     * @param newDiscussionTopic the discussion topic to create
+     * @param asUser optional - masquerade as this user when creating the discussion topic. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
+     * @return
+     */
     public DiscussionTopic createDiscussionTopic(String courseId, DiscussionTopic newDiscussionTopic, String asUser) {
         if (courseId == null || newDiscussionTopic == null) {
             throw new IllegalArgumentException("Null courseId or newDiscussionTopic passed to createDiscussionTopic.");

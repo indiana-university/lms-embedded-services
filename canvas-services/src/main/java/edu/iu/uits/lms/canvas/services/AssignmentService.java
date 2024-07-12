@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.Assignment;
 import edu.iu.uits.lms.canvas.model.AssignmentCreateWrapper;
 import edu.iu.uits.lms.canvas.model.AssignmentGroup;
@@ -134,9 +135,11 @@ public class AssignmentService extends SpringBaseService {
      * Creates a new assignment for a given course
      * @param courseId Canvas course id
      * @param newAssignment new Assignment
+     * @param asUser optional - masquerade as this user when creating the assignment. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
      * @return a newly created Assignment from Canvas
      */
-    public Assignment createAssignment(String courseId, AssignmentCreateWrapper newAssignment) {
+    public Assignment createAssignment(String courseId, AssignmentCreateWrapper newAssignment, String asUser) {
         if (courseId == null || newAssignment == null) {
             throw new IllegalArgumentException("Null courseId or newAssignment passed to createAssignment.");
         }
@@ -146,12 +149,18 @@ public class AssignmentService extends SpringBaseService {
         URI uri = BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
         log.debug("{}", uri);
 
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
+
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<AssignmentCreateWrapper> newAssignmentRequest = new HttpEntity<>(newAssignment, headers);
-            HttpEntity<Assignment> newAssignmentResponse = this.restTemplate.exchange(uri, HttpMethod.POST, newAssignmentRequest, Assignment.class);
+            HttpEntity<Assignment> newAssignmentResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, newAssignmentRequest, Assignment.class);
             log.debug("{}", newAssignmentResponse);
 
             savedAssignment = newAssignmentResponse.getBody();
@@ -179,9 +188,11 @@ public class AssignmentService extends SpringBaseService {
      * Creates a new assignment group named with the supplied name for a given course
      * @param courseId Canvas course id
      * @param assignmentGroupName name for created assignment group
+     * @param asUser optional - masquerade as this user when creating the assignment group. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
      * @return a newly created AssignmentGroup from Canvas
      */
-    public AssignmentGroup createAssignmentGroup(String courseId, String assignmentGroupName) {
+    public AssignmentGroup createAssignmentGroup(String courseId, String assignmentGroupName, String asUser) {
         if (courseId == null || assignmentGroupName == null) {
             throw new IllegalArgumentException("Null courseId or name passed to createAssignmentGroup.");
         }
@@ -193,6 +204,10 @@ public class AssignmentService extends SpringBaseService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
         builder.queryParam("name", assignmentGroupName);
+
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
 
         try {
             HttpEntity<AssignmentGroup> createNewAssignmentGroupResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, null, AssignmentGroup.class);

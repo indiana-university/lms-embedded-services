@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.canvas.config;
+package edu.iu.uits.lms.iuonly.config;
 
 /*-
  * #%L
- * LMS Canvas Services
+ * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2024 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,14 +33,14 @@ package edu.iu.uits.lms.canvas.config;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.utils.CacheConstants;
+import edu.iu.uits.lms.iuonly.utils.CacheConstants;
+import edu.iu.uits.lms.canvas.config.CanvasConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -52,7 +52,7 @@ import java.time.Duration;
 @Configuration
 @EnableCaching
 @Slf4j
-public class CanvasRedisCacheConfig {
+public class IuOnlyRedisCacheConfig {
 
     @Autowired
     private CanvasConfiguration canvasConfiguration;
@@ -62,30 +62,19 @@ public class CanvasRedisCacheConfig {
 
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
-        final int ttl = 300;
+        final int ttl = 15;
         return RedisCacheConfiguration.defaultCacheConfig()
-              .entryTtl(Duration.ofSeconds(ttl))
+              .entryTtl(Duration.ofMinutes(ttl))
               .disableCachingNullValues()
-              .prefixCacheNameWith(canvasConfiguration.getEnv() + "-canvasservices");
+              .prefixCacheNameWith(canvasConfiguration.getEnv() + "-iuonly");
     }
 
-    @Bean
-    public RedisCacheConfiguration cacheLongConfiguration() {
-        final int ttl = 3600;
-        return RedisCacheConfiguration.defaultCacheConfig()
-              .entryTtl(Duration.ofSeconds(ttl))
-              .disableCachingNullValues()
-              .prefixCacheNameWith(canvasConfiguration.getEnv() + "-canvasservices");
-    }
-
-    @Primary
-    @Bean(name = "CanvasServicesCacheManager")
+    @Bean(name = "IuOnlyCacheManager")
     public CacheManager cacheManager() {
         log.debug("cacheManager()");
         log.debug("Redis hostname: {}", redisConnectionFactory.getHostName());
         return RedisCacheManager.builder(redisConnectionFactory)
-              .withCacheConfiguration(CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, cacheConfiguration())
-              .withCacheConfiguration(CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, cacheLongConfiguration())
+              .withCacheConfiguration(CacheConstants.IS_LEGIT_SIS_COURSE_CACHE_NAME, cacheConfiguration())
               .build();
     }
 }

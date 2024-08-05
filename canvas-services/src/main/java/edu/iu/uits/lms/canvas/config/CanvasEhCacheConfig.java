@@ -35,13 +35,15 @@ package edu.iu.uits.lms.canvas.config;
 
 import edu.iu.uits.lms.canvas.utils.CacheConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.jcache.JCacheCacheManager;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
@@ -55,12 +57,14 @@ import java.util.concurrent.TimeUnit;
  * Created by chmaurer on 9/19/17.
  */
 @Profile("ehcache")
+@Order(Integer.MAX_VALUE - 1)
 @Configuration
 @EnableCaching
 @Slf4j
-public class CanvasEhCacheConfig {
+public class CanvasEhCacheConfig extends CanvasBaseCacheConfig {
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    @Primary
     @Bean(name = "CanvasServicesCacheManager")
     public CacheManager canvasCacheManager() {
         log.debug("canvasCacheManager() init");

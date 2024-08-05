@@ -40,8 +40,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -50,9 +50,10 @@ import java.time.Duration;
 
 @Profile("redis-cache")
 @Configuration
+@Order(Integer.MAX_VALUE - 1)
 @EnableCaching
 @Slf4j
-public class CanvasRedisCacheConfig {
+public class CanvasRedisCacheConfig extends CanvasBaseCacheConfig {
 
     @Autowired
     private CanvasConfiguration canvasConfiguration;
@@ -78,7 +79,6 @@ public class CanvasRedisCacheConfig {
               .prefixCacheNameWith(canvasConfiguration.getEnv() + "-canvasservices");
     }
 
-    @Primary
     @Bean(name = "CanvasServicesCacheManager")
     public CacheManager cacheManager() {
         log.debug("cacheManager()");

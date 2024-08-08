@@ -47,9 +47,9 @@ import javax.annotation.PostConstruct;
 @Slf4j
 public abstract class CanvasBaseCacheConfig {
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
-    private boolean isThereAPrimaryCacheManagerDefinedAlready() {
+    protected boolean isThereAPrimaryCacheManagerDefinedAlready() {
         String[] cacheManagerBeanNames = applicationContext.getBeanNamesForType(CacheManager.class);
 
         boolean isThereAPrimaryCacheManager = false;

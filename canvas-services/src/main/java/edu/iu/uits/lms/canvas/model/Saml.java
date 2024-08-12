@@ -108,6 +108,11 @@ public class Saml implements Serializable {
         @JsonProperty(value = "provisioning_only")
         public boolean provisioningOnly;
 
+        /**
+         * (only for 'email' attribute) If the email address is trusted and should be automatically confirmed
+         * If this property is sent with any other attribute, Canvas will get mad.  So, set as Boolean so that a null can be
+         * supplied, and then excluded from the json payload when sending to Canvas.
+         */
         @JsonInclude(JsonInclude.Include.NON_NULL)
         public Boolean autoconfirm;
     }

@@ -35,7 +35,9 @@ package edu.iu.uits.lms.canvas.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.iu.uits.lms.canvas.helpers.TermHelper;
 import lombok.Data;
+import lombok.NonNull;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -45,7 +47,7 @@ import java.util.Map;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class CanvasTerm implements Serializable {
+public class CanvasTerm implements Serializable, Comparable<CanvasTerm> {
 
     private String id;
 
@@ -64,6 +66,35 @@ public class CanvasTerm implements Serializable {
     private String workflowState;
 
     private Map<String, TermOverride> overrides;
+
+
+    @Override
+    public int compareTo(@NonNull CanvasTerm otherCanvasTerm) {
+        // This comparator is used for sorting terms in a map. We don't want it to ever return equal because
+        // that entry would not be added to the map.  In case of equality, return in ABC order.
+        if (TermHelper.getStartDate(this) == null && TermHelper.getStartDate(otherCanvasTerm) == null) {
+            // if start dates are the same, return in ABC order
+            return this.getName().compareTo(otherCanvasTerm.getName());
+        } else if (TermHelper.getStartDate(this) == null && TermHelper.getStartDate(otherCanvasTerm) != null) {
+            return 1;
+        } else if (TermHelper.getStartDate(this) != null && TermHelper.getStartDate(otherCanvasTerm) == null) {
+            return -1;
+        } else if (TermHelper.getStartDate(this).before(TermHelper.getStartDate(otherCanvasTerm))) {
+            return 1;
+        } else if (TermHelper.getStartDate(this).after(TermHelper.getStartDate(otherCanvasTerm))) {
+            return -1;
+        } else {
+            // if start dates are the same, return in ABC order
+            return this.getName().compareTo(otherCanvasTerm.getName());
+        }
+    }
+
+//    @Override
+//    public int compareTo(@NonNull CanvasTerm otherCanvasTerm) {
+//        return this.id == null || otherCanvasTerm.id == null
+//                ? 0
+//                : this.id.hashCode() - otherCanvasTerm.id.hashCode();
+//    }
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown=true)

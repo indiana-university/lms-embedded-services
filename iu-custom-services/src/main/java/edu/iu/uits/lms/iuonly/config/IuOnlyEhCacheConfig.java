@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.canvas.config;
+package edu.iu.uits.lms.iuonly.config;
 
 /*-
  * #%L
- * LMS Canvas Services
+ * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2024 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ package edu.iu.uits.lms.canvas.config;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.utils.CacheConstants;
+import edu.iu.uits.lms.iuonly.utils.CacheConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -41,28 +41,23 @@ import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
 
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
-import javax.cache.expiry.AccessedExpiryPolicy;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 import javax.cache.spi.CachingProvider;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by chmaurer on 9/19/17.
- */
 @Profile("ehcache")
-@Order(Integer.MAX_VALUE - 1)
 @Configuration
 @EnableCaching
 @Slf4j
-public class CanvasEhCacheConfig extends CanvasBaseCacheConfig {
-    @Bean(name = "CanvasServicesCacheManager")
-    public CacheManager canvasCacheManager() {
-        log.debug("canvasCacheManager() init");
+public class IuOnlyEhCacheConfig {
+
+    @Bean(name = "IuOnlyCacheManager")
+    public CacheManager iuOnlyCacheManager() {
+        log.debug("iuOnlyCacheManager() init");
 
         // Spring doesn't natively support ehcache 3.  It does ehcache 2.
         // But ehcache 3 IS JCache compliant (JSR-107 specification) and
@@ -83,24 +78,13 @@ public class CanvasEhCacheConfig extends CanvasBaseCacheConfig {
         // getCache() defined.  But setting them to generic Object.class seems to solve this.
         // There might be a way around this but that is work for a future ticket!
 
-//        int heapSize = 1000;
-        final int ttl = 3600;
-        final int courseServiceTtl = 300;
+        final int ttl = 15;
 
-
-        final MutableConfiguration<Object, Object> mutableLongConfiguration =
+        final MutableConfiguration<Object, Object> mutableConfiguration =
               new MutableConfiguration<Object, Object>()
                     .setTypes(Object.class, Object.class)
                     .setStoreByValue(false)
-                    .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, ttl)))
-                    .setManagementEnabled(true)
-                    .setStatisticsEnabled(true);
-
-        final MutableConfiguration<Object, Object> mutableMediumAccessedConfiguration =
-              new MutableConfiguration<Object, Object>()
-                    .setTypes(Object.class, Object.class)
-                    .setStoreByValue(false)
-                    .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, courseServiceTtl)))
+                    .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, ttl)))
                     .setManagementEnabled(true)
                     .setStatisticsEnabled(true);
 
@@ -108,8 +92,7 @@ public class CanvasEhCacheConfig extends CanvasBaseCacheConfig {
 
         final javax.cache.CacheManager cacheManager = provider.getCacheManager();
 
-        createCacheIfMissing(cacheManager, CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, mutableMediumAccessedConfiguration);
-        createCacheIfMissing(cacheManager, CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, mutableLongConfiguration);
+        createCacheIfMissing(cacheManager, CacheConstants.IS_LEGIT_SIS_COURSE_CACHE_NAME, mutableConfiguration);
 
         return new JCacheCacheManager(cacheManager);
     }

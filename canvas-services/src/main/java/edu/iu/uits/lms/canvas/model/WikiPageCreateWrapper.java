@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.model;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2024 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,31 +33,20 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 
-/**
- * Created by yingwang on 11/16/15.
- */
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties (ignoreUnknown=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
-public class Assignment implements Serializable {
-    private String id;
-    private String name;
-    private String description;
-
-    @JsonProperty("allowed_extensions")
-    private List<String> allowedExtensions;
-    private boolean published;
-
-    @JsonProperty("assignment_group_id")
-    private Integer assignmentGroupId;
-
-    @JsonProperty("submission_types")
-    private List<String> submissionTypes;
+@AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class WikiPageCreateWrapper implements Serializable {
+    private WikiPage wikiPage;
 }

@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.canvas.model;
+package edu.iu.uits.lms.iuonly.utils;
 
 /*-
  * #%L
- * LMS Canvas Services
+ * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2024 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,31 +33,12 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
+public class CacheConstants {
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+    /**
+     * Constant defining the ehcache provider
+     */
+    public static final String EHCACHE_PROVIDER_TYPE = "org.ehcache.jsr107.EhcacheCachingProvider";
 
-import java.io.Serializable;
-import java.util.List;
-
-/**
- * Created by yingwang on 11/16/15.
- */
-@JsonIgnoreProperties(ignoreUnknown=true)
-@Data
-public class Assignment implements Serializable {
-    private String id;
-    private String name;
-    private String description;
-
-    @JsonProperty("allowed_extensions")
-    private List<String> allowedExtensions;
-    private boolean published;
-
-    @JsonProperty("assignment_group_id")
-    private Integer assignmentGroupId;
-
-    @JsonProperty("submission_types")
-    private List<String> submissionTypes;
+    public static final String IS_LEGIT_SIS_COURSE_CACHE_NAME = "IsLegitSisCourse";
 }

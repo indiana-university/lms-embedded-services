@@ -37,9 +37,11 @@ import edu.iu.uits.lms.iuonly.model.ListWrapper;
 import edu.iu.uits.lms.iuonly.model.SisClass;
 import edu.iu.uits.lms.iuonly.model.SisCourse;
 import edu.iu.uits.lms.iuonly.model.SisFerpaEntry;
+import edu.iu.uits.lms.iuonly.utils.CacheConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -180,6 +182,7 @@ public class SisServiceImpl {
         return entries;
     }
 
+    @Cacheable(value = CacheConstants.IS_LEGIT_SIS_COURSE_CACHE_NAME, cacheManager = "IuOnlyCacheManager")
     public boolean isLegitSisCourse(String iu_site_id) {
         boolean sisCourse = false;
         Connection conn = getConnection();

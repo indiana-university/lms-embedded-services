@@ -14,12 +14,11 @@
     <description>Shared services for the lms-canvas LTI tools around the LTI tool launch</description>
 
     <properties>
-        <basiclti-util.version>23.2</basiclti-util.version>
         <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
         <commons-io.version>2.16.1</commons-io.version>
         <hibernate5-ddl-maven-plugin.version>2.3.0</hibernate5-ddl-maven-plugin.version>
         <reflections.version>0.10.2</reflections.version>
-        <spring-security-lti13.version>0.2.0-SNAPSHOT</spring-security-lti13.version>
+        <spring-security-lti13.version>0.2.0</spring-security-lti13.version>
 
     </properties>
 

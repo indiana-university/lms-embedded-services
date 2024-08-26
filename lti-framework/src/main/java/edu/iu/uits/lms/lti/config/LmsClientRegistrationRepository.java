@@ -40,8 +40,8 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.web.LTIAuthorizationGrantType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +81,7 @@ public class LmsClientRegistrationRepository implements ClientRegistrationReposi
 
             ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(ltiAuthz.getRegistrationId())
                   .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                  .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                  .authorizationGrantType(LTIAuthorizationGrantType.IMPLICIT)
                   .redirectUri("{baseUrl}/lti/login")
                   .scope("openid")
                   .authorizationUri(registrationDetails.getAuthzUrl())

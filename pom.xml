@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.7</version>
+        <version>3.2.9</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -66,19 +66,19 @@
     </scm>
 
     <properties>
-        <commons-codec.version>1.17.0</commons-codec.version>
+        <commons-codec.version>1.17.1</commons-codec.version>
         <httpclient.version>5.3.1</httpclient.version>
-        <spring-cloud-starter-parent.version>2023.0.2</spring-cloud-starter-parent.version>
-        <springdoc-openapi-ui.version>2.5.0</springdoc-openapi-ui.version>
+        <spring-cloud-starter-parent.version>2023.0.3</spring-cloud-starter-parent.version>
+        <springdoc-openapi-ui.version>2.6.0</springdoc-openapi-ui.version>
 
         <java.version>21</java.version>
 
         <plugins.compiler.version>3.13.0</plugins.compiler.version>
-        <plugins.gpg.version>3.2.4</plugins.gpg.version>
-        <plugins.javadoc.version>3.7.0</plugins.javadoc.version>
+        <plugins.gpg.version>3.2.5</plugins.gpg.version>
+        <plugins.javadoc.version>3.8.0</plugins.javadoc.version>
         <plugins.license.version>2.4.0</plugins.license.version>
         <plugins.nexus-staging.version>1.7.0</plugins.nexus-staging.version>
-        <plugins.release.version>3.1.0</plugins.release.version>
+        <plugins.release.version>3.1.1</plugins.release.version>
         <plugins.source.version>3.3.1</plugins.source.version>
     </properties>
 

@@ -36,10 +36,7 @@ package edu.iu.uits.lms.lti.config;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.repository.KeyPairRepository;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
-import edu.iu.uits.lms.lti.repository.legacy.Lti11AuthorizationRepository;
 import edu.iu.uits.lms.lti.service.Lti13Service;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -48,29 +45,22 @@ import uk.ac.ox.ctl.lti13.nrps.NamesRoleService;
 
 import javax.sql.DataSource;
 
-@TestConfiguration
 public class LtiClientTestConfig {
 
    @MockBean
-   protected LtiAuthorizationRepository ltiAuthorizationRepository;
+   public LtiAuthorizationRepository ltiAuthorizationRepository;
 
    @MockBean
-   protected Lti11AuthorizationRepository lti11AuthorizationRepository;
+   public KeyPairRepository keyPairRepository;
 
-   @MockBean
-   protected KeyPairRepository keyPairRepository;
-
-   @MockBean
-   @Qualifier("ltiDataSource")
+   @MockBean(name = "ltiDataSource")
    public DataSource dataSource;
 
 
-   @MockBean
-   @Qualifier("ltiEntityMgrFactory")
+   @MockBean(name = "ltiEntityMgrFactory")
    public LocalContainerEntityManagerFactoryBean ltiEntityMgrFactory;
 
-   @MockBean
-   @Qualifier("ltiTransactionMgr")
+   @MockBean(name = "ltiTransactionMgr")
    public PlatformTransactionManager ltiTransactionMgr;
 
    @MockBean

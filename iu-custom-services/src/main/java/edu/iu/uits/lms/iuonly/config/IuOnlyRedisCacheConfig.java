@@ -33,8 +33,8 @@ package edu.iu.uits.lms.iuonly.config;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.utils.CacheConstants;
 import edu.iu.uits.lms.canvas.config.CanvasConfiguration;
+import edu.iu.uits.lms.iuonly.utils.CacheConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;

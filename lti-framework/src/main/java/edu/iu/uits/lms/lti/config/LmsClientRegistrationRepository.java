@@ -37,17 +37,15 @@ import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
 import edu.iu.uits.lms.lti.service.LtiAuthorizationService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.web.LTIAuthorizationGrantType;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Custom implementation of a ClientRegistrationRepository so we can look up registrations in real-time.
@@ -74,7 +72,7 @@ public class LmsClientRegistrationRepository implements ClientRegistrationReposi
    private Map<String, ClientRegistration> buildRegistrations() {
       LtiClientRegistrationProperties.RegistrationDetails registrationDetails = ltiClientRegistrationProperties.getDefaultRegistrationDetails();
 
-      List<ClientRegistration> registrations = new ArrayList<>();
+      Map<String, ClientRegistration> registrations = new HashMap<>();
 
       // Use toolKey and/or prefix to lookup client and secret
       List<LmsLtiAuthz> ltiAuthzs = ltiAuthorizationService.findByRegistrationsPrefixesEnvActive(toolKeys, toolKeyPrefix, env);
@@ -83,7 +81,7 @@ public class LmsClientRegistrationRepository implements ClientRegistrationReposi
 
             ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(ltiAuthz.getRegistrationId())
                   .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                  .authorizationGrantType(AuthorizationGrantType.IMPLICIT)
+                  .authorizationGrantType(LTIAuthorizationGrantType.IMPLICIT)
                   .redirectUri("{baseUrl}/lti/login")
                   .scope("openid")
                   .authorizationUri(registrationDetails.getAuthzUrl())
@@ -95,15 +93,13 @@ public class LmsClientRegistrationRepository implements ClientRegistrationReposi
                   .clientId(ltiAuthz.getClientId())
                   .clientSecret(ltiAuthz.getSecret());
 
-            registrations.add(builder.build());
+            registrations.put(ltiAuthz.getRegistrationId(), builder.build());
          }
       }
 
       // If the calling tool has configured any additional clients (via standard application.yml means), wire them in here as well.
-      List<ClientRegistration> additionalRegistrations = new ArrayList<>(
-            OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(oAuth2ClientProperties).values());
-      registrations.addAll(additionalRegistrations);
-
-      return registrations.stream().collect(Collectors.toMap(ClientRegistration::getRegistrationId, Function.identity()));
+      OAuth2ClientPropertiesMapper mapper = new OAuth2ClientPropertiesMapper(oAuth2ClientProperties);
+      registrations.putAll(mapper.asClientRegistrations());
+      return registrations;
    }
 }

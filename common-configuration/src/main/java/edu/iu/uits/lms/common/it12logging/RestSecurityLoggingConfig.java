@@ -42,14 +42,14 @@ public class RestSecurityLoggingConfig extends AbstractHttpConfigurer<RestSecuri
 
    @Override
    public void init(HttpSecurity http) throws Exception {
-      // https://docs.spring.io/spring-security/site/docs/5.0.x/reference/html/jc.html
-      http.authorizeRequests()
+      // https://docs.spring.io/spring-security/reference/servlet/configuration/java.html#post-processing-configured-objects
+      http.authorizeHttpRequests(auth -> auth
             .anyRequest().authenticated()
             .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
                public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {
                   fsi.setPublishAuthorizationSuccess(true);
                   return fsi;
                }
-            });
+            }));
    }
 }

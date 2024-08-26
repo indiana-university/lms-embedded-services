@@ -34,10 +34,11 @@ package edu.iu.uits.lms.iuonly.repository;
  */
 
 import edu.iu.uits.lms.iuonly.model.StoredFile;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public interface FileStorageRepository extends PagingAndSortingRepository<StoredFile, Long> {
+public interface FileStorageRepository extends PagingAndSortingRepository<StoredFile, Long>, ListCrudRepository<StoredFile, Long> {
 
 }

@@ -33,9 +33,9 @@ package edu.iu.uits.lms.common.session;
  * #L%
  */
 
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 

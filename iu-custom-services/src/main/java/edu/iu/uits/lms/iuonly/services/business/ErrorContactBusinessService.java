@@ -43,6 +43,7 @@ import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactJobProfile;
 import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactResponse;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
+import jakarta.mail.MessagingException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.mail.MessagingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

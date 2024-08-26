@@ -39,7 +39,7 @@ import io.swagger.v3.oas.annotations.security.OAuthFlows;
 import io.swagger.v3.oas.annotations.security.OAuthScope;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
-import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -64,7 +64,7 @@ public class SwaggerConfig {
             .group(IUCUSTOM_GROUP_CODE)
             .packagesToScan("edu.iu.uits.lms.iuonly")
             .pathsToMatch("/rest/iu/**")
-            .addOpenApiCustomiser(openApi -> openApi.addSecurityItem(new SecurityRequirement().addList("security_auth_iu")))
+            .addOpenApiCustomizer(openApi -> openApi.addSecurityItem(new SecurityRequirement().addList("security_auth_iu")))
             .build();
    }
 }

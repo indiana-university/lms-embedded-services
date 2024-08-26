@@ -49,7 +49,7 @@ public class LTIConstants {
     public static final String TA_ROLE = "LTI_TA";
     public static final String OBSERVER_ROLE = "LTI_OB";
     public static final String DESIGNER_ROLE = "LTI_DESIGNER";
-    public static final String BASE_USER_ROLE = "USER";
+    public static final String BASE_USER_ROLE = "OIDC_USER";
 
     public static final String ADMIN_AUTHORITY = AUTHORITY_ROLE_PREFIX + ADMIN_ROLE;
     public static final String INSTRUCTOR_AUTHORITY = AUTHORITY_ROLE_PREFIX + INSTRUCTOR_ROLE;
@@ -57,8 +57,6 @@ public class LTIConstants {
     public static final String TA_AUTHORITY = AUTHORITY_ROLE_PREFIX + TA_ROLE;
     public static final String OBSERVER_AUTHORITY = AUTHORITY_ROLE_PREFIX + OBSERVER_ROLE;
     public static final String DESIGNER_AUTHORITY = AUTHORITY_ROLE_PREFIX + DESIGNER_ROLE;
-
-    public static final String BASE_USER_AUTHORITY = AUTHORITY_ROLE_PREFIX + BASE_USER_ROLE;
 
     public static final String UI_DATE_FORMAT = "MMM dd 'at' h:mm a";
 

@@ -68,7 +68,7 @@ public abstract class AbstractSwaggerCustomTest extends SwaggerBase {
          for (String path : paths) {
             log.info("Checking {}", getCustomApiPath() + path);
             mvc.perform(get(getCustomApiPath() + path))
-                  .andExpect(status().is5xxServerError());
+                  .andExpect(status().isNotFound());
          }
       }
 

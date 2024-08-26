@@ -169,25 +169,28 @@
 </footer>
 
 <script type="text/javascript">
-    var plusSign = document.getElementById("plusSign");
-    var minusSign = document.getElementById("minusSign");
+    let plusSign = document.getElementById("plusSign");
+    let minusSign = document.getElementById("minusSign");
+    let element = document.getElementById('errorInfo');
 
-    document.getElementById('errorInfo').addEventListener("click", function() {
-        this.classList.toggle("active");
-        var open = this.classList.contains("active");
-        this.setAttribute('aria-expanded', open);
+    if (element) {
+        element.addEventListener("click", function() {
+            this.classList.toggle("active");
+            let open = this.classList.contains("active");
+            this.setAttribute('aria-expanded', open);
 
-        var content = document.getElementById("errorContent");
-        if (open) {
-            content.removeAttribute('hidden');
-        } else {
-            content.setAttribute('hidden', '');
-        }
+            let content = document.getElementById("errorContent");
+            if (open) {
+                content.removeAttribute('hidden');
+            } else {
+                content.setAttribute('hidden', '');
+            }
 
-        // switch if +/- is displayed
-        plusSign.classList.toggle("display-none");
-        minusSign.classList.toggle("display-none");
-    });
+            // switch if +/- is displayed
+            plusSign.classList.toggle("display-none");
+            minusSign.classList.toggle("display-none");
+        });
+    }
 </script>
 </body>
 </html>

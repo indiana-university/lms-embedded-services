@@ -34,6 +34,7 @@ package edu.iu.uits.lms.iuonly.repository;
  */
 
 import edu.iu.uits.lms.iuonly.model.LmsBatchEmail;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
@@ -44,7 +45,7 @@ import org.springframework.stereotype.Component;
 
 //@RepositoryRestResource(collectionResourceRel = "batchEmail", path = "batchEmail")
 @Component
-public interface LmsBatchEmailRepository extends PagingAndSortingRepository<LmsBatchEmail, Long> {
+public interface LmsBatchEmailRepository extends PagingAndSortingRepository<LmsBatchEmail, Long>, ListCrudRepository<LmsBatchEmail, Long> {
 
     /**
      * @param groupCode

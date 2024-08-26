@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.config;
  * #L%
  */
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -41,8 +42,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Primary;
-
-import javax.annotation.PostConstruct;
 
 @Slf4j
 public abstract class CanvasBaseCacheConfig {

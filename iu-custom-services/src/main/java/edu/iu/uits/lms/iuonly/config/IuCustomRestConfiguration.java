@@ -35,14 +35,13 @@ package edu.iu.uits.lms.iuonly.config;
 
 import edu.iu.uits.lms.common.it12logging.RestSecurityLoggingConfig;
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 
 import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
 import static edu.iu.uits.lms.iuonly.IuCustomConstants.READ_SCOPE;
@@ -50,36 +49,33 @@ import static edu.iu.uits.lms.iuonly.IuCustomConstants.WRITE_SCOPE;
 
 @EnableWebSecurity
 public class IuCustomRestConfiguration {
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4996)
-    public static class IuRestWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/rest/iu/**")
-                    .and()
-                    .authorizeRequests()
-                    .antMatchers("/rest/iu/file/**").permitAll()
-                    .antMatchers("/rest/iu/**")
-                    .access("hasAuthority('" + READ_SCOPE + "') or hasAuthority('" + WRITE_SCOPE + "')")
-                    .and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .oauth2ResourceServer()
-                    .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
-            http.apply(new RestSecurityLoggingConfig());
-        }
+
+    @Order(1)
+    @Bean
+    public SecurityFilterChain iuCustomRestFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/rest/iu/**")
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/rest/iu/file/**").permitAll()
+                        .requestMatchers("/rest/iu/**").hasAnyAuthority(READ_SCOPE, WRITE_SCOPE)
+                )
+                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(oauth -> oauth.jwt(jwt ->
+                        jwt.jwtAuthenticationConverter(new CustomJwtAuthenticationConverter())))
+                .with(new RestSecurityLoggingConfig(), log -> {
+                });
+
+        return http.build();
     }
 
     @Profile(IUCUSTOMREST_PROFILE + " & swagger")
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4995)
-    public static class IuApiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/api/iu/**")
-                  .and()
-                  .authorizeRequests()
-                  .antMatchers("/api/iu/**").permitAll();
-        }
+    @Order(1)
+    @Bean
+    public SecurityFilterChain iuCustomApiFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/api/iu/**")
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/api/iu/**").permitAll()
+                );
+
+        return http.build();
     }
 }

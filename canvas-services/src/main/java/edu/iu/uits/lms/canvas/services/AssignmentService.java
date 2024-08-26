@@ -38,7 +38,6 @@ import edu.iu.uits.lms.canvas.model.Assignment;
 import edu.iu.uits.lms.canvas.model.AssignmentCreateWrapper;
 import edu.iu.uits.lms.canvas.model.AssignmentGroup;
 import edu.iu.uits.lms.canvas.model.AssignmentSubmission;
-import edu.iu.uits.lms.canvas.model.WikiPage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

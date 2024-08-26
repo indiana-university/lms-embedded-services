@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.lti.service.legacy;
+package edu.iu.uits.lms.lti.swagger;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2023 Indiana University
+ * Copyright (C) 2015 - 2024 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,25 +33,12 @@ package edu.iu.uits.lms.lti.service.legacy;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.model.legacy.LmsLti11Authz;
-import edu.iu.uits.lms.lti.repository.legacy.Lti11AuthorizationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
+import lombok.Data;
 
-/**
- * @deprecated This class was temporarily added and is not intended for long-term use.  Please use the 1.3 launch mechanism instead.
- */
-@Service
-@Deprecated(since = "5.2.2", forRemoval = true)
-public class Lti11AuthorizationService {
+import java.util.List;
 
-    @Autowired
-    private Lti11AuthorizationRepository lti11AuthorizationRepository = null;
-
-    public LmsLti11Authz findByKeyContextActive(@RequestParam("consumerKey") String consumerKey,
-                                              @RequestParam("context") String context) {
-        return lti11AuthorizationRepository.findByKeyContextActive(consumerKey, context);
-    }
+@Data
+public class SwaggerTestingBean {
+    private List<String> embeddedSwaggerToolPaths;
 
 }

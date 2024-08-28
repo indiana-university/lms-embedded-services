@@ -33,45 +33,39 @@ package edu.iu.uits.lms.canvas.config;
  * #L%
  */
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-public abstract class CanvasBaseCacheConfig {
-    @Autowired
-    protected ApplicationContext applicationContext;
+@Component
+public class CanvasCacheBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
-    protected boolean isThereAPrimaryCacheManagerDefinedAlready() {
-        String[] cacheManagerBeanNames = applicationContext.getBeanNamesForType(CacheManager.class);
+    protected boolean isThereAPrimaryCacheManagerDefinedAlready(ConfigurableListableBeanFactory beanFactory) {
+        String[] cacheManagerBeanNames = beanFactory.getBeanNamesForType(CacheManager.class);
 
         boolean isThereAPrimaryCacheManager = false;
 
         for (String cacheManagerBeanName : cacheManagerBeanNames) {
-            isThereAPrimaryCacheManager = applicationContext.findAnnotationOnBean(cacheManagerBeanName, Primary.class) != null;
+            isThereAPrimaryCacheManager = beanFactory.findAnnotationOnBean(cacheManagerBeanName, Primary.class) != null;
 
             if (isThereAPrimaryCacheManager) {
                 break;
             }
-
         }
 
         return isThereAPrimaryCacheManager;
     }
 
-    @PostConstruct
-    public void setToPrimaryCacheIfNeeded() {
-        ConfigurableApplicationContext configurableContext = (ConfigurableApplicationContext) applicationContext;
-        BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) configurableContext.getBeanFactory();
-
-        if (! isThereAPrimaryCacheManagerDefinedAlready()) {
-            BeanDefinition beanDefinition = beanDefinitionRegistry.getBeanDefinition("CanvasServicesCacheManager");
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        if (! isThereAPrimaryCacheManagerDefinedAlready(beanFactory)) {
+            BeanDefinition beanDefinition = beanFactory.getBeanDefinition("CanvasServicesCacheManager");
             beanDefinition.setPrimary(true);
 
             log.info("No Primary Cache Managers are set as Primary. Setting CanvasServicesCacheManager as Primary");

@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 import java.time.Duration;
 
@@ -58,10 +58,10 @@ public class IuOnlyRedisCacheConfig {
     private CanvasConfiguration canvasConfiguration;
 
     @Autowired
-    private JedisConnectionFactory redisConnectionFactory;
+    private LettuceConnectionFactory redisConnectionFactory;
 
     @Bean
-    public RedisCacheConfiguration cacheConfiguration() {
+    public RedisCacheConfiguration iuOnlyCacheConfiguration() {
         final int ttl = 15;
         return RedisCacheConfiguration.defaultCacheConfig()
               .entryTtl(Duration.ofMinutes(ttl))
@@ -74,7 +74,7 @@ public class IuOnlyRedisCacheConfig {
         log.debug("cacheManager()");
         log.debug("Redis hostname: {}", redisConnectionFactory.getHostName());
         return RedisCacheManager.builder(redisConnectionFactory)
-              .withCacheConfiguration(CacheConstants.IS_LEGIT_SIS_COURSE_CACHE_NAME, cacheConfiguration())
+              .withCacheConfiguration(CacheConstants.IS_LEGIT_SIS_COURSE_CACHE_NAME, iuOnlyCacheConfiguration())
               .build();
     }
 }

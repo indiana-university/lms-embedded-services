@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 import java.time.Duration;
 
@@ -53,16 +53,16 @@ import java.time.Duration;
 @Order(Integer.MAX_VALUE - 1)
 @EnableCaching
 @Slf4j
-public class CanvasRedisCacheConfig extends CanvasBaseCacheConfig {
+public class CanvasRedisCacheConfig {
 
     @Autowired
     private CanvasConfiguration canvasConfiguration;
 
     @Autowired
-    private JedisConnectionFactory redisConnectionFactory;
+    private LettuceConnectionFactory redisConnectionFactory;
 
     @Bean
-    public RedisCacheConfiguration cacheConfiguration() {
+    public RedisCacheConfiguration canvasCacheConfiguration() {
         final int ttl = 300;
         return RedisCacheConfiguration.defaultCacheConfig()
               .entryTtl(Duration.ofSeconds(ttl))
@@ -71,7 +71,7 @@ public class CanvasRedisCacheConfig extends CanvasBaseCacheConfig {
     }
 
     @Bean
-    public RedisCacheConfiguration cacheLongConfiguration() {
+    public RedisCacheConfiguration canvasCacheLongConfiguration() {
         final int ttl = 3600;
         return RedisCacheConfiguration.defaultCacheConfig()
               .entryTtl(Duration.ofSeconds(ttl))
@@ -84,8 +84,8 @@ public class CanvasRedisCacheConfig extends CanvasBaseCacheConfig {
         log.debug("cacheManager()");
         log.debug("Redis hostname: {}", redisConnectionFactory.getHostName());
         return RedisCacheManager.builder(redisConnectionFactory)
-              .withCacheConfiguration(CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, cacheConfiguration())
-              .withCacheConfiguration(CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, cacheLongConfiguration())
+              .withCacheConfiguration(CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, canvasCacheConfiguration())
+              .withCacheConfiguration(CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, canvasCacheLongConfiguration())
               .build();
     }
 }

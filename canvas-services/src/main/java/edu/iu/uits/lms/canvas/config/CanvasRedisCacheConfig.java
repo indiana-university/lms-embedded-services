@@ -62,7 +62,7 @@ public class CanvasRedisCacheConfig extends CanvasBaseCacheConfig {
     private JedisConnectionFactory redisConnectionFactory;
 
     @Bean
-    public RedisCacheConfiguration cacheConfiguration() {
+    public RedisCacheConfiguration canvasCacheConfiguration() {
         final int ttl = 300;
         return RedisCacheConfiguration.defaultCacheConfig()
               .entryTtl(Duration.ofSeconds(ttl))
@@ -71,7 +71,7 @@ public class CanvasRedisCacheConfig extends CanvasBaseCacheConfig {
     }
 
     @Bean
-    public RedisCacheConfiguration cacheLongConfiguration() {
+    public RedisCacheConfiguration canvasCacheLongConfiguration() {
         final int ttl = 3600;
         return RedisCacheConfiguration.defaultCacheConfig()
               .entryTtl(Duration.ofSeconds(ttl))
@@ -84,8 +84,8 @@ public class CanvasRedisCacheConfig extends CanvasBaseCacheConfig {
         log.debug("cacheManager()");
         log.debug("Redis hostname: {}", redisConnectionFactory.getHostName());
         return RedisCacheManager.builder(redisConnectionFactory)
-              .withCacheConfiguration(CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, cacheConfiguration())
-              .withCacheConfiguration(CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, cacheLongConfiguration())
+              .withCacheConfiguration(CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, canvasCacheConfiguration())
+              .withCacheConfiguration(CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, canvasCacheLongConfiguration())
               .build();
     }
 }

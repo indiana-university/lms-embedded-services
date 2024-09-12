@@ -89,13 +89,6 @@ public class CanvasTerm implements Serializable, Comparable<CanvasTerm> {
         }
     }
 
-//    @Override
-//    public int compareTo(@NonNull CanvasTerm otherCanvasTerm) {
-//        return this.id == null || otherCanvasTerm.id == null
-//                ? 0
-//                : this.id.hashCode() - otherCanvasTerm.id.hashCode();
-//    }
-
     @Data
     @JsonIgnoreProperties(ignoreUnknown=true)
     public static class TermOverride implements Serializable {

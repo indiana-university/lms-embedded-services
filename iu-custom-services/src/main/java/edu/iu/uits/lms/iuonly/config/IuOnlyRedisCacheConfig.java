@@ -61,7 +61,7 @@ public class IuOnlyRedisCacheConfig {
     private JedisConnectionFactory redisConnectionFactory;
 
     @Bean
-    public RedisCacheConfiguration cacheConfiguration() {
+    public RedisCacheConfiguration iuOnlyCacheConfiguration() {
         final int ttl = 15;
         return RedisCacheConfiguration.defaultCacheConfig()
               .entryTtl(Duration.ofMinutes(ttl))
@@ -74,7 +74,7 @@ public class IuOnlyRedisCacheConfig {
         log.debug("cacheManager()");
         log.debug("Redis hostname: {}", redisConnectionFactory.getHostName());
         return RedisCacheManager.builder(redisConnectionFactory)
-              .withCacheConfiguration(CacheConstants.IS_LEGIT_SIS_COURSE_CACHE_NAME, cacheConfiguration())
+              .withCacheConfiguration(CacheConstants.IS_LEGIT_SIS_COURSE_CACHE_NAME, iuOnlyCacheConfiguration())
               .build();
     }
 }

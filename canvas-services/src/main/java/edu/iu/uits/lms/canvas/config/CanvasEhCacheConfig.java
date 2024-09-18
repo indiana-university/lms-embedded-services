@@ -59,7 +59,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableCaching
 @Slf4j
-public class CanvasEhCacheConfig extends CanvasBaseCacheConfig {
+public class CanvasEhCacheConfig {
     @Bean(name = "CanvasServicesCacheManager")
     public CacheManager canvasCacheManager() {
         log.debug("canvasCacheManager() init");

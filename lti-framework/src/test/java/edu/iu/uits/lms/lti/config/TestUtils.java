@@ -45,12 +45,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_ROLE;
+import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_AUTHORITY;
 
 public class TestUtils extends CommonTestUtils {
 
-   public static String defaultRole() {
-      return BASE_USER_ROLE;
+   public static String defaultAuthority() {
+      return BASE_USER_AUTHORITY;
    }
 
    public static OidcAuthenticationToken buildToken(String username, String courseId, String role) {
@@ -60,7 +60,7 @@ public class TestUtils extends CommonTestUtils {
       return buildToken(username, role, new HashMap<>(), customMap);
    }
 
-   public static OidcAuthenticationToken buildToken(String username, String role, Map<String, Object> extraAttributes, Map<String, Object> extraCustomAttributes) {
+   public static OidcAuthenticationToken buildToken(String username, String authority, Map<String, Object> extraAttributes, Map<String, Object> extraCustomAttributes) {
       final String nameAttributeKey = "sub";
       Map<String, Object> attributeMap = new HashMap<>();
       attributeMap.put(nameAttributeKey, username);
@@ -78,7 +78,7 @@ public class TestUtils extends CommonTestUtils {
 
       OAuth2User oAuth2User = new DefaultOAuth2User(Collections.emptyList(), attributeMap, nameAttributeKey);
       OidcAuthenticationToken token = new OidcAuthenticationToken(oAuth2User,
-            AuthorityUtils.createAuthorityList(TestUtils.defaultRole(), role),
+            AuthorityUtils.createAuthorityList(TestUtils.defaultAuthority(), authority),
             "unit_test", "the_state");
       return token;
    }

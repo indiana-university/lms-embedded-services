@@ -12,7 +12,7 @@
     <artifactId>lms-embedded-services-parent</artifactId>
     <groupId>edu.iu.uits.lms</groupId>
     <packaging>pom</packaging>
-    <version>6.0.2-SNAPSHOT</version>
+    <version>6.0.2</version>
 
     <description>Collection of services/configurations that can be embedded in Canvas-based LTI tools</description>
     <url>https://github.com/indiana-university/lms-embedded-services</url>
@@ -62,7 +62,7 @@
         <connection>scm:git:https://github.com/indiana-university/lms-embedded-services.git</connection>
         <developerConnection>scm:git:https://github.com/indiana-university/lms-embedded-services.git</developerConnection>
         <url>https://github.com/indiana-university/lms-embedded-services</url>
-        <tag>HEAD</tag>
+        <tag>6.0.2</tag>
     </scm>
 
     <properties>

@@ -40,8 +40,10 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile({"ehcache", "redis-cache"})
 @Slf4j
 @Component
 public class CanvasCacheBeanFactoryPostProcessor implements BeanFactoryPostProcessor {

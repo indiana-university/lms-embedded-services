@@ -44,7 +44,6 @@ public class FaviconProperties {
     private String url;
     private TYPE type;
 
-
     public enum TYPE {
         URL, PATH
     }

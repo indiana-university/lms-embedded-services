@@ -103,10 +103,7 @@ public class FaviconTest {
 
     private static class FaviconBase {
         @Autowired
-//        protected FaviconProperties faviconProperties;
         protected FaviconControllerAdvice faviconControllerAdvice;
     }
-
-
 
 }

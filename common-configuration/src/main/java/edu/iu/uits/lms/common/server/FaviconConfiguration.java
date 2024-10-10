@@ -70,7 +70,6 @@ public class FaviconConfiguration {
         return new FaviconControllerAdvice(faviconProperties());
     }
 
-//    @Bean(name = "FaviconProperties")
     private FaviconProperties faviconProperties() {
         String faviconUrl = path;
         FaviconProperties.TYPE type = FaviconProperties.TYPE.PATH;

@@ -33,6 +33,8 @@ package edu.iu.uits.lms.iuonly.services;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import edu.iu.uits.lms.iuonly.exceptions.CanvasDataServiceException;
 import edu.iu.uits.lms.iuonly.model.CloseExpireCourse;
 import edu.iu.uits.lms.iuonly.model.Enrollment;
@@ -44,6 +46,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -306,6 +311,47 @@ public class CanvasDataServiceImpl {
         return notificationCourses;
     }
 
+    /**
+     * Retrieves a list of results from the database based on the provided SQL query.
+     *
+     * This method executes the given SQL statement and maps the results to a list of objects
+     * of the specified class type. It handles SQL exceptions and ensures that resources are
+     * properly closed after execution.
+     *
+     * @param sql   The SQL query to be executed. It should be a valid SQL statement that
+     *              returns a result set.
+     * @param clazz The class type to which the result set will be mapped. This class must
+     *              have a no-argument constructor and appropriate setters for the fields
+     *              that correspond to the columns in the result set.
+     * @param <T>   The type of the objects in the returned list. This is a generic type
+     *              that allows for flexibility in the type of objects returned.
+     * @return A list of objects of type T, populated with the data retrieved from the
+     *         database. If no results are found, an empty list is returned.
+     * @throws CanvasDataServiceException If there is an error during the execution of the
+     *                                     SQL statement or while parsing the result set.
+     * @throws IllegalStateException If an error occurs while accessing the database or
+     *                               mapping the results to the specified class type.
+     */
+    public <T> List<T> getSqlResults(String sql, Class<T> clazz) throws CanvasDataServiceException {
+        List<T> objList;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Connection conn = getConnection();
+        validateConnection(conn);
+        try {
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            objList = parseResultSet(rs, clazz);
+        } catch (SQLException | InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
+            log.error("Error getting data", e);
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, ps, rs);
+        }
+        return objList;
+    }
+
     private Connection getConnection() {
         try {
             if (dataSource != null) {
@@ -342,5 +388,69 @@ public class CanvasDataServiceImpl {
         } catch (SQLException sqle) {
             log.error("Error closing connection ", sqle);
         }
+    }
+
+    /**
+     * Parses a {@link ResultSet} and maps its rows to a list of objects of the specified class type.
+     *
+     * This method utilizes reflection to instantiate objects of the specified class and populate their fields
+     * with values retrieved from the {@link ResultSet}. It also supports custom field naming strategies
+     * through the use of the {@link JsonNaming} annotation, allowing for flexible mapping between database
+     * column names and object field names.
+     *
+     * @param <T> the type of objects to be created from the {@link ResultSet}
+     * @param rs the {@link ResultSet} containing the data to be parsed
+     * @param clazz the class of the objects to be created
+     * @return a {@link List} of objects of type {@code T} populated with data from the {@link ResultSet}
+     * @throws SQLException if a database access error occurs or this method is called on a closed {@link ResultSet}
+     * @throws InstantiationException if the class that declares the underlying field represents an abstract class
+     * @throws IllegalAccessException if this {@code Field} object is enforcing Java language access control
+     *         and the underlying field is inaccessible
+     * @throws NoSuchMethodException if a matching method is not found
+     * @throws InvocationTargetException if the underlying method throws an exception
+     *
+     * @see JsonNaming
+     * @see PropertyNamingStrategy
+     */
+    private <T> List<T> parseResultSet(ResultSet rs, Class<T> clazz) throws SQLException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        List<T> objList = new ArrayList<>();
+
+        Field[] fields = clazz.getDeclaredFields();
+
+        // Check for an annotation that tells us how to translate the field name
+        JsonNaming jsonNaming = clazz.getAnnotation(JsonNaming.class);
+        Class<? extends PropertyNamingStrategy> strategyClass = null;
+        PropertyNamingStrategy strategy = null;
+
+        if (jsonNaming != null) {
+            strategyClass = jsonNaming.value();
+            strategy = strategyClass.getConstructor().newInstance();
+            log.debug("Using strategy class {} to get fields", strategyClass.getName());
+        }
+
+        while (rs.next()) {
+            T obj = clazz.getDeclaredConstructor().newInstance();
+
+            for (Field field : fields) {
+                field.setAccessible(true);
+                String fieldName = field.getName();
+
+                // See if there's a strategy to use (snake case, camel case, etc
+                if (strategyClass != null) {
+                    Method invokeMethod = strategyClass.getMethod("translate", String.class);
+                    fieldName = (String) invokeMethod.invoke(strategy, fieldName);
+                }
+
+                log.trace("Looking up field '{}'", fieldName);
+                Object value = rs.getObject(fieldName);
+
+                if (value != null) {
+                    field.set(obj, value);
+                }
+            }
+            objList.add(obj);
+        }
+        return objList;
     }
 }

@@ -40,6 +40,7 @@ import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
 import edu.iu.uits.lms.iuonly.repository.FeatureAccessRepository;
 import edu.iu.uits.lms.iuonly.repository.FileStorageRepository;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import edu.iu.uits.lms.iuonly.repository.JobCompletionDetailRepository;
 import edu.iu.uits.lms.iuonly.repository.LmsBatchEmailRepository;
 import edu.iu.uits.lms.iuonly.repository.NodeHierarchyRepository;
 import edu.iu.uits.lms.iuonly.repository.TemplatedCourseRepository;
@@ -92,4 +93,7 @@ public class IuClientTestConfig {
 
    @MockBean
    public AuditInfoRepository auditInfoRepository;
+
+   @MockBean
+   public JobCompletionDetailRepository jobCompletionDetailRepository;
 }

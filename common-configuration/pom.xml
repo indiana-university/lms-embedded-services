@@ -13,7 +13,7 @@
     <description>Common configuration bits that are useful to the lms-canvas LTI tools</description>
 
     <properties>
-        <commons-lang3.version>3.16.0</commons-lang3.version>
+        <commons-lang3.version>3.17.0</commons-lang3.version>
         <jjwt-api.version>0.12.6</jjwt-api.version>
     </properties>
 

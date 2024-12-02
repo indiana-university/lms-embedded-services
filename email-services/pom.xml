@@ -16,7 +16,7 @@
     <description>Shared services for the lms-canvas LTI tools to send email</description>
 
     <properties>
-        <commons-io.version>2.16.1</commons-io.version>
+        <commons-io.version>2.18.0</commons-io.version>
         <reflections.version>0.10.2</reflections.version>
     </properties>
 

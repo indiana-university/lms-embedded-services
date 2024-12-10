@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.9</version>
+        <version>3.2.12</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
     <artifactId>lms-embedded-services-parent</artifactId>
     <groupId>edu.iu.uits.lms</groupId>
     <packaging>pom</packaging>
-    <version>6.0.6-SNAPSHOT</version>
+    <version>6.0.9-SNAPSHOT</version>
 
     <description>Collection of services/configurations that can be embedded in Canvas-based LTI tools</description>
     <url>https://github.com/indiana-university/lms-embedded-services</url>
@@ -67,16 +67,16 @@
 
     <properties>
         <commons-codec.version>1.17.1</commons-codec.version>
-        <httpclient.version>5.3.1</httpclient.version>
-        <spring-cloud-starter-parent.version>2023.0.3</spring-cloud-starter-parent.version>
-        <springdoc-openapi-ui.version>2.6.0</springdoc-openapi-ui.version>
+        <httpclient.version>5.4.1</httpclient.version>
+        <spring-cloud-starter-parent.version>2023.0.4</spring-cloud-starter-parent.version>
+        <springdoc-openapi-ui.version>2.5.0</springdoc-openapi-ui.version>
 
         <java.version>21</java.version>
 
         <plugins.compiler.version>3.13.0</plugins.compiler.version>
-        <plugins.gpg.version>3.2.5</plugins.gpg.version>
-        <plugins.javadoc.version>3.8.0</plugins.javadoc.version>
-        <plugins.license.version>2.4.0</plugins.license.version>
+        <plugins.gpg.version>3.2.7</plugins.gpg.version>
+        <plugins.javadoc.version>3.11.1</plugins.javadoc.version>
+        <plugins.license.version>2.5.0</plugins.license.version>
         <plugins.nexus-staging.version>1.7.0</plugins.nexus-staging.version>
         <plugins.release.version>3.1.1</plugins.release.version>
         <plugins.source.version>3.3.1</plugins.source.version>

@@ -822,7 +822,7 @@ public class CourseService extends SpringBaseService {
         builder.queryParam("include[]", "email");
         builder.queryParam("include[]", "avatar_url");
         builder.queryParam("include[]", "enrollments");
-        builder.queryParam("per_page", "100");
+        builder.queryParam("per_page", "50");
 
         if (asUser != null) {
             builder.queryParam("as_user_id", asUser);

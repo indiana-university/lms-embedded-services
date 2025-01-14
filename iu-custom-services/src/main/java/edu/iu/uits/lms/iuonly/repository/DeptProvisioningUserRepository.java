@@ -40,6 +40,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 @Component
+@Deprecated(forRemoval = true, since = "6.1.0")
 public interface DeptProvisioningUserRepository extends PagingAndSortingRepository<DeptProvisioningUser, Long>, ListCrudRepository<DeptProvisioningUser, Long> {
 
    DeptProvisioningUser findByUsername(@Param("username") String username);

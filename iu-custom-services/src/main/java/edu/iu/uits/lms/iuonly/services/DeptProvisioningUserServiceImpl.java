@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@Deprecated(forRemoval = true, since = "6.1.0")
 public class DeptProvisioningUserServiceImpl {
 
     @Autowired

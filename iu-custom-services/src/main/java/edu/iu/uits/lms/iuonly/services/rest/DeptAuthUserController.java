@@ -62,6 +62,7 @@ import static edu.iu.uits.lms.iuonly.IuCustomConstants.WRITE_SCOPE;
 @RequestMapping("/rest/iu/dept_auth_user")
 @Tag(name = "DeptAuthUserController", description = "Operations involving the DeptProvisioningUser table")
 @Slf4j
+@Deprecated(forRemoval = true, since = "6.1.0")
 public class DeptAuthUserController {
 
    @Autowired

@@ -38,6 +38,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Deprecated(forRemoval = true, since = "6.1.0")
 public class DeptProvisioningUserBooleanOverride extends DeptProvisioningUser {
    private Boolean allowSisEnrollments;
    private Boolean overrideRestrictions;

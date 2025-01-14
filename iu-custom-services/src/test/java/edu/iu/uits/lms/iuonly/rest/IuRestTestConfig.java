@@ -33,6 +33,7 @@ package edu.iu.uits.lms.iuonly.rest;
  * #L%
  */
 
+import edu.iu.uits.lms.iuonly.repository.AuthorizedUserRepository;
 import edu.iu.uits.lms.iuonly.repository.DeptProvisioningUserRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
@@ -55,6 +56,9 @@ public class IuRestTestConfig {
 
    @MockBean
    public DeptProvisioningUserRepository deptProvisioningUserRepository;
+
+   @MockBean
+   public AuthorizedUserRepository authorizedUserRepository;
 
    @MockBean
    public ErrorContactEventRepository errorContactEventRepository;

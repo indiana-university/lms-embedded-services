@@ -62,6 +62,7 @@ import java.util.List;
 })
 @SequenceGenerator(name = "DEPT_PROV_USERS_ID_SEQ", sequenceName = "DEPT_PROV_USERS_ID_SEQ", allocationSize = 1)
 @Data
+@Deprecated(forRemoval = true, since = "6.1.0")
 public class DeptProvisioningUser implements Serializable {
 
    @Id

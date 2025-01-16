@@ -316,6 +316,46 @@ public class SisServiceImpl {
         return courseCount;
     }
 
+    /**
+     * Check to see if a course is eligible to display the HonorLock tool
+     * @param sisCourseId Sis Course ID to check
+     * @return True if the given course meets the criteria, false if it doesn't
+     */
+    public boolean isHonorLockEligible(String sisCourseId) {
+        String instructionModeDescription = null;
+        Connection conn = getConnection();
+
+        String sql = "select iu_instrc_mode_des from " + SIS_COURSE_TABLE + " where iu_site_id = ?";
+        log.debug("Executing SQL: " + sql + " with query parameters: " + sisCourseId);
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, sisCourseId);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                instructionModeDescription = rs.getString("iu_instrc_mode_des");
+            }
+        } catch (SQLException e) {
+            log.error("Error getting sis course", e);
+        } finally {
+            close(conn, stmt, rs);
+        }
+
+        /*
+            DO = Distance Synchronous Video
+            HD = Hybrid-Distance Video & Online
+            OA = 100% Online All
+            OI = 76-99% Online Interactive
+         */
+
+        List<String> approvedDescriptions = List.of("Distance Synchronous Video", "Hybrid-Distance Video & Online",
+                "100% Online All", "76-99% Online Interactive");
+        return instructionModeDescription != null && approvedDescriptions.contains(instructionModeDescription);
+    }
+
     private SisClass translateRsToSisClass(ResultSet rs) {
         SisClass sisClass = new SisClass();
         try {

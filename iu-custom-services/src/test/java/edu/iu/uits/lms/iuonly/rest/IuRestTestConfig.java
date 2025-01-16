@@ -45,6 +45,7 @@ import edu.iu.uits.lms.iuonly.repository.NodeHierarchyRepository;
 import edu.iu.uits.lms.iuonly.repository.TemplatedCourseRepository;
 import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.iuonly.services.HierarchyResourceService;
+import edu.iu.uits.lms.iuonly.services.SisServiceImpl;
 import edu.iu.uits.lms.iuonly.services.rest.BatchEmailRestController;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -89,5 +90,8 @@ public class IuRestTestConfig {
 
    @MockBean
    private HierarchyResourceService hierarchyResourceService;
+
+   @MockBean
+   private SisServiceImpl sisService;
 
 }

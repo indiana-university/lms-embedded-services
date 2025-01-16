@@ -58,6 +58,7 @@ public class IuCustomRestConfiguration {
         http.securityMatcher("/rest/iu/**")
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/rest/iu/file/**").permitAll()
+                        .requestMatchers("/rest/iu/honorlock/**").permitAll()
                         .requestMatchers("/rest/iu/**").hasAnyAuthority(READ_SCOPE, WRITE_SCOPE)
                 )
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

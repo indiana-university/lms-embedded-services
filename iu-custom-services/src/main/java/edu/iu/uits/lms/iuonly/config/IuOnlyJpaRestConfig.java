@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.services;
+package edu.iu.uits.lms.iuonly.config;
 
 /*-
  * #%L
  * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,24 +33,31 @@ package edu.iu.uits.lms.iuonly.services;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.DeptProvisioningUser;
-import edu.iu.uits.lms.iuonly.repository.DeptProvisioningUserRepository;
+import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
-@Service
+import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
+
+@Profile(IUCUSTOMREST_PROFILE)
+@Configuration
 @Slf4j
-public class DeptProvisioningUserServiceImpl {
+public class IuOnlyJpaRestConfig implements RepositoryRestConfigurer {
 
-    @Autowired
-    private DeptProvisioningUserRepository deptProvisioningUserRepository;
+    @Override
+    public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
+        log.debug("configureRepositoryRestConfiguration()");
+        //  This is needed to allow the "ids" to be served up via the
+        //  @RepositoryRestResource annotation (by default, it is suppressed)
+        config.exposeIdsFor(AuthorizedUser.class);
+        config.setBasePath("/rest/iu");
 
-    public DeptProvisioningUser findByUsername(String username) {
-        return deptProvisioningUserRepository.findByUsername(username);
-    }
-
-    public DeptProvisioningUser findByCanvasUserId(String canvasUserId) {
-        return deptProvisioningUserRepository.findByCanvasUserId(canvasUserId);
+        RepositoryRestConfigurer.super.configureRepositoryRestConfiguration(config, cors);
+        config.setRepositoryDetectionStrategy(RepositoryDetectionStrategy.RepositoryDetectionStrategies.ANNOTATED);
     }
 }

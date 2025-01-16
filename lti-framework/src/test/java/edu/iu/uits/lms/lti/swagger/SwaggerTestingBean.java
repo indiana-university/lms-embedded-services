@@ -41,4 +41,6 @@ import java.util.List;
 public class SwaggerTestingBean {
     private List<String> embeddedSwaggerToolPaths;
 
+    private String extraPath = "";
+
 }

@@ -103,7 +103,7 @@ public abstract class SwaggerBase {
     * @return
     */
    public String getExtraPath() {
-      return "";
+      return swaggerTestingBean.getExtraPath();
    }
 
    /**

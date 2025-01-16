@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.model;
+package edu.iu.uits.lms.iuonly.model.acl;
 
 /*-
  * #%L
  * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -35,79 +35,76 @@ package edu.iu.uits.lms.iuonly.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import edu.iu.uits.lms.common.date.DateFormatUtil;
-import jakarta.persistence.CollectionTable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 @Entity
-@Table(name = "DEPT_PROV_USERS")
-@NamedQueries({
-        @NamedQuery(name = "DeptProvisioningUser.findByCanvasUserId", query = "from DeptProvisioningUser where canvasUserId = :canvasUserId"),
-})
-@SequenceGenerator(name = "DEPT_PROV_USERS_ID_SEQ", sequenceName = "DEPT_PROV_USERS_ID_SEQ", allocationSize = 1)
+@Table(name = "AUTHORIZED_USERS", uniqueConstraints = @UniqueConstraint(name = "UK_AUTHORIZED_USERS", columnNames = {"username"}))
 @Data
-public class DeptProvisioningUser implements Serializable {
+public class AuthorizedUser implements Serializable {
 
-   @Id
-   @GeneratedValue(generator = "DEPT_PROV_USERS_ID_SEQ")
-   @Column(name = "DEPT_PROV_USERS_ID")
-   private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "AUTHORIZED_USER_ID")
+    private Long id;
 
-   @Column(name = "DISPLAY_NAME")
-   private String displayName;
+    @Column(name = "DISPLAY_NAME")
+    private String displayName;
 
-   @Column(name = "USERNAME")
-   private String username;
+    @Column(name = "USERNAME")
+    private String username;
 
-   @Column(name = "CANVAS_USER_ID")
-   private String canvasUserId;
+    @Column(name = "CANVAS_USER_ID")
+    private String canvasUserId;
 
-   @Column(name = "GROUP_CODE")
-   @ElementCollection(fetch = FetchType.EAGER)
-   @CollectionTable(name = "DEPT_PROV_USER_GROUP", joinColumns = @JoinColumn(name = "DEPT_PROV_USERS_ID"))
-   private List<String> groupCode;
+    @Column(name = "EMAIL")
+    private String email;
 
-   @Column(name = "ALLOW_SIS_ENROLLMENTS")
-   private boolean allowSisEnrollments;
+    @Column(name = "ACTIVE")
+    private boolean active;
 
-   @Column(name = "AUTHORIZED_ACCOUNTS")
-   private String authorizedAccounts;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "AUTHORIZED_USER_ID", foreignKey = @ForeignKey(name = "FK_ATP_AU"))
+    @MapKeyColumn(name="TOOL_PERMISSION")
+    private Map<String, ToolPermission> toolPermissions;
 
-   @Column(name = "OVERRIDE_RESTRICTIONS")
-   private boolean overrideRestrictions;
+    public Map<String, String> getToolPermissionProperties(String toolPermission) {
+        return toolPermissions.get(toolPermission).getToolPermissionProperties();
+    }
 
-   @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)
-   @Column(name = "CREATEDON")
-   private Date createdOn;
+    @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)
+    @Column(name = "CREATEDON")
+    private Date createdOn;
 
-   @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)
-   @Column(name = "MODIFIEDON")
-   private Date modifiedOn;
+    @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)
+    @Column(name = "MODIFIEDON")
+    private Date modifiedOn;
 
 
-   @PreUpdate
-   @PrePersist
-   public void updateTimeStamps() {
-      modifiedOn = new Date();
-      if (createdOn==null) {
-         createdOn = new Date();
-      }
-   }
-
+    @PreUpdate
+    @PrePersist
+    public void updateTimeStamps() {
+        modifiedOn = new Date();
+        if (createdOn==null) {
+            createdOn = new Date();
+        }
+    }
 }

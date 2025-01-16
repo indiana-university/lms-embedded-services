@@ -33,7 +33,7 @@ package edu.iu.uits.lms.iuonly.rest;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.repository.DeptProvisioningUserRepository;
+import edu.iu.uits.lms.iuonly.repository.AuthorizedUserRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
 import edu.iu.uits.lms.iuonly.repository.FeatureAccessRepository;
@@ -44,6 +44,7 @@ import edu.iu.uits.lms.iuonly.repository.NodeHierarchyRepository;
 import edu.iu.uits.lms.iuonly.repository.TemplatedCourseRepository;
 import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.iuonly.services.HierarchyResourceService;
+import edu.iu.uits.lms.iuonly.services.SisServiceImpl;
 import edu.iu.uits.lms.iuonly.services.rest.BatchEmailRestController;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -54,7 +55,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class IuRestTestConfig {
 
    @MockBean
-   public DeptProvisioningUserRepository deptProvisioningUserRepository;
+   public AuthorizedUserRepository authorizedUserRepository;
 
    @MockBean
    public ErrorContactEventRepository errorContactEventRepository;
@@ -85,5 +86,8 @@ public class IuRestTestConfig {
 
    @MockBean
    private HierarchyResourceService hierarchyResourceService;
+
+   @MockBean
+   private SisServiceImpl sisService;
 
 }

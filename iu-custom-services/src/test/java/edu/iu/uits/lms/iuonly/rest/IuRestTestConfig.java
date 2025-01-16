@@ -34,7 +34,6 @@ package edu.iu.uits.lms.iuonly.rest;
  */
 
 import edu.iu.uits.lms.iuonly.repository.AuthorizedUserRepository;
-import edu.iu.uits.lms.iuonly.repository.DeptProvisioningUserRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
 import edu.iu.uits.lms.iuonly.repository.FeatureAccessRepository;
@@ -54,9 +53,6 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootConfiguration
 @ComponentScan(basePackageClasses = BatchEmailRestController.class, value = "IuRestTestConfig")
 public class IuRestTestConfig {
-
-   @MockBean
-   public DeptProvisioningUserRepository deptProvisioningUserRepository;
 
    @MockBean
    public AuthorizedUserRepository authorizedUserRepository;

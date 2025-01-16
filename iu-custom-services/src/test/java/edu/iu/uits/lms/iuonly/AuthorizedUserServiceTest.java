@@ -19,6 +19,8 @@ public class AuthorizedUserServiceTest {
         Assertions.assertFalse(AuthorizedUserService.convertPropertyToBoolean("FALSE"));
         Assertions.assertFalse(AuthorizedUserService.convertPropertyToBoolean("no"));
         Assertions.assertFalse(AuthorizedUserService.convertPropertyToBoolean("yes"));
+        Assertions.assertFalse(AuthorizedUserService.convertPropertyToBoolean("0"));
+        Assertions.assertFalse(AuthorizedUserService.convertPropertyToBoolean("1"));
 
         Assertions.assertTrue(AuthorizedUserService.convertPropertyToBoolean("true"));
         Assertions.assertTrue(AuthorizedUserService.convertPropertyToBoolean("True"));

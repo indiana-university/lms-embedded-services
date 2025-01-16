@@ -316,6 +316,11 @@ public class SisServiceImpl {
         return courseCount;
     }
 
+    /**
+     * Check to see if a course is eligible to display the HonorLock tool
+     * @param sisCourseId Sis Course ID to check
+     * @return True if the given course meets the criteria, false if it doesn't
+     */
     public boolean isHonorLockEligible(String sisCourseId) {
         String instructionModeDescription = null;
         Connection conn = getConnection();

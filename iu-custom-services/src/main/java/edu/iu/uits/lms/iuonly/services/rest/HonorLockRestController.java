@@ -54,7 +54,7 @@ import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
 @Profile(IUCUSTOMREST_PROFILE)
 @RestController
 @RequestMapping({"/rest/iu/honorlock"})
-@Tag(name = "HonorLockRestController", description = "File download functionality")
+@Tag(name = "HonorLockRestController", description = "Endpoint for HonorLock")
 @CrossOrigin(origins = {"${lms.js.cors.origin}"})
 public class HonorLockRestController {
 
@@ -62,7 +62,7 @@ public class HonorLockRestController {
    private SisServiceImpl sisService;
 
    @GetMapping(value = "/eligible/{sisCourseId}")
-   @Operation(summary = "Check if a course is eligible to enable the HonoeLock tool")
+   @Operation(summary = "Check if a course is eligible to enable the HonorLock tool")
    public ResponseEntity<HonorLockEligible> checkEligible(@PathVariable(name = "sisCourseId") String sisCourseId) {
       boolean isEligible = sisService.isHonorLockEligible(sisCourseId);
       return ResponseEntity.ok().body(new HonorLockEligible(isEligible));

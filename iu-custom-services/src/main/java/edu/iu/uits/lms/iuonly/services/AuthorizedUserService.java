@@ -15,13 +15,15 @@ public class AuthorizedUserService {
     @Autowired
     private AuthorizedUserRepository authorizedUserRepository;
 
+    /**
+     * Find the active AuthorizedUser with the given username and toolPermission
+     * @param username
+     * @param toolPermission
+     * @return
+     */
     public AuthorizedUser findByUsernameAndToolPermission(String username, String toolPermission) {
         return authorizedUserRepository.findByUsernameAndToolPermission(username, toolPermission);
     }
-
-//    public AuthorizedUser findByCanvasUserId(String canvasUserId) {
-//        return authorizedUserRepository.findByCanvasUserId(canvasUserId);
-//    }
 
     /**
      * Convert the input to a boolean.  Does a case-insensitive compare to "true".  Anything that doesn't match is false.
@@ -32,6 +34,12 @@ public class AuthorizedUserService {
         return Boolean.parseBoolean(propertyValue);
     }
 
+    /**
+     * Convert the input it a String[].  Trims any leading/trailing spaces for the entire input value, as well as each
+     * individual item in the list.  Expects items to be comma-delimited.
+     * @param propertyValue
+     * @return
+     */
     public static String[] convertPropertyToStringArray(String propertyValue) {
         if (propertyValue == null) {
             return new String[]{};
@@ -40,6 +48,12 @@ public class AuthorizedUserService {
         return propertyValue.trim().split("\\s*,\\s*");
     }
 
+    /**
+     * Convert the input it a List<String>.  Trims any leading/trailing spaces for the entire input value, as well as each
+     * individual item in the list.  Expects items to be comma-delimited.
+     * @param propertyValue
+     * @return
+     */
     public static List<String> convertPropertyToList(String propertyValue) {
         return Arrays.stream(convertPropertyToStringArray(propertyValue))
                 .map(String::trim)

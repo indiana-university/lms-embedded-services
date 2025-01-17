@@ -55,14 +55,20 @@ import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
 @RestController
 @RequestMapping({"/rest/iu/honorlock"})
 @Tag(name = "HonorLockRestController", description = "Endpoint for HonorLock")
-@CrossOrigin(origins = {"${lms.js.cors.origin}"})
 public class HonorLockRestController {
 
    @Autowired
    private SisServiceImpl sisService;
 
+   /**
+    * NOTE: CrossOrigin annotation needs to be on this method and not the class in order for it to be properly handled
+    * by the api-portal
+    * @param sisCourseId
+    * @return
+    */
    @GetMapping(value = "/eligible/{sisCourseId}")
    @Operation(summary = "Check if a course is eligible to enable the HonorLock tool")
+   @CrossOrigin(origins = {"${lms.js.cors.origin}"})
    public ResponseEntity<HonorLockEligible> checkEligible(@PathVariable(name = "sisCourseId") String sisCourseId) {
       boolean isEligible = sisService.isHonorLockEligible(sisCourseId);
       return ResponseEntity.ok().body(new HonorLockEligible(isEligible));

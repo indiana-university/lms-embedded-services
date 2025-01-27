@@ -49,13 +49,37 @@ public class AuthorizedUserService {
     private AuthorizedUserRepository authorizedUserRepository;
 
     /**
+     * Find the AuthorizedUser with the given username
+     *
+     * @param username
+     * @return
+     */
+    public AuthorizedUser findByUsername(String username) {
+        return authorizedUserRepository.findByUsername(username);
+    }
+
+    /**
      * Find the active AuthorizedUser with the given username and toolPermission
      * @param username
      * @param toolPermission
      * @return
      */
-    public AuthorizedUser findByUsernameAndToolPermission(String username, String toolPermission) {
-        return authorizedUserRepository.findByUsernameAndToolPermission(username, toolPermission);
+    public AuthorizedUser findByActiveUsernameAndToolPermission(String username, String toolPermission) {
+        return authorizedUserRepository.findByActiveUsernameAndToolPermission(username, toolPermission);
+    }
+
+    /**
+     * Find the active AuthorizedUser with the given canvasUserId and toolPermission
+     * @param canvasUserId
+     * @param toolPermission
+     * @return
+     */
+    public AuthorizedUser findByActiveCanvasUserIdAndToolPermission(String canvasUserId, String toolPermission) {
+        return authorizedUserRepository.findByActiveCanvasUserIdAndToolPermission(canvasUserId, toolPermission);
+    }
+
+    public List<AuthorizedUser> findActiveUsersByPermission(String toolPermission) {
+        return authorizedUserRepository.findByActiveToolPermission(toolPermission);
     }
 
     /**

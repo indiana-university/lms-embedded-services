@@ -43,6 +43,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.List;
+
 @Component
 @RepositoryRestResource(path = "auth_user")
 @Tag(name = "AuthorizedUserRepository", description = "Operations involving the AuthorizedUser table")
@@ -56,6 +58,11 @@ public interface AuthorizedUserRepository extends PagingAndSortingRepository<Aut
    AuthorizedUser findByCanvasUserId(@Param("canvasUserId") String canvasUserId);
 
    @Query("SELECT au FROM AuthorizedUser au JOIN au.toolPermissions tp WHERE au.active = true AND au.username = :username AND KEY(tp) = :toolPermission")
-   AuthorizedUser findByUsernameAndToolPermission(@Param("username") String username, @Param("toolPermission") String toolPermission);
+   AuthorizedUser findByActiveUsernameAndToolPermission(@Param("username") String username, @Param("toolPermission") String toolPermission);
 
+   @Query("SELECT au FROM AuthorizedUser au JOIN au.toolPermissions tp WHERE au.active = true AND au.canvasUserId = :canvasUserId AND KEY(tp) = :toolPermission")
+   AuthorizedUser findByActiveCanvasUserIdAndToolPermission(@Param("canvasUserId") String canvasUserId, @Param("toolPermission") String toolPermission);
+
+   @Query("SELECT au FROM AuthorizedUser au JOIN au.toolPermissions tp WHERE au.active = true AND KEY(tp) = :toolPermission")
+   List<AuthorizedUser> findByActiveToolPermission(@Param("toolPermission") String toolPermission);
 }

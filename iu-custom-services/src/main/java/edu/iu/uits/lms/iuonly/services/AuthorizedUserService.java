@@ -78,6 +78,11 @@ public class AuthorizedUserService {
         return authorizedUserRepository.findByActiveCanvasUserIdAndToolPermission(canvasUserId, toolPermission);
     }
 
+    /**
+     * Find all the active AuthorizedUser records that have the given toolPermission
+     * @param toolPermission
+     * @return
+     */
     public List<AuthorizedUser> findActiveUsersByPermission(String toolPermission) {
         return authorizedUserRepository.findByActiveToolPermission(toolPermission);
     }

@@ -54,6 +54,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -86,8 +87,25 @@ public class AuthorizedUser implements Serializable {
     @MapKeyColumn(name="TOOL_PERMISSION")
     private Map<String, ToolPermission> toolPermissions;
 
+    /**
+     * Get the toolPermission properties Map
+     * @param toolPermission
+     * @return The desired properties map, or an empty map if none are found
+     */
     public Map<String, String> getToolPermissionProperties(String toolPermission) {
+        if (!hasToolPermission(toolPermission)) {
+            return new HashMap<>();
+        }
         return toolPermissions.get(toolPermission).getToolPermissionProperties();
+    }
+
+    /**
+     * Determines if the AuthorizedUser has the given toolPermission
+     * @param toolPermission
+     * @return
+     */
+    public boolean hasToolPermission(String toolPermission) {
+        return toolPermissions.containsKey(toolPermission);
     }
 
     @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)

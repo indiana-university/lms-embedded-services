@@ -102,6 +102,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/env.properties</exclude>
+                        <exclude>**/logback-test.xml</exclude>
                     </excludes>
                 </configuration>
             </plugin>

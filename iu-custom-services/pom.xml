@@ -126,6 +126,7 @@
                     <excludes>
                         <exclude>**/denodo.properties</exclude>
                         <exclude>**/derdack.properties</exclude>
+                        <exclude>**/logback-test.xml</exclude>
                     </excludes>
                 </configuration>
             </plugin>

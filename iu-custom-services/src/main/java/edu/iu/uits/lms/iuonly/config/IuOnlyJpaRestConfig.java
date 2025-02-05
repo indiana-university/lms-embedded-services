@@ -33,14 +33,16 @@ package edu.iu.uits.lms.iuonly.config;
  * #L%
  */
 
+import edu.iu.uits.lms.common.swagger.LmsRepositoryDetectionStrategy;
 import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
-import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+
+import java.util.List;
 
 import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
 
@@ -58,6 +60,6 @@ public class IuOnlyJpaRestConfig implements RepositoryRestConfigurer {
         config.setBasePath("/rest/iu");
 
         RepositoryRestConfigurer.super.configureRepositoryRestConfiguration(config, cors);
-        config.setRepositoryDetectionStrategy(RepositoryDetectionStrategy.RepositoryDetectionStrategies.ANNOTATED);
+        config.setRepositoryDetectionStrategy(new LmsRepositoryDetectionStrategy(List.of("edu.iu.uits.lms.iuonly.repository")));
     }
 }

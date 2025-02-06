@@ -123,6 +123,7 @@
                     <excludes>
                         <exclude>**/shared-tests.properties</exclude>
                         <exclude>**/lti-registrations.properties</exclude>
+                        <exclude>**/logback-test.xml</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -141,12 +141,10 @@ public class AccountService extends SpringBaseService {
         log.debug("uri: {}", uri);
 
         try {
-            HttpEntity<Account> accountResponseEntity = this.restTemplate.getForEntity(uri, Account.class);
+            ResponseEntity<Account> accountResponseEntity = this.restTemplate.getForEntity(uri, Account.class);
             log.debug("accountResponseEntity: {}", accountResponseEntity);
 
-            if (accountResponseEntity != null) {
-                return accountResponseEntity.getBody();
-            }
+            return accountResponseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error: ", hcee);
         }
@@ -217,10 +215,10 @@ public class AccountService extends SpringBaseService {
             AccountAdminCreate accountAdminCreate = new AccountAdminCreate(userId, false);
 
             HttpEntity<AccountAdminCreate> accountAdminCreateRequestEntity = new HttpEntity<>(accountAdminCreate, headers);
-            HttpEntity<AccountAdmin> accountAdminCreateResponseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, accountAdminCreateRequestEntity, AccountAdmin.class);
+            ResponseEntity<AccountAdmin> accountAdminCreateResponseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, accountAdminCreateRequestEntity, AccountAdmin.class);
             log.debug("accountAdminCreateResponseEntity: {}", accountAdminCreateResponseEntity);
 
-            if (((ResponseEntity<AccountAdmin>) accountAdminCreateResponseEntity).getStatusCode() == HttpStatus.OK) {
+            if (accountAdminCreateResponseEntity.getStatusCode() == HttpStatus.OK) {
                 return true;
             }
 
@@ -248,10 +246,10 @@ public class AccountService extends SpringBaseService {
             URI uri = ACCOUNT_ADMINS_SPECIFIC_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), accountId, userId);
             log.debug("uri: {}", uri);
 
-            HttpEntity<AccountAdmin> accountAdminDeleteResponseEntity = this.restTemplate.exchange(uri, HttpMethod.DELETE, null, AccountAdmin.class);
+            ResponseEntity<AccountAdmin> accountAdminDeleteResponseEntity = this.restTemplate.exchange(uri, HttpMethod.DELETE, null, AccountAdmin.class);
             log.debug("accountAdminDeleteResponseEntity: {}",  accountAdminDeleteResponseEntity);
 
-            if (((ResponseEntity<AccountAdmin>) accountAdminDeleteResponseEntity).getStatusCode() == HttpStatus.OK) {
+            if (accountAdminDeleteResponseEntity.getStatusCode() == HttpStatus.OK) {
                 return true;
             }
         } catch (HttpClientErrorException hcee) {
@@ -322,15 +320,13 @@ public class AccountService extends SpringBaseService {
         log.debug("{}", uri);
 
         try {
-            HttpEntity<SsoSettingsWrapper> ssoSettingsResponseEntity = this.restTemplate.getForEntity(uri, SsoSettingsWrapper.class);
+            ResponseEntity<SsoSettingsWrapper> ssoSettingsResponseEntity = this.restTemplate.getForEntity(uri, SsoSettingsWrapper.class);
             log.debug("{}", ssoSettingsResponseEntity);
 
-            if (ssoSettingsResponseEntity != null) {
-                SsoSettingsWrapper ssoSettingsWrapperResponse = ssoSettingsResponseEntity.getBody();
+            SsoSettingsWrapper ssoSettingsWrapperResponse = ssoSettingsResponseEntity.getBody();
 
-                if (ssoSettingsWrapperResponse != null) {
-                    return ssoSettingsWrapperResponse.getSsoSettings();
-                }
+            if (ssoSettingsWrapperResponse != null) {
+                return ssoSettingsWrapperResponse.getSsoSettings();
             }
         } catch (HttpClientErrorException hcee) {
             log.error("Error getting SsoSettings", hcee);
@@ -354,15 +350,13 @@ public class AccountService extends SpringBaseService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<SsoSettingsWrapper> ssoSettingsWrapperRequestEntity = new HttpEntity<>(ssoSettingsWrapper, headers);
-            HttpEntity<SsoSettingsWrapper> ssoSettingsResponseEntity = this.restTemplate.exchange(uri, HttpMethod.PUT, ssoSettingsWrapperRequestEntity, SsoSettingsWrapper.class);
+            ResponseEntity<SsoSettingsWrapper> ssoSettingsResponseEntity = this.restTemplate.exchange(uri, HttpMethod.PUT, ssoSettingsWrapperRequestEntity, SsoSettingsWrapper.class);
             log.debug("{}", ssoSettingsResponseEntity);
 
-            if (ssoSettingsResponseEntity != null) {
-                SsoSettingsWrapper ssoSettingsWrapperResponse = ssoSettingsResponseEntity.getBody();
+            SsoSettingsWrapper ssoSettingsWrapperResponse = ssoSettingsResponseEntity.getBody();
 
-                if (ssoSettingsWrapperResponse != null) {
-                    return ssoSettingsWrapperResponse.getSsoSettings();
-                }
+            if (ssoSettingsWrapperResponse != null) {
+                return ssoSettingsWrapperResponse.getSsoSettings();
             }
         } catch (HttpClientErrorException hcee) {
             log.error("Error setting SsoSettings", hcee);
@@ -382,12 +376,10 @@ public class AccountService extends SpringBaseService {
         log.debug("{}", uri);
 
         try {
-            HttpEntity<Saml> samlResponseEntity = this.restTemplate.getForEntity(uri, Saml.class);
+            ResponseEntity<Saml> samlResponseEntity = this.restTemplate.getForEntity(uri, Saml.class);
             log.debug("{}", samlResponseEntity);
 
-            if (samlResponseEntity != null) {
-                return samlResponseEntity.getBody();
-            }
+            return samlResponseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error getting Saml", hcee);
         }
@@ -409,15 +401,15 @@ public class AccountService extends SpringBaseService {
 
         try {
             HttpEntity<Saml> requestEntity = new HttpEntity<>(newSamlObject, headers);
-            HttpEntity<Saml> samlResponseEntity = this.restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, Saml.class);
+            ResponseEntity<Saml> samlResponseEntity = this.restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, Saml.class);
             log.debug("{}", samlResponseEntity);
 
-            ResponseEntity<Saml> responseEntity = (ResponseEntity<Saml>) samlResponseEntity;
+//            ResponseEntity<Saml> responseEntity = (ResponseEntity<Saml>) samlResponseEntity;
 
-            if (responseEntity.getStatusCode() != HttpStatus.OK) {
+            if (samlResponseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
-                      + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
-                      + ", body: " + responseEntity.getBody());
+                      + samlResponseEntity.getStatusCode() + ", reason: " + ((HttpStatus)samlResponseEntity.getStatusCode()).getReasonPhrase()
+                      + ", body: " + samlResponseEntity.getBody());
             }
         } catch (RuntimeException re) {
             log.error("Error setting Saml", re);

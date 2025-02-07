@@ -33,7 +33,7 @@ package edu.iu.uits.lms.common.it12logging;
  * #L%
  */
 
-import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;

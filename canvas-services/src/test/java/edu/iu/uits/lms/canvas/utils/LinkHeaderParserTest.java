@@ -100,11 +100,11 @@ public class LinkHeaderParserTest {
     }
 
     @Test
-    public void testDebug() {
+    public void testDebug() throws Exception {
         String current = "http://foo/?A=B&page=7&per_page=2";
         String first = "http://foo/?A=B&page=1&per_page=2";
         String prev = null;
-        String last = "http://foo/?A=B&page=100&per_page=2";;
+        String last = "http://foo/?A=B&page=100&per_page=2";
         String next = null;
 
         LinkHeaderParser lhp = validate(first, last, prev, next, current, true);

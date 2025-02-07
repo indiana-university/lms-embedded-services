@@ -44,6 +44,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +96,7 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
             requestBody = body;
         }
 
-        log.debug("Request body: " + new String(requestBody, "UTF-8"));
+        log.debug("Request body: " + new String(requestBody, StandardCharsets.UTF_8));
 
         log.debug("*** Request End ***");
     }
@@ -106,7 +107,7 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
         //If you do a getStatusCode first, it "works"
         // See https://stackoverflow.com/questions/30356491/resttemplate-clienthttpresponse-getbody-throws-i-o-error
         HttpStatusCode status = response.getStatusCode();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getBody(), "UTF-8"));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getBody(), StandardCharsets.UTF_8));
         String line = bufferedReader.readLine();
         while (line != null) {
             inputStringBuilder.append(line);

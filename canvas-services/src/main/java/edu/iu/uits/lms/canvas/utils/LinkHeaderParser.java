@@ -35,12 +35,12 @@ package edu.iu.uits.lms.canvas.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.NameValuePair;
-import org.apache.hc.core5.net.URLEncodedUtils;
+import org.apache.hc.core5.net.URIBuilder;
 import org.glassfish.jersey.message.internal.JerseyLink;
 import org.springframework.http.HttpHeaders;
 
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +51,8 @@ public class LinkHeaderParser {
 
     private static final String LINK_DELIM = ",";
 
-    private HttpHeaders headers;
-    private Map<LINK_KEY, String> headerMap = new HashMap<>();
+    private final HttpHeaders headers;
+    private final Map<LINK_KEY, String> headerMap = new HashMap<>();
 
     private enum LINK_KEY {
         FIRST, PREV, NEXT, LAST, CURRENT;
@@ -67,7 +67,7 @@ public class LinkHeaderParser {
         String linkHeaderValue = headers.getFirst(HttpHeaders.LINK);
 
         if(linkHeaderValue != null) {
-            List<String> links = Arrays.asList(linkHeaderValue.split(LINK_DELIM));
+            String[] links = linkHeaderValue.split(LINK_DELIM);
             for (String linkVal : links) {
                 String trimmedLink = linkVal.trim();
                 if (!trimmedLink.isEmpty()) {
@@ -85,7 +85,7 @@ public class LinkHeaderParser {
     }
 
     public boolean hasLinkHeader() {
-        return headerMap.size() > 0;
+        return !headerMap.isEmpty();
     }
 
     public String getFirst() {
@@ -108,15 +108,16 @@ public class LinkHeaderParser {
         return headerMap.get(LINK_KEY.CURRENT);
     }
 
-    public String debug(String currentUrl) {
+    public String debug(String currentUrl) throws URISyntaxException {
         String lastLink = getLast();
         String lastPage = getPageForUrl(lastLink);
         String currentPage = getPageForUrl(currentUrl);
         return "Page " + currentPage + " of " + lastPage;
     }
 
-    private String getPageForUrl(String url) {
-        List<NameValuePair> queryParams = URLEncodedUtils.parse(url, Charset.defaultCharset());
+    private String getPageForUrl(String url) throws URISyntaxException {
+        URIBuilder b = new URIBuilder(url, Charset.defaultCharset());
+        List<NameValuePair> queryParams = b.getQueryParams();
         Map<String, String> paramMap = queryParams.stream()
                 .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
         return paramMap.get("page");

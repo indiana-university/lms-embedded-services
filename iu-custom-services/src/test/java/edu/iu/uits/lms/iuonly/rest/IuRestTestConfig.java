@@ -47,47 +47,47 @@ import edu.iu.uits.lms.iuonly.services.HierarchyResourceService;
 import edu.iu.uits.lms.iuonly.services.SisServiceImpl;
 import edu.iu.uits.lms.iuonly.services.rest.BatchEmailRestController;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootConfiguration
 @ComponentScan(basePackageClasses = BatchEmailRestController.class, value = "IuRestTestConfig")
 public class IuRestTestConfig {
 
-   @MockBean
+   @MockitoBean
    public AuthorizedUserRepository authorizedUserRepository;
 
-   @MockBean
+   @MockitoBean
    public ErrorContactEventRepository errorContactEventRepository;
 
-   @MockBean
+   @MockitoBean
    public ErrorContactJobProfileRepository errorContactJobProfileRepository;
 
-   @MockBean
+   @MockitoBean
    public FeatureAccessRepository featureAccessRepository;
 
-   @MockBean
+   @MockitoBean
    public LmsBatchEmailRepository lmsBatchEmailRepository;
 
-   @MockBean
+   @MockitoBean
    public NodeHierarchyRepository nodeHierarchyRepository;
 
-   @MockBean
+   @MockitoBean
    public TemplatedCourseRepository templatedCourseRepository;
 
-   @MockBean
+   @MockitoBean
    public HierarchyResourceRepository hierarchyResourceRepository;
 
-   @MockBean
+   @MockitoBean
    public FileStorageRepository fileStorageRepository;
 
-   @MockBean
+   @MockitoBean
    private FeatureAccessServiceImpl featureAccessService;
 
-   @MockBean
+   @MockitoBean
    private HierarchyResourceService hierarchyResourceService;
 
-   @MockBean
+   @MockitoBean
    private SisServiceImpl sisService;
 
 }

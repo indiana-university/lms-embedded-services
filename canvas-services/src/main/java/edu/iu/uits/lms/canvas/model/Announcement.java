@@ -34,21 +34,24 @@ package edu.iu.uits.lms.canvas.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import edu.iu.uits.lms.canvas.services.AnnouncementService;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.io.Serializable;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
-@ToString
-@Data
 /**
  * An Announcement in Canvas is actually a DiscussionTopic with some special handling. This object
  * is used primarily for clarity in development while working with Announcements.  The Announcements API
- * is not very useful at this time, so {@link com.instructure.services.api.AnnouncementService} utilizes
+ * is not very useful at this time, so {@link AnnouncementService} utilizes
  * the DiscussionTopic API
  *
  */
+@EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties(ignoreUnknown=true)
+@ToString
+@Data
 public class Announcement extends DiscussionTopic implements Serializable {
 
     public Announcement() {

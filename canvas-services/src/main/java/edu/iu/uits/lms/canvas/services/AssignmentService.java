@@ -42,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -79,12 +80,10 @@ public class AssignmentService extends SpringBaseService {
         log.debug("{}", uri);
 
         try {
-            HttpEntity<Assignment> assignmentEntity = this.restTemplate.getForEntity(uri, Assignment.class);
+            ResponseEntity<Assignment> assignmentEntity = this.restTemplate.getForEntity(uri, Assignment.class);
             log.debug("{}", assignmentEntity);
 
-            if (assignmentEntity != null) {
-                return assignmentEntity.getBody();
-            }
+            return assignmentEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error getting assignment " + assignmentId + " for course " + courseId, hcee);
         }
@@ -106,12 +105,10 @@ public class AssignmentService extends SpringBaseService {
         log.debug("{}", uri);
 
         try {
-            HttpEntity<AssignmentSubmission> assignmentSubmissionEntity = this.restTemplate.getForEntity(uri, AssignmentSubmission.class);
+            ResponseEntity<AssignmentSubmission> assignmentSubmissionEntity = this.restTemplate.getForEntity(uri, AssignmentSubmission.class);
             log.debug("{}", assignmentSubmissionEntity);
 
-            if (assignmentSubmissionEntity != null) {
-                return assignmentSubmissionEntity.getBody();
-            }
+            return assignmentSubmissionEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error getting submission for assignment " + assignmentId + " for user " + userId + " in course " + courseId, hcee);
         }
@@ -159,7 +156,7 @@ public class AssignmentService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<AssignmentCreateWrapper> newAssignmentRequest = new HttpEntity<>(newAssignment, headers);
-            HttpEntity<Assignment> newAssignmentResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, newAssignmentRequest, Assignment.class);
+            ResponseEntity<Assignment> newAssignmentResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, newAssignmentRequest, Assignment.class);
             log.debug("{}", newAssignmentResponse);
 
             savedAssignment = newAssignmentResponse.getBody();
@@ -209,7 +206,7 @@ public class AssignmentService extends SpringBaseService {
         }
 
         try {
-            HttpEntity<AssignmentGroup> createNewAssignmentGroupResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, null, AssignmentGroup.class);
+            ResponseEntity<AssignmentGroup> createNewAssignmentGroupResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, null, AssignmentGroup.class);
             log.debug("{}", createNewAssignmentGroupResponse);
 
             savedAssignmentGroup = createNewAssignmentGroupResponse.getBody();

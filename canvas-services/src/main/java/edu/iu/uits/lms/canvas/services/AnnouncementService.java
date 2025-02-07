@@ -160,8 +160,8 @@ public class AnnouncementService extends SpringBaseService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
 
         try {
-            HttpEntity<Announcement> announcementsEntity = restTemplate.postForEntity(builder.build().toUri(), requestEntity, Announcement.class);
-            HttpStatusCode responseStatus = ((ResponseEntity<Announcement>) announcementsEntity).getStatusCode();
+            ResponseEntity<Announcement> announcementsEntity = restTemplate.postForEntity(builder.build().toUri(), requestEntity, Announcement.class);
+            HttpStatusCode responseStatus = announcementsEntity.getStatusCode();
 
             if (HttpStatus.OK.equals(responseStatus)) {
                 return announcementsEntity.getBody();

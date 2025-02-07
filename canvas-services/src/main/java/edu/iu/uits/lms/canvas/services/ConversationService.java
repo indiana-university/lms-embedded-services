@@ -41,6 +41,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -129,11 +130,9 @@ public class ConversationService extends SpringBaseService {
 		}
 
 		try {
-			HttpEntity<Conversation[]> conversationsEntity = restTemplate.postForEntity(builder.build().toUri(), requestEntity, Conversation[].class);
+			ResponseEntity<Conversation[]> conversationsEntity = restTemplate.postForEntity(builder.build().toUri(), requestEntity, Conversation[].class);
 
-			if (conversationsEntity != null &&
-					conversationsEntity.getBody() != null &&
-					conversationsEntity.getBody().length > 0) {
+			if (conversationsEntity.getBody() != null && conversationsEntity.getBody().length > 0) {
 
 				// For some reason Canvas returns a collection of conversations on conversation posting. In this case a collection
 				// of 1. So we grab the first/only one to return.
@@ -161,7 +160,7 @@ public class ConversationService extends SpringBaseService {
 			builder.queryParam("as_user_id", asUser);
 		}
 
-		HttpEntity<Conversation> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, Conversation.class);
+		ResponseEntity<Conversation> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, Conversation.class);
 
 		return response.getBody();
 	}
@@ -182,7 +181,7 @@ public class ConversationService extends SpringBaseService {
 			builder.queryParam("as_user_id", asUser);
 		}
 
-		HttpEntity<Conversation> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.GET, null, Conversation.class);
+		ResponseEntity<Conversation> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.GET, null, Conversation.class);
 
 		return response.getBody();
 	}

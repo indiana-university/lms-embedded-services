@@ -37,7 +37,7 @@ import edu.iu.uits.lms.canvas.model.Quiz;
 import edu.iu.uits.lms.canvas.model.QuizSubmission;
 import edu.iu.uits.lms.canvas.model.QuizSubmissionWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -54,9 +54,9 @@ public class QuizService extends SpringBaseService {
     private static final String SINGLE_QUIZ_URI = COURSE_QUIZZES_URI + "/{id}";
     private static final String QUIZ_SUBMISSION_URI = SINGLE_QUIZ_URI + "/submission";
 
-    private UriTemplate COURSE_QUIZZES_TEMPLATE = new UriTemplate(COURSE_QUIZZES_URI);
-    private UriTemplate SINGLE_QUIZ_TEMPLATE = new UriTemplate(SINGLE_QUIZ_URI);
-    private UriTemplate QUIZ_SUBMISSION_TEMPLATE = new UriTemplate(QUIZ_SUBMISSION_URI);
+    private final UriTemplate COURSE_QUIZZES_TEMPLATE = new UriTemplate(COURSE_QUIZZES_URI);
+    private final UriTemplate SINGLE_QUIZ_TEMPLATE = new UriTemplate(SINGLE_QUIZ_URI);
+    private final UriTemplate QUIZ_SUBMISSION_TEMPLATE = new UriTemplate(QUIZ_SUBMISSION_URI);
 
     /**
      * Get all quizzes in a particular course, that the given user has access to see
@@ -88,12 +88,10 @@ public class QuizService extends SpringBaseService {
         builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
 
         try {
-            HttpEntity<Quiz> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), Quiz.class);
+            ResponseEntity<Quiz> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), Quiz.class);
             log.debug("quizResponseEntity: {}", quizResponseEntity);
 
-            if (quizResponseEntity != null) {
-                return quizResponseEntity.getBody();
-            }
+            return quizResponseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error:", hcee);
         }
@@ -115,12 +113,10 @@ public class QuizService extends SpringBaseService {
         builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
 
         try {
-            HttpEntity<QuizSubmissionWrapper> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), QuizSubmissionWrapper.class);
+            ResponseEntity<QuizSubmissionWrapper> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), QuizSubmissionWrapper.class);
             log.debug("quizResponseEntity: {}", quizResponseEntity);
 
-            if (quizResponseEntity != null) {
-                return quizResponseEntity.getBody().getQuizSubmissions();
-            }
+            return quizResponseEntity.getBody().getQuizSubmissions();
         } catch (HttpClientErrorException hcee) {
             log.error("Error:", hcee);
         }

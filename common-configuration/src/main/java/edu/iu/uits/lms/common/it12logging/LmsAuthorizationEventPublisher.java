@@ -4,22 +4,22 @@ package edu.iu.uits.lms.common.it12logging;
  * #%L
  * lms-canvas-common-configuration
  * %%
- * Copyright (C) 2015 - 2023 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,13 +33,34 @@ package edu.iu.uits.lms.common.it12logging;
  * #L%
  */
 
-import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Role;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationEventPublisher;
+import org.springframework.security.authorization.event.AuthorizationEvent;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
-public class LmsFilterSecurityInterceptorObjectPostProcessor implements ObjectPostProcessor<FilterSecurityInterceptor> {
-   @Override
-    public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {
-        fsi.setPublishAuthorizationSuccess(true);
-        return fsi;
+import java.util.function.Supplier;
+
+@Profile("it12")
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+@Component
+@Slf4j
+public class LmsAuthorizationEventPublisher implements AuthorizationEventPublisher {
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    public LmsAuthorizationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+        log.info(getClass().getName() + " is set to publish authorization events");
+    }
+
+    @Override
+    public <T> void publishAuthorizationEvent(Supplier<Authentication> authentication,
+                                              T object, AuthorizationDecision decision) {
+        applicationEventPublisher.publishEvent(new AuthorizationEvent(authentication, object, decision));
     }
 }

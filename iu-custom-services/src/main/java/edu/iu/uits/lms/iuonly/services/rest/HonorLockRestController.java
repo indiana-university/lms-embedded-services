@@ -33,6 +33,8 @@ package edu.iu.uits.lms.iuonly.services.rest;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.iuonly.services.SisServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,17 +62,25 @@ public class HonorLockRestController {
    @Autowired
    private SisServiceImpl sisService;
 
+   @Autowired
+   private CourseService courseService;
+
    /**
     * NOTE: CrossOrigin annotation needs to be on this method and not the class in order for it to be properly handled
     * by the api-portal
-    * @param sisCourseId
+    * @param canvasCourseId
     * @return
     */
-   @GetMapping(value = "/eligible/{sisCourseId}")
+   @GetMapping(value = "/eligible/{canvasCourseId}")
    @Operation(summary = "Check if a course is eligible to enable the HonorLock tool")
    @CrossOrigin(origins = {"${lms.js.cors.origin}"})
-   public ResponseEntity<HonorLockEligible> checkEligible(@PathVariable(name = "sisCourseId") String sisCourseId) {
-      boolean isEligible = sisService.isHonorLockEligible(sisCourseId);
+   public ResponseEntity<HonorLockEligible> checkEligible(@PathVariable(name = "canvasCourseId") String canvasCourseId) {
+      boolean isEligible = false;
+      Course course = courseService.getCourse(canvasCourseId);
+      if (course != null) {
+         String sisCourseId = course.getSisCourseId();
+         isEligible = sisService.isHonorLockEligible(sisCourseId);
+      }
       return ResponseEntity.ok().body(new HonorLockEligible(isEligible));
    }
 

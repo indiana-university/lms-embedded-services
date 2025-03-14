@@ -129,4 +129,7 @@ public class Course implements Serializable {
 	@JsonProperty("access_restricted_by_date")
 	private boolean accessRestrictedByDate;
 
+	@JsonProperty("syllabus_body")
+	private String syllabusBody;
+
 }

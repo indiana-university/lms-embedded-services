@@ -42,7 +42,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
@@ -218,5 +222,32 @@ public class AssignmentService extends SpringBaseService {
             throw new RuntimeException("Error creating assignment group", hcee);
         }
         return savedAssignmentGroup;
+    }
+
+    public Assignment updateAssignmentDescription(String courseId, String assignmentId, String sis_login_id, String description) {
+        URI uri = ASSIGNMENT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+            multiValueMap.add("assignment[description]", description);
+
+            HttpEntity<MultiValueMap<String, String>> updateRequest = new HttpEntity<>(multiValueMap, headers);
+            ResponseEntity<Assignment> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, updateRequest, Assignment.class);
+            log.debug("responseEntity: {}", responseEntity);
+
+            if (responseEntity != null) {
+                return responseEntity.getBody();
+            }
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error:", hcee);
+        }
+
+        return null;
     }
 }

@@ -63,6 +63,10 @@ public class SpringBaseService extends BaseService {
     protected RestTemplate restTemplateNoBuffer;
 
     @Autowired
+    @Qualifier("RestTemplateHttpComponent")
+    protected RestTemplate restTemplateHttpComponent;
+
+    @Autowired
     protected CanvasConfiguration canvasConfiguration;
 
     /**

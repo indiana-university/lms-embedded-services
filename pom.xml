@@ -129,11 +129,6 @@
             </dependency>
             <dependency>
                 <groupId>edu.iu.uits.lms</groupId>
-                <artifactId>lms-canvas-redis-config</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>edu.iu.uits.lms</groupId>
                 <artifactId>lms-canvas-lti-framework</artifactId>
                 <version>${project.version}</version>
             </dependency>

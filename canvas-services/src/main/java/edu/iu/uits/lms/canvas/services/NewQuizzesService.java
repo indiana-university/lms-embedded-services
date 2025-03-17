@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.services;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,12 +33,16 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.model.Quiz;
-import edu.iu.uits.lms.canvas.model.QuizSubmission;
-import edu.iu.uits.lms.canvas.model.QuizSubmissionWrapper;
+import edu.iu.uits.lms.canvas.model.newquizzes.Quiz;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
@@ -48,15 +52,15 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class QuizService extends SpringBaseService {
-    private static final String COURSES_BASE_URI = "{url}/courses";
+public class NewQuizzesService extends SpringBaseService {
+    ///api/quiz/v1/courses/:course_id/quizzes
+    // Note that this api url is different from most other api urls.  New quizzes is "special"
+    private static final String COURSES_BASE_URI = "{url}/api/quiz/v1/courses";
     private static final String COURSE_QUIZZES_URI = COURSES_BASE_URI + "/{id}/quizzes";
     private static final String SINGLE_QUIZ_URI = COURSE_QUIZZES_URI + "/{id}";
-    private static final String QUIZ_SUBMISSION_URI = SINGLE_QUIZ_URI + "/submission";
 
-    private UriTemplate COURSE_QUIZZES_TEMPLATE = new UriTemplate(COURSE_QUIZZES_URI);
-    private UriTemplate SINGLE_QUIZ_TEMPLATE = new UriTemplate(SINGLE_QUIZ_URI);
-    private UriTemplate QUIZ_SUBMISSION_TEMPLATE = new UriTemplate(QUIZ_SUBMISSION_URI);
+    private final UriTemplate COURSE_QUIZZES_TEMPLATE = new UriTemplate(COURSE_QUIZZES_URI);
+    private final UriTemplate SINGLE_QUIZ_TEMPLATE = new UriTemplate(SINGLE_QUIZ_URI);
 
     /**
      * Get all quizzes in a particular course, that the given user has access to see
@@ -65,7 +69,7 @@ public class QuizService extends SpringBaseService {
      * @return
      */
     public List<Quiz> getQuizzesInCourse(String courseId, String sis_login_id) {
-        URI uri = COURSE_QUIZZES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+        URI uri = COURSE_QUIZZES_TEMPLATE.expand(canvasConfiguration.getBaseUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
         builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
@@ -82,7 +86,7 @@ public class QuizService extends SpringBaseService {
      * @return
      */
     public Quiz getSingleQuizFromCourse(String courseId, String quizId, String sis_login_id) {
-        URI uri = SINGLE_QUIZ_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, quizId);
+        URI uri = SINGLE_QUIZ_TEMPLATE.expand(canvasConfiguration.getBaseUrl(), courseId, quizId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
         builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
@@ -101,25 +105,25 @@ public class QuizService extends SpringBaseService {
         return null;
     }
 
-    /**
-     * Get all quiz submissions from a quiz in a course, as seen by the given user
-     * @param courseId
-     * @param quizId
-     * @param sis_login_id
-     * @return
-     */
-    public List<QuizSubmission> getQuizSubmissionFromQuiz(String courseId, String quizId, String sis_login_id) {
-        URI uri = QUIZ_SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, quizId);
+    public Quiz updateQuizInstructions(String courseId, String quizId, String sis_login_id, String instructions) {
+        URI uri = SINGLE_QUIZ_TEMPLATE.expand(canvasConfiguration.getBaseUrl(), courseId, quizId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
         builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
 
         try {
-            HttpEntity<QuizSubmissionWrapper> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), QuizSubmissionWrapper.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+            multiValueMap.add("quiz[instructions]", instructions);
+
+            HttpEntity<MultiValueMap<String, String>> updateRequest = new HttpEntity<>(multiValueMap, headers);
+            ResponseEntity<Quiz> quizResponseEntity = this.restTemplateHttpComponent.exchange(builder.build().toUri(), HttpMethod.PATCH, updateRequest, Quiz.class);
             log.debug("quizResponseEntity: {}", quizResponseEntity);
 
             if (quizResponseEntity != null) {
-                return quizResponseEntity.getBody().getQuizSubmissions();
+                return quizResponseEntity.getBody();
             }
         } catch (HttpClientErrorException hcee) {
             log.error("Error:", hcee);

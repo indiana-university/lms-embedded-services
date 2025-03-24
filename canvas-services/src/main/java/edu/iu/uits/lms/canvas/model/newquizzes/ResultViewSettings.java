@@ -38,12 +38,13 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown=true)
 @Data
-public class ResultViewSettings {
+public class ResultViewSettings implements Serializable {
     private boolean resultViewRestricted;
     private boolean displayPointsAwarded;
     private boolean displayPointsPossible;

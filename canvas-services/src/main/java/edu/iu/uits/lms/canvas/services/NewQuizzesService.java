@@ -65,14 +65,14 @@ public class NewQuizzesService extends SpringBaseService {
     /**
      * Get all quizzes in a particular course, that the given user has access to see
      * @param courseId
-     * @param sis_login_id
+     * @param asUser
      * @return
      */
-    public List<Quiz> getQuizzesInCourse(String courseId, String sis_login_id) {
+    public List<Quiz> getQuizzesInCourse(String courseId, String asUser) {
         URI uri = COURSE_QUIZZES_TEMPLATE.expand(canvasConfiguration.getBaseUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+        builder.queryParam("as_user_id", asUser);
         builder.queryParam("per_page", "100");
 
         return doGet(builder.build().toUri(), Quiz[].class);
@@ -82,14 +82,14 @@ public class NewQuizzesService extends SpringBaseService {
      * Get a specific quiz form a course, as seen by the given user
      * @param courseId
      * @param quizId
-     * @param sis_login_id
+     * @param asUser
      * @return
      */
-    public Quiz getSingleQuizFromCourse(String courseId, String quizId, String sis_login_id) {
+    public Quiz getSingleQuizFromCourse(String courseId, String quizId, String asUser) {
         URI uri = SINGLE_QUIZ_TEMPLATE.expand(canvasConfiguration.getBaseUrl(), courseId, quizId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+        builder.queryParam("as_user_id", asUser);
 
         try {
             HttpEntity<Quiz> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), Quiz.class);
@@ -105,11 +105,11 @@ public class NewQuizzesService extends SpringBaseService {
         return null;
     }
 
-    public Quiz updateQuizInstructions(String courseId, String quizId, String sis_login_id, String instructions) {
+    public Quiz updateQuizInstructions(String courseId, String quizId, String asUser, String instructions) {
         URI uri = SINGLE_QUIZ_TEMPLATE.expand(canvasConfiguration.getBaseUrl(), courseId, quizId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+        builder.queryParam("as_user_id", asUser);
 
         try {
             HttpHeaders headers = new HttpHeaders();

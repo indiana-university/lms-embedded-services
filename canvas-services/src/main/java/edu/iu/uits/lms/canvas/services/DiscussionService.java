@@ -117,11 +117,11 @@ public class DiscussionService extends SpringBaseService {
         return doGet(builder.build().toUri(), DiscussionTopic[].class);
     }
 
-    public DiscussionTopic updateDiscussionTopic(String courseId, String topicId, String sis_login_id, String message) {
+    public DiscussionTopic updateDiscussionTopic(String courseId, String topicId, String asUser, String message) {
         URI uri = TOPIC_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, topicId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+        builder.queryParam("as_user_id", asUser);
 
         try {
             HttpHeaders headers = new HttpHeaders();

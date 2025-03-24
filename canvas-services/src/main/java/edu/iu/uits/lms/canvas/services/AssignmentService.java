@@ -224,11 +224,11 @@ public class AssignmentService extends SpringBaseService {
         return savedAssignmentGroup;
     }
 
-    public Assignment updateAssignmentDescription(String courseId, String assignmentId, String sis_login_id, String description) {
+    public Assignment updateAssignmentDescription(String courseId, String assignmentId, String asUser, String description) {
         URI uri = ASSIGNMENT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+        builder.queryParam("as_user_id", asUser);
 
         try {
             HttpHeaders headers = new HttpHeaders();

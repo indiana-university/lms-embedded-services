@@ -66,14 +66,14 @@ public class ClassicQuizzesService extends SpringBaseService {
     /**
      * Get all quizzes in a particular course, that the given user has access to see
      * @param courseId
-     * @param sis_login_id
+     * @param asUser
      * @return
      */
-    public List<Quiz> getQuizzesInCourse(String courseId, String sis_login_id) {
+    public List<Quiz> getQuizzesInCourse(String courseId, String asUser) {
         URI uri = COURSE_QUIZZES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+        builder.queryParam("as_user_id", asUser);
         builder.queryParam("per_page", "100");
 
         return doGet(builder.build().toUri(), Quiz[].class);
@@ -83,14 +83,14 @@ public class ClassicQuizzesService extends SpringBaseService {
      * Get a specific quiz form a course, as seen by the given user
      * @param courseId
      * @param quizId
-     * @param sis_login_id
+     * @param asUser
      * @return
      */
-    public Quiz getSingleQuizFromCourse(String courseId, String quizId, String sis_login_id) {
+    public Quiz getSingleQuizFromCourse(String courseId, String quizId, String asUser) {
         URI uri = SINGLE_QUIZ_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, quizId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+        builder.queryParam("as_user_id", asUser);
 
         try {
             HttpEntity<Quiz> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), Quiz.class);
@@ -110,14 +110,14 @@ public class ClassicQuizzesService extends SpringBaseService {
      * Get all quiz submissions from a quiz in a course, as seen by the given user
      * @param courseId
      * @param quizId
-     * @param sis_login_id
+     * @param asUser
      * @return
      */
-    public List<QuizSubmission> getQuizSubmissionFromQuiz(String courseId, String quizId, String sis_login_id) {
+    public List<QuizSubmission> getQuizSubmissionFromQuiz(String courseId, String quizId, String asUser) {
         URI uri = QUIZ_SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, quizId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+        builder.queryParam("as_user_id", asUser);
 
         try {
             HttpEntity<QuizSubmissionWrapper> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), QuizSubmissionWrapper.class);
@@ -133,11 +133,11 @@ public class ClassicQuizzesService extends SpringBaseService {
         return null;
     }
 
-    public Quiz updateQuizDescription(String courseId, String quizId, String sis_login_id, String description) {
+    public Quiz updateQuizDescription(String courseId, String quizId, String asUser, String description) {
         URI uri = SINGLE_QUIZ_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, quizId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + sis_login_id);
+        builder.queryParam("as_user_id", asUser);
 
         try {
             HttpHeaders headers = new HttpHeaders();

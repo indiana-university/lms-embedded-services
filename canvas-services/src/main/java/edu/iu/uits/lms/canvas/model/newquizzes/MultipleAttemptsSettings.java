@@ -38,10 +38,12 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown=true)
 @Data
-public class MultipleAttemptsSettings {
+public class MultipleAttemptsSettings implements Serializable {
     private boolean multipleAttemptsEnabled;
     private boolean attemptLimit;
     private Integer maxAttempts;

@@ -73,6 +73,13 @@ public class CanvasEnvironmentConfiguration {
         return restTemplate;
     }
 
+    /**
+     * Creates a RestTemplate bean using HttpComponentsClientHttpRequestFactory with a CloseableHttpClient.
+     * This RestTemplate is configured with a CanvasTokenAuthorizationInterceptor.
+     * Unlike the default RestTemplate, this one can handle PATCH requests.
+     *
+     * @return a RestTemplate instance configured with HttpComponentsClientHttpRequestFactory and CanvasTokenAuthorizationInterceptor
+     */
     @Bean(name = "RestTemplateHttpComponent")
     public RestTemplate restTemplateHttpComponent() {
         CloseableHttpClient httpClient = HttpClients.createDefault();

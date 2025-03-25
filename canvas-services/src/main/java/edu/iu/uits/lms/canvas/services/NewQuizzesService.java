@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.newquizzes.Quiz;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -63,10 +64,12 @@ public class NewQuizzesService extends SpringBaseService {
     private final UriTemplate SINGLE_QUIZ_TEMPLATE = new UriTemplate(SINGLE_QUIZ_URI);
 
     /**
-     * Get all quizzes in a particular course, that the given user has access to see
-     * @param courseId
-     * @param asUser
-     * @return
+     * Get all quizzes in a particular course, that the given user has access to see.
+     *
+     * @param courseId The ID of the course.
+     * @param asUser Masquerade as this user when getting the quizzes. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+     * @return A list of quizzes in the course.
      */
     public List<Quiz> getQuizzesInCourse(String courseId, String asUser) {
         URI uri = COURSE_QUIZZES_TEMPLATE.expand(canvasConfiguration.getBaseUrl(), courseId);
@@ -79,11 +82,13 @@ public class NewQuizzesService extends SpringBaseService {
     }
 
     /**
-     * Get a specific quiz form a course, as seen by the given user
-     * @param courseId
-     * @param quizId
-     * @param asUser
-     * @return
+     * Get a specific quiz from a course, as seen by the given user.
+     *
+     * @param courseId The ID of the course.
+     * @param quizId The ID of the quiz.
+     * @param asUser Masquerade as this user when getting the quiz. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+     * @return The quiz object, or null if not found.
      */
     public Quiz getSingleQuizFromCourse(String courseId, String quizId, String asUser) {
         URI uri = SINGLE_QUIZ_TEMPLATE.expand(canvasConfiguration.getBaseUrl(), courseId, quizId);
@@ -105,6 +110,16 @@ public class NewQuizzesService extends SpringBaseService {
         return null;
     }
 
+    /**
+     * Update the instructions of a quiz in a course, as seen by the given user.
+     *
+     * @param courseId The ID of the course.
+     * @param quizId The ID of the quiz.
+     * @param asUser Masquerade as this user when updating the quiz. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+     * @param instructions The new instructions for the quiz.
+     * @return The updated quiz object, or null if the update failed.
+     */
     public Quiz updateQuizInstructions(String courseId, String quizId, String asUser, String instructions) {
         URI uri = SINGLE_QUIZ_TEMPLATE.expand(canvasConfiguration.getBaseUrl(), courseId, quizId);
 

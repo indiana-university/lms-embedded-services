@@ -224,7 +224,17 @@ public class AssignmentService extends SpringBaseService {
         return savedAssignmentGroup;
     }
 
-    public Assignment updateAssignmentDescription(String courseId, String assignmentId, String asUser, String description) {
+  /**
+   * Update the description of an assignment.
+   *
+   * @param courseId Canvas course id
+   * @param assignmentId Canvas assignment id
+   * @param asUser optional - masquerade as this user when updating the assignment. If you wish to use an sis_login_id,
+   *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+   * @param description new description for the assignment
+   * @return the updated Assignment
+   */
+  public Assignment updateAssignmentDescription(String courseId, String assignmentId, String asUser, String description) {
         URI uri = ASSIGNMENT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);

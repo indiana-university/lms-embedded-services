@@ -117,11 +117,23 @@ public class CourseService extends SpringBaseService {
 
 
 
+    /**
+     * Retrieve a course by its ID.
+     *
+     * @param courseId the ID of the course to retrieve
+     * @return the Course object, or null if not found
+     */
     public Course getCourse(String courseId) {
         return getCourse(courseId, new String[]{});
     }
 
-    // feel free to pass in "sis_course_id:1234" for the courseId if you need the SIS id instead of Canvas's course id
+    /**
+     * Retrieve a course by its ID with optional includes.
+     *
+     * @param courseId the ID of the course to retrieve
+     * @param includes optional parameters to include in the response
+     * @return the Course object, or null if not found
+     */
     public Course getCourse(String courseId, String[] includes) {
         URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 

@@ -112,11 +112,19 @@ public class DiscussionService extends SpringBaseService {
         log.debug("uri: {}", uri);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-//        builder.queryParam("only_announcements", false);
 
         return doGet(builder.build().toUri(), DiscussionTopic[].class);
     }
 
+    /**
+     * Update a discussion topic for the given course
+     * @param courseId Canvas course id
+     * @param topicId Discussion topic id
+     * @param asUser Masquerade as this user when getting the quiz. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+     * @param message Updated message for the discussion topic
+     * @return Updated DiscussionTopic object
+     */
     public DiscussionTopic updateDiscussionTopic(String courseId, String topicId, String asUser, String message) {
         URI uri = TOPIC_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, topicId);
 

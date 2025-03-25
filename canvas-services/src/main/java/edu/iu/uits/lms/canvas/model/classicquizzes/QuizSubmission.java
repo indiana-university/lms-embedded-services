@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.canvas.model;
+package edu.iu.uits.lms.canvas.model.classicquizzes;
 
 /*-
  * #%L
@@ -36,13 +36,39 @@ package edu.iu.uits.lms.canvas.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.List;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class QuizSubmissionWrapper implements Serializable {
-    @JsonProperty("quiz_submissions")
-    private List<QuizSubmission> quizSubmissions;
+@ToString
+@Data
+public class QuizSubmission implements Serializable {
+
+    private String id;
+
+    @JsonProperty("quiz_id")
+    private String quizId;
+
+    @JsonProperty("user_id")
+    private String userId;
+
+    @JsonProperty("submission_id")
+    private String submissionId;
+
+    @JsonProperty("extra_attempts")
+    private String extraAttempts;
+
+    // Amount of extra time allowed for the quiz submission, in minutes.
+    @JsonProperty("extra_time")
+    private String extraTime;
+
+    @JsonProperty("manually_unlocked")
+    private boolean manuallyUnlocked;
+
+    @JsonProperty("attempts_left")
+    private String attemptsLeft;
+
+    @JsonProperty("excused?")
+    private boolean excused;
 }

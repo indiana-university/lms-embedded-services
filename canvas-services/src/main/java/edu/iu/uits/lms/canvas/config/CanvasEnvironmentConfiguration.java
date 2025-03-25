@@ -35,10 +35,13 @@ package edu.iu.uits.lms.canvas.config;
 
 import edu.iu.uits.lms.canvas.security.CanvasTokenAuthorizationInterceptor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -65,6 +68,22 @@ public class CanvasEnvironmentConfiguration {
     @Bean(name = "restTemplateNoBuffer")
     public RestTemplate restTemplateNoBuffer() {
         RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
+
+        restTemplate.getInterceptors().add(new CanvasTokenAuthorizationInterceptor(canvasConfiguration.getToken()));
+        return restTemplate;
+    }
+
+    /**
+     * Creates a RestTemplate bean using HttpComponentsClientHttpRequestFactory with a CloseableHttpClient.
+     * This RestTemplate is configured with a CanvasTokenAuthorizationInterceptor.
+     * Unlike the default RestTemplate, this one can handle PATCH requests.
+     *
+     * @return a RestTemplate instance configured with HttpComponentsClientHttpRequestFactory and CanvasTokenAuthorizationInterceptor
+     */
+    @Bean(name = "RestTemplateHttpComponent")
+    public RestTemplate restTemplateHttpComponent() {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)));
 
         restTemplate.getInterceptors().add(new CanvasTokenAuthorizationInterceptor(canvasConfiguration.getToken()));
         return restTemplate;

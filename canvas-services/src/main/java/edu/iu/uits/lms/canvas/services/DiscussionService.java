@@ -39,19 +39,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
 import java.net.URI;
+import java.util.List;
 
 @Service
 @Slf4j
 public class DiscussionService extends SpringBaseService {
     private static final String BASE_URI = "{url}/courses/{course_id}/discussion_topics";
+    private static final String TOPIC_URI = BASE_URI + "/{id}";
 
     private static final UriTemplate BASE_TEMPLATE = new UriTemplate(BASE_URI);
+    private static final UriTemplate TOPIC_TEMPLATE = new UriTemplate(TOPIC_URI);
 
     /**
      *
@@ -94,5 +100,55 @@ public class DiscussionService extends SpringBaseService {
         }
 
         return savedDiscussionTopic;
+    }
+
+    /**
+     * Get all discussion topics for the given course
+     * @param courseId Course id
+     * @return a list of all the discussion topics in a given course
+     */
+    public List<DiscussionTopic> getDiscussionsForCourse(String courseId) {
+        URI uri = BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+        log.debug("uri: {}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        return doGet(builder.build().toUri(), DiscussionTopic[].class);
+    }
+
+    /**
+     * Update a discussion topic for the given course
+     * @param courseId Canvas course id
+     * @param topicId Discussion topic id
+     * @param asUser Masquerade as this user when getting the quiz. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+     * @param message Updated message for the discussion topic
+     * @return Updated DiscussionTopic object
+     */
+    public DiscussionTopic updateDiscussionTopic(String courseId, String topicId, String asUser, String message) {
+        URI uri = TOPIC_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, topicId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.queryParam("as_user_id", asUser);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+            multiValueMap.add("message", message);
+
+            HttpEntity<MultiValueMap<String, String>> updateRequest = new HttpEntity<>(multiValueMap, headers);
+            HttpEntity<DiscussionTopic> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, updateRequest, DiscussionTopic.class);
+            log.debug("responseEntity: {}", responseEntity);
+
+            if (responseEntity != null) {
+                return responseEntity.getBody();
+            }
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error:", hcee);
+        }
+
+        return null;
     }
 }

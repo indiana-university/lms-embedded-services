@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.common.swagger;
+package edu.iu.uits.lms.common.it12logging;
 
 /*-
  * #%L
@@ -33,39 +33,34 @@ package edu.iu.uits.lms.common.swagger;
  * #L%
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Role;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationEventPublisher;
+import org.springframework.security.authorization.event.AuthorizationEvent;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.function.Supplier;
 
-/**
- * Create a RepositoryDetectionStrategy that has to match the configured package list, in addition to either a
- * class annotated with RepositoryRestResource or RestResource
- */
-@Data
-@AllArgsConstructor
+@Profile("it12")
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+@Component
 @Slf4j
-public class LmsRepositoryDetectionStrategy implements RepositoryDetectionStrategy {
+public class LmsAuthorizationEventPublisher implements AuthorizationEventPublisher {
+    private ApplicationEventPublisher applicationEventPublisher;
 
-    private List<String> initPackagesToInclude;
+    public LmsAuthorizationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+        log.info(getClass().getName() + " is set to publish authorization events");
+    }
 
     @Override
-    public boolean isExported(RepositoryMetadata metadata) {
-        // If no packages were configured to include, use an empty list
-        List<String> packagesToInclude = initPackagesToInclude == null ? List.of() : initPackagesToInclude;
-
-        // Check if the repository's package is in the allowed list
-        String repositoryPackage = metadata.getRepositoryInterface().getPackageName();
-        boolean isPackageAllowed = packagesToInclude.stream().anyMatch(repositoryPackage::startsWith);
-
-        // Check for allowed annotations
-        boolean hasAnnotation = RepositoryDetectionStrategies.ANNOTATED.isExported(metadata);
-
-        log.debug("Packages to check for class {}: {}", metadata.getRepositoryInterface(), packagesToInclude);
-        log.debug("Checking {}: pkg: {}, anyAnnotation: {}", repositoryPackage, isPackageAllowed, hasAnnotation);
-        return isPackageAllowed && hasAnnotation;
+    public <T> void publishAuthorizationEvent(Supplier<Authentication> authentication,
+                                              T object, AuthorizationDecision decision) {
+        applicationEventPublisher.publishEvent(new AuthorizationEvent(authentication, object, decision));
     }
 }

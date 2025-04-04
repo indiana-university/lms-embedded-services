@@ -33,6 +33,7 @@ package edu.iu.uits.lms.iuonly.rest;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.iuonly.repository.AuthorizedUserRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
@@ -104,6 +105,9 @@ public class RestControllerAvailabilityTest {
 
    @MockitoBean
    private SisServiceImpl sisService;
+
+   @MockitoBean
+   private CourseService courseService;
 
    @Nested
    @ActiveProfiles({IUCUSTOMREST_PROFILE})

@@ -1,25 +1,25 @@
-package edu.iu.uits.lms.common.it12logging;
+package edu.iu.uits.lms.canvas.model.newquizzes;
 
 /*-
  * #%L
- * lms-canvas-common-configuration
+ * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2023 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,15 +33,21 @@ package edu.iu.uits.lms.common.it12logging;
  * #L%
  */
 
-import org.springframework.security.config.ObjectPostProcessor;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.Data;
 
-public class LmsFilterSecurityInterceptorObjectPostProcessor implements ObjectPostProcessor<FilterSecurityInterceptor> {
-   @Override
-    public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {
-        if (fsi != null) {
-            fsi.setPublishAuthorizationSuccess(true);
-        }
-        return fsi;
-    }
+import java.io.Serializable;
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown=true)
+@Data
+public class MultipleAttemptsSettings implements Serializable {
+    private boolean multipleAttemptsEnabled;
+    private boolean attemptLimit;
+    private Integer maxAttempts;
+    private String scoreToKeep;
+    private boolean coolingPeriod;
+    private Long coolingPeriodSeconds;
 }

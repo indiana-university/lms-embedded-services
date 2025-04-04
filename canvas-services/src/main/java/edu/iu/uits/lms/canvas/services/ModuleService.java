@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.Module;
 import edu.iu.uits.lms.canvas.model.ModuleCreateWrapper;
 import edu.iu.uits.lms.canvas.model.ModuleItem;
@@ -87,20 +88,29 @@ public class ModuleService extends SpringBaseService {
      * Create a module in a course
      * @param courseId Course id
      * @param newModule Wrapper object used to create the module
+     * @param asUser optional - masquerade as this user when creating the module. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1).
+     *               Send in null to not set the user explicitly (api caller owner will own)
      * @return Created Module
      */
-    public Module createModule(String courseId, ModuleCreateWrapper newModule) {
+    public Module createModule(String courseId, ModuleCreateWrapper newModule, String asUser) {
         Module savedModule = null;
 
         URI uri = MODULES_BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
         log.debug("{}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<ModuleCreateWrapper> request = new HttpEntity<>(newModule, headers);
-            ResponseEntity<Module> response = this.restTemplate.exchange(uri, HttpMethod.POST, request, Module.class);
+            ResponseEntity<Module> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, request, Module.class);
             log.debug("{}", response);
 
             savedModule = response.getBody();
@@ -199,20 +209,29 @@ public class ModuleService extends SpringBaseService {
      * @param courseId Course id
      * @param moduleId Module id
      * @param newModuleItem Wrapper object used to create the module item
+     * @param asUser optional - masquerade as this user when creating the module item. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
+     *               Send in null to not set the user explicitly (api caller owner will own)
      * @return Created ModuleItem
      */
-    public ModuleItem createModuleItem(String courseId, String moduleId, ModuleItemCreateWrapper newModuleItem) {
+    public ModuleItem createModuleItem(String courseId, String moduleId, ModuleItemCreateWrapper newModuleItem, String asUser) {
         ModuleItem savedModuleItem = null;
 
         URI uri = MODULE_ITEMS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, moduleId);
         log.debug("{}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<ModuleItemCreateWrapper> request = new HttpEntity<>(newModuleItem, headers);
-            ResponseEntity<ModuleItem> response = this.restTemplate.exchange(uri, HttpMethod.POST, request, ModuleItem.class);
+            ResponseEntity<ModuleItem> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, request, ModuleItem.class);
             log.debug("{}", response);
 
             savedModuleItem = response.getBody();

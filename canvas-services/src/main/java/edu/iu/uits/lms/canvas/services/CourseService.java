@@ -37,7 +37,6 @@ import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.Course;
 import edu.iu.uits.lms.canvas.model.CourseCreateWrapper;
 import edu.iu.uits.lms.canvas.model.CourseSectionUpdateWrapper;
-import edu.iu.uits.lms.canvas.model.CourseSyllabusBody;
 import edu.iu.uits.lms.canvas.model.CourseSyllabusBodyWrapper;
 import edu.iu.uits.lms.canvas.model.Enrollment;
 import edu.iu.uits.lms.canvas.model.EnrollmentCreateWrapper;
@@ -101,6 +100,7 @@ public class CourseService extends SpringBaseService {
     private static final String SECTIONS_BASE_URI = "{url}/sections";
     private static final String SECTION_ENROLLMENTS_URI = SECTIONS_BASE_URI + "/{id}/enrollments";
     private static final String COURSE_WIKI_PAGES_URI = COURSE_URI + "/pages";
+    private static final String COURSE_WIKI_PAGE_URI = COURSE_URI + "/pages/{id}";
 
     private final UriTemplate ACCOUNTS_COURSES_TEMPLATE = new UriTemplate(ACCOUNTS_COURSES_URI);
     private final UriTemplate COURSE_BASE_TEMPLATE = new UriTemplate(COURSES_BASE_URI);
@@ -113,13 +113,35 @@ public class CourseService extends SpringBaseService {
     private final UriTemplate COURSE_SECTIONS_TEMPLATE = new UriTemplate(COURSE_SECTIONS_BASE_URI);
     private final UriTemplate SECTION_ENROLLMENTS_TEMPLATE = new UriTemplate(SECTION_ENROLLMENTS_URI);
     private final UriTemplate COURSE_WIKI_PAGES_TEMPLATE = new UriTemplate(COURSE_WIKI_PAGES_URI);
+    private final UriTemplate COURSE_WIKI_PAGE_TEMPLATE = new UriTemplate(COURSE_WIKI_PAGE_URI);
 
-    // feel free to pass in "sis_course_id:1234" for the courseId if you need the SIS id instead of Canvas's course id
+
+
+    /**
+     * Retrieve a course by its ID.
+     *
+     * @param courseId the ID of the course to retrieve
+     * @return the Course object, or null if not found
+     */
     public Course getCourse(String courseId) {
+        return getCourse(courseId, new String[]{});
+    }
+
+    /**
+     * Retrieve a course by its ID with optional includes.
+     *
+     * @param courseId the ID of the course to retrieve
+     * @param includes optional parameters to include in the response
+     * @return the Course object, or null if not found
+     */
+    public Course getCourse(String courseId, String[] includes) {
         URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
         builder.queryParam("include[]", "term");
+        for (String include : includes) {
+            builder.queryParam("include[]", include);
+        }
 
         try {
             HttpEntity<Course> courseResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), Course.class);
@@ -953,12 +975,17 @@ public class CourseService extends SpringBaseService {
     /**
      * Get all Wiki pages for the supplied course
      * @param courseId Canvas course id
+     * @param includes List of optional includes to add to the call
      * @return get all the Wiki pages for the given course id
      */
-    public List<WikiPage> getWikiPages(String courseId) {
+    public List<WikiPage> getWikiPages(String courseId, String[] includes) {
         URI uri = COURSE_WIKI_PAGES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        for (String include : includes) {
+            builder.queryParam("include[]", include);
+        }
+
         return doGet(builder.build().toUri(), WikiPage[].class);
     }
 
@@ -1004,13 +1031,57 @@ public class CourseService extends SpringBaseService {
     }
 
     /**
+     * Update a course Wiki Page
+     * @param courseId Canvas course id
+     * @param pageId Wiki page to update
+     * @param asUser optional - masquerade as this user when creating the Wiki Page. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
+     * @return an updated WikiPage from Canvas
+     */
+    public WikiPage updateWikiPage(String courseId, String pageId, String pageBody, String asUser) {
+        if (courseId == null) {
+            throw new IllegalArgumentException("Null id passed to updateWikiPage.");
+        }
+
+        WikiPage savedWikiPage = null;
+
+        URI uri = COURSE_WIKI_PAGE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, pageId);
+        log.debug("{}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+            multiValueMap.add("wiki_page[body]", pageBody);
+
+            HttpEntity<MultiValueMap<String, String>> updateWikiPageRequest = new HttpEntity<>(multiValueMap, headers);
+            HttpEntity<WikiPage> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, updateWikiPageRequest, WikiPage.class);
+            log.debug("{}", responseEntity);
+
+            savedWikiPage = responseEntity.getBody();
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error updating Wiki page", hcee);
+            throw new RuntimeException("Error updating Wiki page", hcee);
+        }
+
+        return savedWikiPage;
+    }
+
+    /**
      * Updates a course's syllabus body with the supplied value
      * @param courseId Canvas course id
      * @param modifiedCourseSyllabusBodyWrapper Syllabus body to use, wrapped
      * @return Syllabus body
      */
-    public CourseSyllabusBody updateCourseSyllabus(String courseId, CourseSyllabusBodyWrapper modifiedCourseSyllabusBodyWrapper) {
-        CourseSyllabusBody modifiedCourseSyllabusBody = null;
+    public Course updateCourseSyllabus(String courseId, CourseSyllabusBodyWrapper modifiedCourseSyllabusBodyWrapper) {
+        Course modifiedCourse = null;
 
         URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
         log.debug("{}", uri);
@@ -1020,16 +1091,16 @@ public class CourseService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<CourseSyllabusBodyWrapper> modifiedCourseSyllabusRequest = new HttpEntity<>(modifiedCourseSyllabusBodyWrapper, headers);
-            HttpEntity<CourseSyllabusBody> modifedCourseResponse = this.restTemplate.exchange(uri, HttpMethod.PUT, modifiedCourseSyllabusRequest, CourseSyllabusBody.class);
+            HttpEntity<Course> modifedCourseResponse = this.restTemplate.exchange(uri, HttpMethod.PUT, modifiedCourseSyllabusRequest, Course.class);
             log.debug("{}", modifedCourseResponse);
 
-            modifiedCourseSyllabusBody = modifedCourseResponse.getBody();
+            modifiedCourse = modifedCourseResponse.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error modifying course syllabus body", hcee);
             throw new RuntimeException("Error modifying course syllabus body", hcee);
         }
 
-        return modifiedCourseSyllabusBody;
+        return modifiedCourse;
     }
 
 

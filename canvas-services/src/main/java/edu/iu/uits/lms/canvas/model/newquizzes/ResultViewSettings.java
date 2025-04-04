@@ -1,8 +1,8 @@
-package edu.iu.uits.lms.common.swagger;
+package edu.iu.uits.lms.canvas.model.newquizzes;
 
 /*-
  * #%L
- * lms-canvas-common-configuration
+ * LMS Canvas Services
  * %%
  * Copyright (C) 2015 - 2025 Indiana University
  * %%
@@ -33,39 +33,30 @@ package edu.iu.uits.lms.common.swagger;
  * #L%
  */
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.Date;
 
-/**
- * Create a RepositoryDetectionStrategy that has to match the configured package list, in addition to either a
- * class annotated with RepositoryRestResource or RestResource
- */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown=true)
 @Data
-@AllArgsConstructor
-@Slf4j
-public class LmsRepositoryDetectionStrategy implements RepositoryDetectionStrategy {
-
-    private List<String> initPackagesToInclude;
-
-    @Override
-    public boolean isExported(RepositoryMetadata metadata) {
-        // If no packages were configured to include, use an empty list
-        List<String> packagesToInclude = initPackagesToInclude == null ? List.of() : initPackagesToInclude;
-
-        // Check if the repository's package is in the allowed list
-        String repositoryPackage = metadata.getRepositoryInterface().getPackageName();
-        boolean isPackageAllowed = packagesToInclude.stream().anyMatch(repositoryPackage::startsWith);
-
-        // Check for allowed annotations
-        boolean hasAnnotation = RepositoryDetectionStrategies.ANNOTATED.isExported(metadata);
-
-        log.debug("Packages to check for class {}: {}", metadata.getRepositoryInterface(), packagesToInclude);
-        log.debug("Checking {}: pkg: {}, anyAnnotation: {}", repositoryPackage, isPackageAllowed, hasAnnotation);
-        return isPackageAllowed && hasAnnotation;
-    }
+public class ResultViewSettings implements Serializable {
+    private boolean resultViewRestricted;
+    private boolean displayPointsAwarded;
+    private boolean displayPointsPossible;
+    private boolean displayItems;
+    private boolean displayItemResponse;
+    private String displayItemResponseQualifier;
+    private Date showItemResponsesAt;
+    private Date hideItemResponsesAt;
+    private boolean displayItemResponseCorrectness;
+    private String displayItemResponseCorrectnessQualifier;
+    private Date showItemResponseCorrectnessAt;
+    private Date hideItemResponseCorrectnessAt;
+    private boolean displayItemCorrectAnswer;
+    private boolean displayItemFeedback;
 }

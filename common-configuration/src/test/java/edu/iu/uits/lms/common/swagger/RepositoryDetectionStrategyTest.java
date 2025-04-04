@@ -59,18 +59,34 @@ public class RepositoryDetectionStrategyTest {
 
     @Test
     public void testGoodPackageHasRepositoryRestResource() {
-        doReturn(TestRepositoryRestResource.class).when(metadata).getRepositoryInterface();
+        doReturn(TestRepositoryRestResourceExported.class).when(metadata).getRepositoryInterface();
 
         boolean result = detectionStrategy.isExported(metadata);
         assertTrue(result, "Repository should be exported when package is allowed and has @RepositoryRestResource");
     }
 
     @Test
+    public void testGoodPackageHasRepositoryRestResourceButNotExported() {
+        doReturn(TestRepositoryRestResourceNotExported.class).when(metadata).getRepositoryInterface();
+
+        boolean result = detectionStrategy.isExported(metadata);
+        assertFalse(result, "Repository should not be exported when package is allowed and has @RepositoryRestResource, but exported = false");
+    }
+
+    @Test
     public void testGoodPackageHasRestResource() {
-        doReturn(TestRestRepository.class).when(metadata).getRepositoryInterface();
+        doReturn(TestRestRepositoryExported.class).when(metadata).getRepositoryInterface();
 
         boolean result = detectionStrategy.isExported(metadata);
         assertTrue(result, "Repository should be exported when package is allowed and has @RestResource");
+    }
+
+    @Test
+    public void testGoodPackageHasRestResourceButNotExported() {
+        doReturn(TestRestRepositoryNotExported.class).when(metadata).getRepositoryInterface();
+
+        boolean result = detectionStrategy.isExported(metadata);
+        assertFalse(result, "Repository should not be exported when package is allowed and has @RestResource, but exported = false");
     }
 
     @Test
@@ -94,7 +110,7 @@ public class RepositoryDetectionStrategyTest {
         //Override the strategy to use a different package
         detectionStrategy = new LmsRepositoryDetectionStrategy(List.of("com.other.repository"));
 
-        doReturn(TestRestRepository.class).when(metadata).getRepositoryInterface();
+        doReturn(TestRestRepositoryExported.class).when(metadata).getRepositoryInterface();
         boolean result = detectionStrategy.isExported(metadata);
         assertFalse(result, "Repository should not be exported when package is not allowed");
     }
@@ -107,12 +123,38 @@ public class RepositoryDetectionStrategyTest {
         assertFalse(result, "Repository should not be exported when no annotations are present");
     }
 
+    @Test
+    public void testNoConfiguredPackage() {
+        //Override the strategy to use a different package
+        detectionStrategy = new LmsRepositoryDetectionStrategy(List.of());
+
+        doReturn(TestRestRepositoryExported.class).when(metadata).getRepositoryInterface();
+        boolean result = detectionStrategy.isExported(metadata);
+        assertFalse(result, "Repository should not be exported when package is not allowed");
+    }
+
+    @Test
+    public void testNullConfiguredPackage() {
+        //Override the strategy to use a different package
+        detectionStrategy = new LmsRepositoryDetectionStrategy(null);
+
+        doReturn(TestRestRepositoryExported.class).when(metadata).getRepositoryInterface();
+        boolean result = detectionStrategy.isExported(metadata);
+        assertFalse(result, "Repository should not be exported when package is not allowed");
+    }
+
     // Mock repository classes for testing
     @RestResource
-    interface TestRestRepository {}
+    interface TestRestRepositoryExported {}
 
     @RepositoryRestResource
-    interface TestRepositoryRestResource {}
+    interface TestRepositoryRestResourceExported {}
+
+    @RestResource(exported = false)
+    interface TestRestRepositoryNotExported {}
+
+    @RepositoryRestResource(exported = false)
+    interface TestRepositoryRestResourceNotExported {}
 
     interface TestNoAnnotationRepository {}
 

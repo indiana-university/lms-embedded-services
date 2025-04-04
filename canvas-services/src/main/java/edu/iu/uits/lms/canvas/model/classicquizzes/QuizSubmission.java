@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.common.it12logging;
+package edu.iu.uits.lms.canvas.model.classicquizzes;
 
 /*-
  * #%L
- * lms-canvas-common-configuration
+ * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2023 Indiana University
+ * Copyright (C) 2015 - 2021 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,23 +33,42 @@ package edu.iu.uits.lms.common.it12logging;
  * #L%
  */
 
-import org.springframework.security.config.ObjectPostProcessor;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+import lombok.ToString;
 
-public class RestSecurityLoggingConfig extends AbstractHttpConfigurer<RestSecurityLoggingConfig, HttpSecurity> {
+import java.io.Serializable;
 
-   @Override
-   public void init(HttpSecurity http) throws Exception {
-      // https://docs.spring.io/spring-security/reference/servlet/configuration/java.html#post-processing-configured-objects
-      http.authorizeHttpRequests(auth -> auth
-            .anyRequest().authenticated()
-            .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
-               public <O extends FilterSecurityInterceptor> O postProcess(O fsi) {
-                  fsi.setPublishAuthorizationSuccess(true);
-                  return fsi;
-               }
-            }));
-   }
+@JsonIgnoreProperties(ignoreUnknown=true)
+@ToString
+@Data
+public class QuizSubmission implements Serializable {
+
+    private String id;
+
+    @JsonProperty("quiz_id")
+    private String quizId;
+
+    @JsonProperty("user_id")
+    private String userId;
+
+    @JsonProperty("submission_id")
+    private String submissionId;
+
+    @JsonProperty("extra_attempts")
+    private String extraAttempts;
+
+    // Amount of extra time allowed for the quiz submission, in minutes.
+    @JsonProperty("extra_time")
+    private String extraTime;
+
+    @JsonProperty("manually_unlocked")
+    private boolean manuallyUnlocked;
+
+    @JsonProperty("attempts_left")
+    private String attemptsLeft;
+
+    @JsonProperty("excused?")
+    private boolean excused;
 }

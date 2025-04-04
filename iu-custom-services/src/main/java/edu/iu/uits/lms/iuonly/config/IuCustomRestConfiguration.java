@@ -33,7 +33,6 @@ package edu.iu.uits.lms.iuonly.config;
  * #L%
  */
 
-import edu.iu.uits.lms.common.it12logging.RestSecurityLoggingConfig;
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,9 +62,7 @@ public class IuCustomRestConfiguration {
                 )
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt ->
-                        jwt.jwtAuthenticationConverter(new CustomJwtAuthenticationConverter())))
-                .with(new RestSecurityLoggingConfig(), log -> {
-                });
+                        jwt.jwtAuthenticationConverter(new CustomJwtAuthenticationConverter())));
 
         return http.build();
     }

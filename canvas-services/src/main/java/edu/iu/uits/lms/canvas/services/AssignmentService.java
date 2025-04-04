@@ -42,8 +42,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
@@ -215,5 +218,42 @@ public class AssignmentService extends SpringBaseService {
             throw new RuntimeException("Error creating assignment group", hcee);
         }
         return savedAssignmentGroup;
+    }
+
+  /**
+   * Update the description of an assignment.
+   *
+   * @param courseId Canvas course id
+   * @param assignmentId Canvas assignment id
+   * @param asUser optional - masquerade as this user when updating the assignment. If you wish to use an sis_login_id,
+   *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+   * @param description new description for the assignment
+   * @return the updated Assignment
+   */
+  public Assignment updateAssignmentDescription(String courseId, String assignmentId, String asUser, String description) {
+        URI uri = ASSIGNMENT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.queryParam("as_user_id", asUser);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+            multiValueMap.add("assignment[description]", description);
+
+            HttpEntity<MultiValueMap<String, String>> updateRequest = new HttpEntity<>(multiValueMap, headers);
+            ResponseEntity<Assignment> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, updateRequest, Assignment.class);
+            log.debug("responseEntity: {}", responseEntity);
+
+            if (responseEntity != null) {
+                return responseEntity.getBody();
+            }
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error:", hcee);
+        }
+
+        return null;
     }
 }

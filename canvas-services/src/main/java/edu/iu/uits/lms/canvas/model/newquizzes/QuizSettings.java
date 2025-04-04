@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.canvas.model;
+package edu.iu.uits.lms.canvas.model.newquizzes;
 
 /*-
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,41 +34,29 @@ package edu.iu.uits.lms.canvas.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
-import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown=true)
-@ToString
 @Data
-public class QuizSubmission implements Serializable {
-
-    private String id;
-
-    @JsonProperty("quiz_id")
-    private String quizId;
-
-    @JsonProperty("user_id")
-    private String userId;
-
-    @JsonProperty("submission_id")
-    private String submissionId;
-
-    @JsonProperty("extra_attempts")
-    private String extraAttempts;
-
-    // Amount of extra time allowed for the quiz submission, in minutes.
-    @JsonProperty("extra_time")
-    private String extraTime;
-
-    @JsonProperty("manually_unlocked")
-    private boolean manuallyUnlocked;
-
-    @JsonProperty("attempts_left")
-    private String attemptsLeft;
-
-    @JsonProperty("excused?")
-    private boolean excused;
+public class QuizSettings implements Serializable {
+    private String calculatorType;
+    private boolean filterIpAddress;
+    private Map<String, List<List<String>>> filters;
+    private String oneAtATimeType;
+    private boolean allowBacktracking;
+    private boolean shuffleAnswers;
+    private boolean shuffleQuestions;
+    private boolean requireStudentAccessCode;
+    private String studentAccessCode;
+    private boolean hasTimeLimit;
+    private Long sessionTimeLimitInSeconds;
+    private MultipleAttemptsSettings multipleAttempts;
+    private ResultViewSettings resultViewSettings;
 }

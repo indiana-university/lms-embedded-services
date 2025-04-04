@@ -54,7 +54,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
-@EqualsAndHashCode(exclude = {"templatedCourse"})
+@EqualsAndHashCode(exclude = {"templatedCourse"}, callSuper = true)
 @ToString(exclude = {"templatedCourse"})
 public class ContentMigrationStatus extends BaseObject {
 

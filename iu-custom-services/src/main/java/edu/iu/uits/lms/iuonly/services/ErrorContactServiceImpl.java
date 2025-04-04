@@ -51,8 +51,8 @@ public class ErrorContactServiceImpl {
     public ErrorContactResponse postEvent(ErrorContactPostForm errorContactPostForm) {
 
         if (errorContactPostForm == null ||
-                errorContactPostForm.getJobCode() == null || errorContactPostForm.getJobCode().trim().length() == 0 ||
-                errorContactPostForm.getMessage() == null || errorContactPostForm.getMessage().trim().length() == 0) {
+                errorContactPostForm.getJobCode() == null || errorContactPostForm.getJobCode().trim().isEmpty() ||
+                errorContactPostForm.getMessage() == null || errorContactPostForm.getMessage().trim().isEmpty()) {
             log.error("Missing job code and/or message jobCode = {}, message = {}",
                     errorContactPostForm.getJobCode(), errorContactPostForm.getMessage());
 

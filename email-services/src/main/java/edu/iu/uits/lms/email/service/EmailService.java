@@ -119,7 +119,7 @@ public class EmailService {
 
          body = preBody + "\r\n" + body;
 
-         recipients = new String[] {   emailToUseInPreProd != null && emailToUseInPreProd.trim().length() > 0
+         recipients = new String[] {   emailToUseInPreProd != null && !emailToUseInPreProd.trim().isEmpty()
                  ? emailToUseInPreProd
                  : emailServiceConfig.getDefaultUnsignedTo() };
       }

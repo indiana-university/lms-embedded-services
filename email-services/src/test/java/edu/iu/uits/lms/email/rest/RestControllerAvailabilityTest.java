@@ -33,6 +33,7 @@ package edu.iu.uits.lms.email.rest;
  * #L%
  */
 
+import edu.iu.uits.lms.email.service.EmailService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,10 +54,13 @@ import java.util.stream.Collectors;
 import static edu.iu.uits.lms.email.EmailConstants.EMAILREST_PROFILE;
 
 //@NestedTestConfiguration(INHERIT)
-@SpringBootTest
+@SpringBootTest(classes = {EmailRestController.class})
 public class RestControllerAvailabilityTest {
 
    private static final String PACKAGE = "edu.iu.uits.lms.email";
+
+   @MockitoBean
+   private EmailService emailService;
 
    @Nested
    @ActiveProfiles({EMAILREST_PROFILE})

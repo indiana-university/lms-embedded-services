@@ -161,9 +161,9 @@ public class UserService extends SpringBaseService {
          HttpHeaders headers = new HttpHeaders();
          headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-         HttpEntity<MultiValueMap> requestEntity = new HttpEntity<>(map, headers);
+         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
          log.debug("{}", requestEntity);
-         HttpEntity<Object> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, Object.class);
+         ResponseEntity<Object> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, Object.class);
          log.debug("{}", response);
          return response.getBody();
 
@@ -197,9 +197,9 @@ public class UserService extends SpringBaseService {
          HttpHeaders headers = new HttpHeaders();
          headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-         HttpEntity<MultiValueMap> requestEntity = new HttpEntity<>(map, headers);
+         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
          log.debug("{}", requestEntity);
-         HttpEntity<Object> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, requestEntity, Object.class);
+         ResponseEntity<Object> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, requestEntity, Object.class);
          log.debug("{}", response);
          return response.getBody();
 
@@ -372,7 +372,7 @@ public class UserService extends SpringBaseService {
     * @return The user, or null if none found
     */
    public User getUserByCanvasId(String canvasId) {
-      if (canvasId == null || canvasId.trim().length() == 0) {
+      if (canvasId == null || canvasId.trim().isEmpty()) {
          return null;
       }
 
@@ -435,7 +435,7 @@ public class UserService extends SpringBaseService {
    public CanvasLogin getLogin( String sisUserId) {
       List<CanvasLogin> logins = getLogins(sisUserId);
 
-      if (logins != null && logins.size() > 0) {
+      if (logins != null && !logins.isEmpty()) {
          for (CanvasLogin login : logins) {
             //Find the login that is associated with the sisUserId
             if (sisUserId.equals(login.getSisUserId())) {
@@ -504,7 +504,7 @@ public class UserService extends SpringBaseService {
       UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
       builder.queryParam("login[unique_id]", newLoginUniqueId);
 
-      HttpEntity<CanvasLogin> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, CanvasLogin.class);
+      ResponseEntity<CanvasLogin> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, CanvasLogin.class);
       return response.getBody();
    }
 
@@ -520,7 +520,7 @@ public class UserService extends SpringBaseService {
       UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
       builder.queryParam("user[pronouns]", pronouns);
 
-      HttpEntity<User> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, User.class);
+      ResponseEntity<User> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, User.class);
       return response.getBody();
    }
 

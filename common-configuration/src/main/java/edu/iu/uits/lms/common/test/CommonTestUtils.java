@@ -34,7 +34,6 @@ package edu.iu.uits.lms.common.test;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.io.IOException;
@@ -69,7 +68,7 @@ public class CommonTestUtils {
    public static Jwt createJwtToken(String client, String username) {
       Jwt jwt = Jwt.withTokenValue("fake-token")
             .header("typ", "JWT")
-            .header("alg", SignatureAlgorithm.RS256.getValue())
+//            .header("alg", SignatureAlgorithm.RS256.getValue())
             .claim("user_name", username)
             .claim("client_id", client)
             .notBefore(Instant.now())

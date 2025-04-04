@@ -34,6 +34,7 @@ package edu.iu.uits.lms.iuonly.services;
  */
 
 import edu.iu.uits.lms.canvas.model.ContentMigration;
+import edu.iu.uits.lms.canvas.model.ContentMigrationCreateWrapper;
 import edu.iu.uits.lms.canvas.services.ContentMigrationService;
 import edu.iu.uits.lms.iuonly.helpers.ContentMigrationHelper;
 import edu.iu.uits.lms.iuonly.model.coursetemplating.ContentMigrationStatus;
@@ -46,6 +47,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static edu.iu.uits.lms.canvas.helpers.ContentMigrationHelper.MIGRATION_TYPE_CC;
 
 @Service
 @Slf4j
@@ -89,8 +92,17 @@ public class CourseTemplatingService {
       // or if the previous attempt was an error
       // Or if the forceApply flag is set
       if (templatedCourse == null || ContentMigrationHelper.STATUS.ERROR.name().equals(templatedCourse.getStatus()) || forceApply) {
-         log.info("Applying template to course " + courseId + " (" + sisCourseId + ")");
-         ContentMigration cm = contentMigrationService.importCCIntoCourse(courseId, null, templateUrl);
+         log.info("Applying template to course {} ({})", courseId, sisCourseId);
+
+         ContentMigrationCreateWrapper.Settings settings = new ContentMigrationCreateWrapper.Settings();
+         settings.setFileUrl(templateUrl);
+
+         ContentMigrationCreateWrapper wrapper = new ContentMigrationCreateWrapper();
+         wrapper.setMigrationType(MIGRATION_TYPE_CC);
+         wrapper.setSettings(settings);
+
+         ContentMigration cm = contentMigrationService.initiateContentMigration(courseId, null, wrapper);
+
          ContentMigrationStatus cms = new ContentMigrationStatus();
          cms.setContentMigrationId(cm.getId());
          cms.setStatus(ContentMigrationHelper.translateStatus(cm.getWorkflowState()).name());
@@ -103,7 +115,7 @@ public class CourseTemplatingService {
          templatedCourse.addContentMigrations(cms);
          saveTemplatedCourse(templatedCourse);
       } else {
-         log.info("Not applying template to course " + courseId + " (" + sisCourseId + ") because a template has previously been applied.");
+         log.info("Not applying template to course {} ({}) because a template has previously been applied.", courseId, sisCourseId);
       }
    }
 
@@ -121,11 +133,11 @@ public class CourseTemplatingService {
       List<ContentMigrationStatus> contentMigrationStatuses = templatedCourse.getContentMigrations();
 
       // if there are no migration statuses, don't bother doing any of this stuff since it will likely throw an error
-      if (contentMigrationStatuses.size() > 0) {
+      if (!contentMigrationStatuses.isEmpty()) {
          // Only care about the PENDING ones
          List<ContentMigrationStatus> filteredStatuses = contentMigrationStatuses.stream()
                .filter(cms -> cms.getStatus().equals(ContentMigrationHelper.STATUS.PENDING.name()))
-               .collect(Collectors.toList());
+               .toList();
 
          boolean saveTemplatedCourse = false;
          for (ContentMigrationStatus status : filteredStatuses) {
@@ -142,7 +154,7 @@ public class CourseTemplatingService {
          // this is likely only a scenario on test environments, but slows things down quite a bit!
          if (saveTemplatedCourse) {
             // Set the status on the templatedCourse to match the last one in the list (most recent attempt)
-            templatedCourse.setStatus(contentMigrationStatuses.get(contentMigrationStatuses.size() - 1).getStatus());
+            templatedCourse.setStatus(contentMigrationStatuses.getLast().getStatus());
             saveTemplatedCourse(templatedCourse);
          }
       }

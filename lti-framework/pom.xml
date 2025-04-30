@@ -18,7 +18,7 @@
         <commons-io.version>2.18.0</commons-io.version>
         <hibernate6-ddl-maven-plugin.version>1.0.2</hibernate6-ddl-maven-plugin.version>
         <reflections.version>0.10.2</reflections.version>
-        <spring-security-lti13.version>0.3.1</spring-security-lti13.version>
+        <spring-security-lti13.version>0.3.3</spring-security-lti13.version>
 
     </properties>
 

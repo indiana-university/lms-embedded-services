@@ -39,7 +39,7 @@ import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -68,7 +68,7 @@ public class CookieFilterConfig implements ImportAware {
             }
         }
         String userAgentRegex = attributes.getString("ignoredUserAgentRegex");
-        if (!StringUtils.isEmpty(userAgentRegex)) {
+        if (!ObjectUtils.isEmpty(userAgentRegex)) {
             this.uaPattern = userAgentRegex;
         }
     }

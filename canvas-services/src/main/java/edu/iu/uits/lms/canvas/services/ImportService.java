@@ -38,6 +38,7 @@ import edu.iu.uits.lms.canvas.model.uploadstatus.CanvasUploadStatusWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
@@ -143,12 +144,10 @@ public class ImportService extends SpringBaseService {
         log.debug("{}", uri);
 
         try {
-            HttpEntity<CanvasUploadStatus> entity = this.restTemplate.getForEntity(uri, CanvasUploadStatus.class);
+            ResponseEntity<CanvasUploadStatus> entity = this.restTemplate.getForEntity(uri, CanvasUploadStatus.class);
             log.debug("{}", entity);
 
-            if (entity != null) {
-                return entity.getBody();
-            }
+            return entity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error getting the import status for " + importId, hcee);
         }

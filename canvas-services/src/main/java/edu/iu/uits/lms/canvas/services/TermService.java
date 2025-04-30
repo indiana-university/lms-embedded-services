@@ -182,10 +182,10 @@ public class TermService extends SpringBaseService {
 
 			HttpEntity<CanvasTermCreateWrapper> termCreateWrapperRequestEntity = new HttpEntity<>(newTerm, headers);
 
-			HttpEntity<CanvasTerm> createTermResponse = this.restTemplate.exchange(uri, HttpMethod.POST, termCreateWrapperRequestEntity, CanvasTerm.class);
+			ResponseEntity<CanvasTerm> createTermResponse = this.restTemplate.exchange(uri, HttpMethod.POST, termCreateWrapperRequestEntity, CanvasTerm.class);
 			log.debug("{}", createTermResponse);
 
-			HttpStatusCode responseStatus = ((ResponseEntity<CanvasTerm>) createTermResponse).getStatusCode();
+			HttpStatusCode responseStatus = createTermResponse.getStatusCode();
 
 			if (HttpStatus.OK.equals(responseStatus)) {
 				savedTerm = createTermResponse.getBody();

@@ -165,7 +165,7 @@ public class FileUploadService extends SpringBaseService {
         CanvasFileUploadResponse uploadResponse = null;
 
         try {
-            HttpEntity<CanvasFileUploadResponse> response = restTemplate.postForEntity(builder.build().toUri(), requestEntity, CanvasFileUploadResponse.class);
+            ResponseEntity<CanvasFileUploadResponse> response = restTemplate.postForEntity(builder.build().toUri(), requestEntity, CanvasFileUploadResponse.class);
             uploadResponse = response.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Unable to initiate file upload.", hcee);
@@ -213,8 +213,8 @@ public class FileUploadService extends SpringBaseService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
 
         try {
-            HttpEntity responseEntity = restTemplateNoBuffer.postForEntity(uri, requestEntity, Object.class);
-            HttpStatusCode httpStatus = ((ResponseEntity) responseEntity).getStatusCode();
+            ResponseEntity<Object> responseEntity = restTemplateNoBuffer.postForEntity(uri, requestEntity, Object.class);
+            HttpStatusCode httpStatus = responseEntity.getStatusCode();
 
             if (httpStatus.equals(HttpStatus.OK)) {
                 // upload was successful and no further action necessary
@@ -227,7 +227,7 @@ public class FileUploadService extends SpringBaseService {
                     canvasFile = verifyUpload(location);
 
                 } else {
-                    String exception = "No location returned by Canvas to complete upload despite status " + ((ResponseEntity) responseEntity).getStatusCodeValue();
+                    String exception = "No location returned by Canvas to complete upload despite status " + responseEntity.getStatusCode().value();
                     log.error(exception);
                     throw new RuntimeException(exception);
                 }
@@ -238,7 +238,7 @@ public class FileUploadService extends SpringBaseService {
                     errorEntity = responseEntity.getBody().toString();
                 }
                 throw new RuntimeException("File Upload to Canvas was not successful. Response code: "
-                        + ((ResponseEntity) responseEntity).getStatusCodeValue() + ", reason: " + ((HttpStatus)httpStatus).getReasonPhrase()
+                        + responseEntity.getStatusCode().value() + ", reason: " + ((HttpStatus)httpStatus).getReasonPhrase()
                         + ", entity: " + errorEntity);
             }
 
@@ -258,9 +258,7 @@ public class FileUploadService extends SpringBaseService {
             HttpEntity<CanvasFile> fileUploadResponseEntity = this.restTemplate.getForEntity(location, CanvasFile.class);
             log.debug("fileUploadResponseEntity: {}", fileUploadResponseEntity);
 
-            if (fileUploadResponseEntity != null) {
-                canvasFile = fileUploadResponseEntity.getBody();
-            }
+            canvasFile = fileUploadResponseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error:", hcee);
         }

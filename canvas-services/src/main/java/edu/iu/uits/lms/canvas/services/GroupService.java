@@ -36,7 +36,7 @@ package edu.iu.uits.lms.canvas.services;
 import edu.iu.uits.lms.canvas.model.User;
 import edu.iu.uits.lms.canvas.model.groups.CourseGroup;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -74,12 +74,10 @@ public class GroupService extends SpringBaseService {
         log.debug("{}", uri);
 
         try {
-            HttpEntity<CourseGroup> groupEntity = this.restTemplate.getForEntity(uri, CourseGroup.class);
+            ResponseEntity<CourseGroup> groupEntity = this.restTemplate.getForEntity(uri, CourseGroup.class);
             log.debug("{}", groupEntity);
 
-            if (groupEntity != null) {
-                return groupEntity.getBody();
-            }
+            return groupEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("error getting a course group: ", hcee);
         }

@@ -76,12 +76,10 @@ public class SectionService extends SpringBaseService {
         log.debug("uri: {}", uri);
 
         try {
-            HttpEntity<Section> sectionEntity = this.restTemplate.getForEntity(uri, Section.class);
+            ResponseEntity<Section> sectionEntity = this.restTemplate.getForEntity(uri, Section.class);
             log.debug("sectionEntity: {}", sectionEntity);
 
-            if (sectionEntity != null) {
-                return sectionEntity.getBody();
-            }
+            return sectionEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error: ", hcee);
         }
@@ -100,21 +98,19 @@ public class SectionService extends SpringBaseService {
         log.debug("uri: {}", uri);
 
         try {
-            HttpEntity<Section> sectionEntity = this.restTemplate.postForEntity(uri, null, Section.class);
+            ResponseEntity<Section> sectionEntity = this.restTemplate.postForEntity(uri, null, Section.class);
             log.debug("sectionEntity: {}", sectionEntity);
 
-            if (sectionEntity != null) {
-                Section section = sectionEntity.getBody();
+            Section section = sectionEntity.getBody();
 
-                if (section != null) {
-                    if (section.getId() == null) {
+            if (section != null) {
+                if (section.getId() == null) {
 // We got back an object here, but everything in it was most likely null, so we didn't really get back a good section!
-                        section = null;
-                    }
+                    section = null;
                 }
-
-                return section;
             }
+
+            return section;
         } catch (HttpClientErrorException hcee) {
             log.error("Error: ", hcee);
         }
@@ -132,21 +128,19 @@ public class SectionService extends SpringBaseService {
         log.debug("uri: {}", uri);
 
         try {
-            HttpEntity<Section> sectionEntity = this.restTemplate.exchange(uri, HttpMethod.DELETE, null, Section.class);
+            ResponseEntity<Section> sectionEntity = this.restTemplate.exchange(uri, HttpMethod.DELETE, null, Section.class);
             log.debug("sectionEntity: {}", sectionEntity);
 
-            if (sectionEntity != null) {
-                Section section = sectionEntity.getBody();
+            Section section = sectionEntity.getBody();
 
-                if (section != null) {
-                    if (section.getId() == null) {
+            if (section != null) {
+                if (section.getId() == null) {
 // We got back an object here, but everything in it was most likely null, so we didn't really get back a good section!
-                        section = null;
-                    }
+                    section = null;
                 }
-
-                return section;
             }
+
+            return section;
         } catch (HttpClientErrorException hcee) {
             log.error("Error: ", hcee);
         }
@@ -172,13 +166,11 @@ public class SectionService extends SpringBaseService {
     /**
      * Get all of the enrollments for a sectionId and states that are passed in, e.g. active, invited
      * @param sectionId the id of the section
-     * @param states String array of states. Passing in a null will return Canvas defaults.
+     * @param states List of states. Passing in a null will return Canvas defaults.
      * @return
      */
-    public List<Enrollment> getAllSectionEnrollmentsByIdAndState(String sectionId, String[] states) {
-        final String sisSectionIdPath = sectionId;
-
-        URI uri = ALL_SECTION_ENROLLMENT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sisSectionIdPath);
+    public List<Enrollment> getAllSectionEnrollmentsByIdAndState(String sectionId, List<String> states) {
+        URI uri = ALL_SECTION_ENROLLMENT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sectionId);
         log.debug("{}", uri);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -211,17 +203,15 @@ public class SectionService extends SpringBaseService {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(multiValueMap, headers);
 
-            HttpEntity<Section> updateSectionNameAndSisCourseIdResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, Section.class);
-            log.debug("{}", updateSectionNameAndSisCourseIdResponse);
-
-            ResponseEntity<Section> responseEntity = (ResponseEntity<Section>) updateSectionNameAndSisCourseIdResponse;
+            ResponseEntity<Section> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, Section.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
                         + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                         + ", body: " + responseEntity.getBody());
             } else {
-                return updateSectionNameAndSisCourseIdResponse.getBody();
+                return responseEntity.getBody();
             }
         } catch (HttpClientErrorException hcee) {
             log.error("Error updating section name and sis_course_id", hcee);

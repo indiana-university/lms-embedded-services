@@ -35,7 +35,8 @@ package edu.iu.uits.lms.canvas.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -44,20 +45,18 @@ import java.util.List;
 /**
  * Created by yingwang on 11/16/15.
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown=true)
 @Data
 public class Assignment implements Serializable {
     private String id;
     private String name;
     private String description;
-
-    @JsonProperty("allowed_extensions")
     private List<String> allowedExtensions;
     private boolean published;
-
-    @JsonProperty("assignment_group_id")
     private Integer assignmentGroupId;
-
-    @JsonProperty("submission_types")
     private List<String> submissionTypes;
+    private String quizId;
+    private boolean isQuizAssignment;
+    private boolean isQuizLtiAssignment;
 }

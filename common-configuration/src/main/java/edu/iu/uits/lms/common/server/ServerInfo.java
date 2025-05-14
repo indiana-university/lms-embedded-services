@@ -60,6 +60,11 @@ public class ServerInfo {
 
     @Override
     public String toString() {
+        List<String> elements = getElements();
+        return StringUtils.join(elements, " - ");
+    }
+
+    public List<String> getElements() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/M/dd - H:mm");
 
         if (buildDate == null) {
@@ -83,7 +88,6 @@ public class ServerInfo {
         if (artifactVersion != null) {
             elements.add(artifactVersion);
         }
-
-        return StringUtils.join(elements, " - ");
+        return elements;
     }
 }

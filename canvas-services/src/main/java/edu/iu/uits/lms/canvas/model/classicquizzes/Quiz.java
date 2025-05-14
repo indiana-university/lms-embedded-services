@@ -70,4 +70,5 @@ public class Quiz implements Serializable {
     private boolean requireLockdownBrowser;
     private boolean requireLockdownBrowserMonitor;
     private String lockdownBrowserMonitorData;
+    private String quizType;
 }

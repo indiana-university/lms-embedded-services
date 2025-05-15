@@ -39,7 +39,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.util.Assert;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.ForwardedHeaderUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -62,7 +62,7 @@ public class DerdackKeyAuthorizationInterceptor implements ClientHttpRequestInte
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body,
                                         ClientHttpRequestExecution execution) throws IOException {
-        URI uri = UriComponentsBuilder.fromHttpRequest(request)
+        URI uri = ForwardedHeaderUtils.adaptFromForwardedHeaders(request.getURI(), request.getHeaders())
                 .queryParam(APIKEY_PARAMETER_NAME, apiKey)
                 .build().toUri();
 

@@ -43,9 +43,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,30 +56,28 @@ import java.util.List;
  * Representation of the SIS data used to populate the TEMPLATED_COURSES table. These courses have been
  * processed by the CourseTemplating job
  */
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "TEMPLATED_COURSES",
       uniqueConstraints = @UniqueConstraint(name = "course_id_u", columnNames = {"course_id"}))
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class TemplatedCourse extends BaseObject {
 
    @Id
    @Column(name = "course_id")
-   @NonNull
    private String courseId;
 
    @Column(name = "sis_course_id")
    private String sisCourseId;
 
    @Column(name = "term_id")
-   @NonNull
    private String termId;
 
-   @NonNull
    private String status;
 
    @Column(name = "iu_crseld_status_added")
-   @NonNull
    private boolean iuCrseldStatusAdded;
 
    public TemplatedCourse(String courseId, String sisCourseId, String termId, String status) {

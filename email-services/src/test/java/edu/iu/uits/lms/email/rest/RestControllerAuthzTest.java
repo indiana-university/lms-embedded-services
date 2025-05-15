@@ -34,12 +34,11 @@ package edu.iu.uits.lms.email.rest;
  */
 
 import edu.iu.uits.lms.email.config.EmailRestConfiguration;
+import edu.iu.uits.lms.email.service.EmailService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,7 +48,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.NestedTestConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collection;
@@ -63,12 +64,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @NestedTestConfiguration(INHERIT)
-@WebMvcTest(EmailRestController.class)
-@Import(EmailRestConfiguration.class)
+@WebMvcTest(controllers = EmailRestController.class)
+@ContextConfiguration(classes = {EmailRestController.class, EmailRestConfiguration.class})
 public class RestControllerAuthzTest {
 
-   @MockBean
+   @MockitoBean
    private JwtDecoder jwtDecoder;
+
+   @MockitoBean
+   private EmailService emailService;
 
    @Nested
    @ActiveProfiles({EMAILREST_PROFILE})

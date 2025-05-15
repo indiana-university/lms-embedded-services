@@ -65,7 +65,7 @@ public class CommunicationChannelService extends SpringBaseService {
      * @param type Type of channels to return
      * @return List of CommunicationChannels
      */
-    public List<CommunicationChannel> getCommunicationChannels(String canvasUserId, String type) throws CanvasUserNotFoundException {
+    public List<CommunicationChannel> getCommunicationChannels(String canvasUserId, String type) {
         List<CommunicationChannel> typedChannels = new ArrayList<>();
         List<CommunicationChannel> allChannels = getCommunicationChannels(canvasUserId);
         for (CommunicationChannel communicationChannel : allChannels) {
@@ -81,7 +81,7 @@ public class CommunicationChannelService extends SpringBaseService {
      * @param canvasUserId The canvas user id
      * @return List of CommunicationChannels
      */
-    public List<CommunicationChannel> getCommunicationChannels(String canvasUserId) throws CanvasUserNotFoundException {
+    public List<CommunicationChannel> getCommunicationChannels(String canvasUserId) {
         URI uri = CC_BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), canvasUserId);
         log.debug("{}", uri);
 
@@ -93,7 +93,7 @@ public class CommunicationChannelService extends SpringBaseService {
      * @param canvasUserId The canvas user id
      * @return The CommunicationChannel
      */
-    public CommunicationChannel getPrimaryEmailChannel(String canvasUserId) throws CanvasUserNotFoundException {
+    public CommunicationChannel getPrimaryEmailChannel(String canvasUserId) {
         List <CommunicationChannel> communicationChannels = getCommunicationChannels(canvasUserId);
         CommunicationChannel communicationChannel = null;
         // Start with a reasonably high position so that anything legitimate returned from the service will always be lower
@@ -118,7 +118,7 @@ public class CommunicationChannelService extends SpringBaseService {
      * @param email Email address to lookup
      * @return The CommunicationChannel
      */
-    public CommunicationChannel getChannelByEmail(String canvasUserId, String email) throws CanvasUserNotFoundException {
+    public CommunicationChannel getChannelByEmail(String canvasUserId, String email) {
         List <CommunicationChannel> communicationChannels = getCommunicationChannels(canvasUserId);
         CommunicationChannel communicationChannel = null;
         if (communicationChannels != null) {
@@ -174,7 +174,7 @@ public class CommunicationChannelService extends SpringBaseService {
         log.debug("{}", uri);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<CommunicationChannelCreateWrapper> requestEntity = new HttpEntity<>(communicationChannel, headers);
 

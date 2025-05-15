@@ -42,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -109,7 +110,7 @@ public class ModuleService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<ModuleCreateWrapper> request = new HttpEntity<>(newModule, headers);
-            HttpEntity<Module> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, request, Module.class);
+            ResponseEntity<Module> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, request, Module.class);
             log.debug("{}", response);
 
             savedModule = response.getBody();
@@ -139,7 +140,7 @@ public class ModuleService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<ModuleCreateWrapper> request = new HttpEntity<>(newModule, headers);
-            HttpEntity<Module> response = this.restTemplate.exchange(uri, HttpMethod.PUT, request, Module.class);
+            ResponseEntity<Module> response = this.restTemplate.exchange(uri, HttpMethod.PUT, request, Module.class);
             log.debug("{}", response);
 
             savedModule = response.getBody();
@@ -169,7 +170,7 @@ public class ModuleService extends SpringBaseService {
         log.debug("{}", uri);
 
         try {
-            HttpEntity<Module> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, Module.class);
+            ResponseEntity<Module> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, Module.class);
             log.debug("{}", response);
 
             savedModule = response.getBody();
@@ -230,7 +231,7 @@ public class ModuleService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<ModuleItemCreateWrapper> request = new HttpEntity<>(newModuleItem, headers);
-            HttpEntity<ModuleItem> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, request, ModuleItem.class);
+            ResponseEntity<ModuleItem> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, request, ModuleItem.class);
             log.debug("{}", response);
 
             savedModuleItem = response.getBody();

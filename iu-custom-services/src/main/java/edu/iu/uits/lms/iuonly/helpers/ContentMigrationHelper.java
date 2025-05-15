@@ -48,14 +48,11 @@ public class ContentMigrationHelper {
     */
    public static STATUS translateStatus(String canvasMigrationStatus) {
       STATUS result = STATUS.PENDING;
-      switch (canvasMigrationStatus) {
-         case "completed":
-            result = STATUS.COMPLETE;
-            break;
-         case "failed":
-            result = STATUS.ERROR;
-            break;
-      }
+       result = switch (canvasMigrationStatus) {
+           case "completed" -> STATUS.COMPLETE;
+           case "failed" -> STATUS.ERROR;
+           default -> result;
+       };
       return result;
    }
 }

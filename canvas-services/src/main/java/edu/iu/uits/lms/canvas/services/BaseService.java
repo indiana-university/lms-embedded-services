@@ -37,9 +37,6 @@ import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 
 public class BaseService {
 
-   protected final static String READ_SCOPE = "canvas:read";
-   protected final static String WRITE_SCOPE = "canvas:write";
-
    /**
     *
     * @param id id

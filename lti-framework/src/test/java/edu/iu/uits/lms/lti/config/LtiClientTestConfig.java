@@ -37,9 +37,9 @@ import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.repository.KeyPairRepository;
 import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
 import edu.iu.uits.lms.lti.service.Lti13Service;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.ac.ox.ctl.lti13.nrps.NamesRoleService;
 
@@ -47,32 +47,32 @@ import javax.sql.DataSource;
 
 public class LtiClientTestConfig {
 
-   @MockBean
+   @MockitoBean
    public LtiAuthorizationRepository ltiAuthorizationRepository;
 
-   @MockBean
+   @MockitoBean
    public KeyPairRepository keyPairRepository;
 
-   @MockBean(name = "ltiDataSource")
+   @MockitoBean(name = "ltiDataSource")
    public DataSource dataSource;
 
 
-   @MockBean(name = "ltiEntityMgrFactory")
+   @MockitoBean(name = "ltiEntityMgrFactory")
    public LocalContainerEntityManagerFactoryBean ltiEntityMgrFactory;
 
-   @MockBean(name = "ltiTransactionMgr")
+   @MockitoBean(name = "ltiTransactionMgr")
    public PlatformTransactionManager ltiTransactionMgr;
 
-   @MockBean
+   @MockitoBean
    public ClientRegistrationRepository clientRegistrationRepository;
 
-   @MockBean
+   @MockitoBean
    public Lti13Service lti13Service;
 
-   @MockBean
+   @MockitoBean
    public NamesRoleService namesRoleService;
 
-   @MockBean
+   @MockitoBean
    public DefaultInstructorRoleRepository defaultInstructorRoleRepository;
 
 }

@@ -97,10 +97,10 @@ public class CatalogListingService extends CatalogSpringBaseService {
 
             HttpEntity<EnrollmentPostWrapper> enrollmentWrapperHttpEntity = new HttpEntity<>(enrollmentPostWrapper, headers);
 
-            HttpEntity<String> createEnrollmentResponse = this.restTemplate.exchange(uri, HttpMethod.POST, enrollmentWrapperHttpEntity, String.class);
+            ResponseEntity<String> createEnrollmentResponse = this.restTemplate.exchange(uri, HttpMethod.POST, enrollmentWrapperHttpEntity, String.class);
             log.debug(createEnrollmentResponse.toString());
 
-            HttpStatusCode responseStatus = ((ResponseEntity<String>) createEnrollmentResponse).getStatusCode();
+            HttpStatusCode responseStatus = createEnrollmentResponse.getStatusCode();
 
             if (HttpStatus.CREATED.equals(responseStatus)) {
                 return true;

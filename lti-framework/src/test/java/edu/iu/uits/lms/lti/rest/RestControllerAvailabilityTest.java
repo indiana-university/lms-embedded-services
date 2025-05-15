@@ -43,12 +43,12 @@ import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,6 +64,12 @@ import static edu.iu.uits.lms.lti.LTIConstants.LTIREST_PROFILE;
 public class RestControllerAvailabilityTest {
 
    private static final String PACKAGE = "edu.iu.uits.lms.lti";
+
+   @MockitoBean
+   public DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+
+   @MockitoBean
+   public LtiAuthorizationRepository ltiAuthorizationRepository;
 
    @Nested
    @ActiveProfiles({LTIREST_PROFILE})
@@ -119,10 +125,10 @@ public class RestControllerAvailabilityTest {
    @ComponentScan(basePackageClasses = LtiAuthorizationRestController.class)
    static class LtiTestContextConfiguration {
 
-      @MockBean
+      @MockitoBean
       private LtiAuthorizationRepository ltiAuthorizationRepository;
 
-      @MockBean
+      @MockitoBean
       private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
 
    }

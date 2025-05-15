@@ -45,8 +45,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -65,10 +65,10 @@ public class TestIUMacroVariableReplacement {
     @Autowired
     private VariableReplacementService variableReplacementService;
 
-    @MockBean
+    @MockitoBean
     private CourseService courseService;
 
-    @MockBean
+    @MockitoBean
     private SisServiceImpl sisService;
 
     private MacroVariableMapper macroVariableMapper = null;

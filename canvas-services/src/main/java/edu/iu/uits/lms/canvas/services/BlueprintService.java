@@ -50,6 +50,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -66,19 +67,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BlueprintService extends SpringBaseService {
 
-    private String BASE_URI = "{url}/courses/{course_id}";
-    private String BLUEPRINT_URI = BASE_URI + "/blueprint_templates/{template_id}";
-    private String BLUEPRINT_SUBSCRIPTIONS_BASE_URI = BASE_URI + "/blueprint_subscriptions";
-    private String BLUEPRINT_SUBSCRIPTIONS_URI = BLUEPRINT_SUBSCRIPTIONS_BASE_URI + "/{template_id}";
+    private final String BASE_URI = "{url}/courses/{course_id}";
+    private final String BLUEPRINT_URI = BASE_URI + "/blueprint_templates/{template_id}";
+    private final String BLUEPRINT_SUBSCRIPTIONS_BASE_URI = BASE_URI + "/blueprint_subscriptions";
+    private final String BLUEPRINT_SUBSCRIPTIONS_URI = BLUEPRINT_SUBSCRIPTIONS_BASE_URI + "/{template_id}";
 
-    private UriTemplate GET_BY_COURSE_AND_TEMPLATE = new UriTemplate(BLUEPRINT_URI);
-    private UriTemplate GET_COURSES = new UriTemplate(BLUEPRINT_URI + "/associated_courses");
-    private UriTemplate UPDATE_BP_COURSES = new UriTemplate(BLUEPRINT_URI + "/update_associations");
-    private UriTemplate BEGIN_MIGRATION = new UriTemplate(BLUEPRINT_URI + "/migrations");
-    private UriTemplate UPDATE_COURSE = new UriTemplate(BASE_URI);
+    private final UriTemplate GET_BY_COURSE_AND_TEMPLATE = new UriTemplate(BLUEPRINT_URI);
+    private final UriTemplate GET_COURSES = new UriTemplate(BLUEPRINT_URI + "/associated_courses");
+    private final UriTemplate UPDATE_BP_COURSES = new UriTemplate(BLUEPRINT_URI + "/update_associations");
+    private final UriTemplate BEGIN_MIGRATION = new UriTemplate(BLUEPRINT_URI + "/migrations");
+    private final UriTemplate UPDATE_COURSE = new UriTemplate(BASE_URI);
 
-    private UriTemplate SUBSCRIPTIONS = new UriTemplate(BLUEPRINT_SUBSCRIPTIONS_URI + "/migrations");
-    private UriTemplate ALL_COURSE_SUBSCRIPTIONS = new UriTemplate(BLUEPRINT_SUBSCRIPTIONS_BASE_URI);
+    private final UriTemplate SUBSCRIPTIONS = new UriTemplate(BLUEPRINT_SUBSCRIPTIONS_URI + "/migrations");
+    private final UriTemplate ALL_COURSE_SUBSCRIPTIONS = new UriTemplate(BLUEPRINT_SUBSCRIPTIONS_BASE_URI);
 
     /**
      * Get the blueprint template
@@ -89,7 +90,7 @@ public class BlueprintService extends SpringBaseService {
     public BlueprintTemplate getTemplate(String courseId, String templateId) {
         URI uri = GET_BY_COURSE_AND_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, templateId);
         log.debug("uri: {}", uri);
-        HttpEntity<BlueprintTemplate> template = this.restTemplate.getForEntity(uri, BlueprintTemplate.class);
+        ResponseEntity<BlueprintTemplate> template = this.restTemplate.getForEntity(uri, BlueprintTemplate.class);
         log.debug("Template: {}", template);
         return template.getBody();
     }
@@ -126,7 +127,7 @@ public class BlueprintService extends SpringBaseService {
 
         BlueprintUpdateStatus status = null;
         try {
-            HttpEntity<BlueprintUpdateStatus> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, BlueprintUpdateStatus.class);
+            ResponseEntity<BlueprintUpdateStatus> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, BlueprintUpdateStatus.class);
             log.debug("{}", response);
             status = response.getBody();
         } catch (HttpStatusCodeException rce) {
@@ -180,7 +181,7 @@ public class BlueprintService extends SpringBaseService {
         BlueprintCourseUpdateStatus bcus = new BlueprintCourseUpdateStatus();
 
         try {
-            HttpEntity<Course> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, Course.class);
+            ResponseEntity<Course> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, Course.class);
             log.debug("Response: {}", response);
             bcus.setCourse(response.getBody());
         } catch (HttpStatusCodeException hsce) {
@@ -227,7 +228,7 @@ public class BlueprintService extends SpringBaseService {
 
         BlueprintMigrationStatus status = new BlueprintMigrationStatus();
         try {
-            HttpEntity<BlueprintMigration> response = restTemplate.postForEntity(builder.build().toUri(), null, BlueprintMigration.class);
+            ResponseEntity<BlueprintMigration> response = restTemplate.postForEntity(builder.build().toUri(), null, BlueprintMigration.class);
             status.setBlueprintMigration(response.getBody());
         } catch (HttpStatusCodeException rce) {
             log.error("uh oh", rce);
@@ -278,13 +279,13 @@ public class BlueprintService extends SpringBaseService {
 
     @Data
     @AllArgsConstructor
-    private class BlueprintCourseWrapper {
+    private static class BlueprintCourseWrapper {
         private CourseBlueprintDetails course;
     }
 
     @Data
     @AllArgsConstructor
-    private class CourseBlueprintDetails {
+    private static class CourseBlueprintDetails {
         private boolean blueprint;
         private BlueprintRestriction blueprint_restrictions;
         private boolean use_blueprint_restrictions_by_object_type;

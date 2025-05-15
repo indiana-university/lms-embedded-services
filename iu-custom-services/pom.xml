@@ -15,7 +15,7 @@
     <description>Shared services for the lms-canvas LTI tools to interact with custom IU things</description>
 
     <properties>
-        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-collections4.version>4.5.0</commons-collections4.version>
         <reflections.version>0.10.2</reflections.version>
     </properties>
 

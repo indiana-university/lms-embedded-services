@@ -86,7 +86,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-parent</artifactId>
+                <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud-starter-parent.version}</version>
                 <type>pom</type>
                 <scope>import</scope>

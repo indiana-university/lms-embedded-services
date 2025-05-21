@@ -36,13 +36,12 @@ package edu.iu.uits.lms.iuonly.rest;
 import edu.iu.uits.lms.common.test.CommonTestUtils;
 import edu.iu.uits.lms.iuonly.IuCustomConstants;
 import edu.iu.uits.lms.iuonly.config.IuCustomRestConfiguration;
+import edu.iu.uits.lms.iuonly.repository.LmsBatchEmailRepository;
 import edu.iu.uits.lms.iuonly.services.rest.BatchEmailRestController;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
@@ -52,7 +51,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.NestedTestConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collection;
@@ -65,11 +66,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @NestedTestConfiguration(INHERIT)
 @WebMvcTest(controllers = {BatchEmailRestController.class})
-@Import(IuCustomRestConfiguration.class)
+@ContextConfiguration(classes = {BatchEmailRestController.class, IuCustomRestConfiguration.class})
 public class RestControllerAuthzTest {
 
-   @MockBean
+   @MockitoBean
    private JwtDecoder jwtDecoder;
+
+   @MockitoBean
+   public LmsBatchEmailRepository lmsBatchEmailRepository;
 
    @Nested
    @ActiveProfiles({IUCUSTOMREST_PROFILE})

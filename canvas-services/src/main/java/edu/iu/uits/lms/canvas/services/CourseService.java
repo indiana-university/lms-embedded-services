@@ -297,7 +297,7 @@ public class CourseService extends SpringBaseService {
         builder.path("/files/quota");
 
         try {
-            HttpEntity<QuotaInfo> courseQuotaInfoResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), QuotaInfo.class);
+            ResponseEntity<QuotaInfo> courseQuotaInfoResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), QuotaInfo.class);
             log.debug("courseQuotaInfoResponseEntity: {}", courseQuotaInfoResponseEntity);
 
             if (courseQuotaInfoResponseEntity != null) {
@@ -429,13 +429,8 @@ public class CourseService extends SpringBaseService {
         builder.queryParam("course[grading_standard_id]", gradingStandardId);
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-            HttpEntity<String> updateCourseGradingStandardResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, String.class);
-            log.debug("{}", updateCourseGradingStandardResponse);
-
-            ResponseEntity<String> responseEntity = (ResponseEntity<String>) updateCourseGradingStandardResponse;
+            ResponseEntity<String> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, String.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -467,17 +462,15 @@ public class CourseService extends SpringBaseService {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(multiValueMap, headers);
 
-            HttpEntity<Course> updateCourseNameAndSisCourseIdResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, Course.class);
-            log.debug("{}", updateCourseNameAndSisCourseIdResponse);
-
-            ResponseEntity<Course> responseEntity = (ResponseEntity<Course>) updateCourseNameAndSisCourseIdResponse;
+            ResponseEntity<Course> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, Course.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
                         + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                         + ", body: " + responseEntity.getBody());
             } else {
-                return updateCourseNameAndSisCourseIdResponse.getBody();
+                return responseEntity.getBody();
             }
 
         } catch (HttpClientErrorException hcee) {
@@ -554,20 +547,15 @@ public class CourseService extends SpringBaseService {
         }
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            HttpEntity<Course> updateTermAndCourseEndDateResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, Course.class);
-            log.debug(updateTermAndCourseEndDateResponse.toString());
-
-            ResponseEntity<Course> responseEntity = (ResponseEntity<Course>) updateTermAndCourseEndDateResponse;
+            ResponseEntity<Course> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, Course.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
                         + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                         + ", body: " + responseEntity.getBody());
             } else {
-                return updateTermAndCourseEndDateResponse.getBody();
+                return responseEntity.getBody();
             }
         } catch (HttpClientErrorException hcee) {
             log.error("Error updating term and course end dates", hcee);
@@ -593,13 +581,8 @@ public class CourseService extends SpringBaseService {
         builder.queryParam("course[default_view]", defaultViewType);
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-            HttpEntity<String> updateCourseFrontPageResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, String.class);
-            log.debug("{}", updateCourseFrontPageResponse);
-
-            ResponseEntity<String> responseEntity = (ResponseEntity<String>) updateCourseFrontPageResponse;
+            ResponseEntity<String> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, String.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -630,7 +613,7 @@ public class CourseService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<CourseCreateWrapper> createNewCourseRequest = new HttpEntity<>(newCourse, headers);
-            HttpEntity<Course> createNewCourseResponse = this.restTemplate.exchange(uri, HttpMethod.POST, createNewCourseRequest, Course.class);
+            ResponseEntity<Course> createNewCourseResponse = this.restTemplate.exchange(uri, HttpMethod.POST, createNewCourseRequest, Course.class);
             log.debug("{}", createNewCourseResponse);
 
             savedCourse = createNewCourseResponse.getBody();
@@ -655,14 +638,10 @@ public class CourseService extends SpringBaseService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<SectionCreateWrapper> sectionCreateWrapperRequestEntity = new HttpEntity<>(newSection, headers);
-            HttpEntity<Section> sectionCreateWrapperResponseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, sectionCreateWrapperRequestEntity, Section.class);
+            ResponseEntity<Section> sectionCreateWrapperResponseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, sectionCreateWrapperRequestEntity, Section.class);
             log.debug("{}", sectionCreateWrapperResponseEntity);
 
-            if (sectionCreateWrapperResponseEntity != null) {
-                Section savedSection = sectionCreateWrapperResponseEntity.getBody();
-
-                return savedSection;
-            }
+            return sectionCreateWrapperResponseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error creating course section", hcee);
         }
@@ -688,10 +667,8 @@ public class CourseService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<EnrollmentCreateWrapper> createNewCourseSectionEnrollmentRequest = new HttpEntity<>(enrollmentWrapper, headers);
-            HttpEntity<Enrollment> createNewCourseSectionEnrollmentResponse = this.restTemplate.exchange(uri, HttpMethod.POST, createNewCourseSectionEnrollmentRequest, Enrollment.class);
-            log.debug("{}", createNewCourseSectionEnrollmentResponse);
-
-            ResponseEntity<Enrollment> responseEntity = (ResponseEntity<Enrollment>) createNewCourseSectionEnrollmentResponse;
+            ResponseEntity<Enrollment> responseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, createNewCourseSectionEnrollmentRequest, Enrollment.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -699,7 +676,7 @@ public class CourseService extends SpringBaseService {
                       + ", body: " + responseEntity.getBody());
             }
 
-            savedEnrollment = createNewCourseSectionEnrollmentResponse.getBody();
+            savedEnrollment = responseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error creating enrollment", hcee);
             throw new RuntimeException("Error creating course section enrollment", hcee);
@@ -723,26 +700,19 @@ public class CourseService extends SpringBaseService {
         builder.path("/" + featureId);
 
         try {
-            HttpEntity<FeatureFlag> featureFlagResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), FeatureFlag.class);
-            log.debug("{}", featureFlagResponseEntity);
-
-            ResponseEntity<FeatureFlag> responseEntity = (ResponseEntity<FeatureFlag>) featureFlagResponseEntity;
-
+            ResponseEntity<FeatureFlag> responseEntity = this.restTemplate.getForEntity(builder.build().toUri(), FeatureFlag.class);
+            log.debug("{}", responseEntity);
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
                       + responseEntity.getStatusCode() + ", reason: " + ((HttpStatus)responseEntity.getStatusCode()).getReasonPhrase()
                       + ", body: " + responseEntity.getBody());
             }
 
-            if (featureFlagResponseEntity != null) {
-                return featureFlagResponseEntity.getBody();
-            }
+            return responseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error getting course features", hcee);
             throw new RuntimeException("Error getting course feature", hcee);
         }
-
-        return null;
     }
 
     /**
@@ -763,13 +733,8 @@ public class CourseService extends SpringBaseService {
 
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-            HttpEntity<FeatureFlag> featureFlagResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, FeatureFlag.class);
-            log.debug("{}", featureFlagResponse);
-
-            ResponseEntity<FeatureFlag> responseEntity = (ResponseEntity<FeatureFlag>) featureFlagResponse;
+            ResponseEntity<FeatureFlag> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, FeatureFlag.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -777,15 +742,11 @@ public class CourseService extends SpringBaseService {
                       + ", body: " + responseEntity.getBody());
             }
 
-            if (featureFlagResponse != null) {
-                return featureFlagResponse.getBody();
-            }
+            return responseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error updating course feature", hcee);
             throw new RuntimeException("Error setting course feature", hcee);
         }
-
-        return null;
     }
 
     /**
@@ -803,13 +764,8 @@ public class CourseService extends SpringBaseService {
         builder.path("/" + featureId);
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-            HttpEntity<FeatureFlag> featureFlagResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, FeatureFlag.class);
-            log.debug("{}", featureFlagResponse);
-
-            ResponseEntity<FeatureFlag> responseEntity = (ResponseEntity<FeatureFlag>) featureFlagResponse;
+            ResponseEntity<FeatureFlag> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, FeatureFlag.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -817,15 +773,11 @@ public class CourseService extends SpringBaseService {
                       + ", body: " + responseEntity.getBody());
             }
 
-            if (featureFlagResponse != null) {
-                return featureFlagResponse.getBody();
-            }
+            return responseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error deleting course feature", hcee);
             throw new RuntimeException("Error setting course feature", hcee);
         }
-
-        return null;
     }
 
     /**
@@ -872,13 +824,8 @@ public class CourseService extends SpringBaseService {
         builder.queryParam("task", "delete");
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-            HttpEntity<Enrollment> deleteEnrollmentResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, Enrollment.class);
-            log.debug("{}", deleteEnrollmentResponse);
-
-            ResponseEntity<Enrollment> responseEntity = (ResponseEntity<Enrollment>) deleteEnrollmentResponse;
+            ResponseEntity<Enrollment> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, Enrollment.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -886,15 +833,11 @@ public class CourseService extends SpringBaseService {
                         + ", body: " + responseEntity.getBody());
             }
 
-            if (deleteEnrollmentResponse != null) {
-                return deleteEnrollmentResponse.getBody();
-            }
+            return responseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error deleting enrollment", hcee);
             throw new RuntimeException("Error deleting enrollment", hcee);
         }
-
-        return null;
     }
 
     /**
@@ -924,13 +867,8 @@ public class CourseService extends SpringBaseService {
         builder.queryParam("hidden", isHidden);
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-            HttpEntity<String> toggleCourseToolResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, String.class);
-            log.debug("{}", toggleCourseToolResponse);
-
-            ResponseEntity<String> responseEntity = (ResponseEntity<String>) toggleCourseToolResponse;
+            ResponseEntity<String> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, String.class);
+            log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -955,16 +893,11 @@ public class CourseService extends SpringBaseService {
         ExternalCourseToolResult externalCourseToolResult = null;
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
             restTemplate.setErrorHandler(new ClientErrorHandler());
 
-            HttpEntity<ExternalTool> httpEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.GET, null, ExternalTool.class);
+            ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.GET, null, ExternalTool.class);
 
-            ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) httpEntity;
-
-            externalCourseToolResult = new ExternalCourseToolResult(responseEntity.getStatusCode(), responseEntity.getStatusCodeValue(), responseEntity.getBody());
+            externalCourseToolResult = new ExternalCourseToolResult(responseEntity.getStatusCode(), responseEntity.getStatusCode().value(), responseEntity.getBody());
 
         } catch (Exception e) {
             log.error("Error ", e);
@@ -976,7 +909,7 @@ public class CourseService extends SpringBaseService {
     }
 
     public ExternalCourseToolResult renameCourseTool(String courseId, String courseToolId, String newToolName) {
-        if (newToolName == null || newToolName.trim().length() == 0) {
+        if (newToolName == null || newToolName.trim().isEmpty()) {
             return null;
         }
 
@@ -1000,11 +933,9 @@ public class CourseService extends SpringBaseService {
 
             HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(valueMap, headers);
 
-            HttpEntity<ExternalTool> httpEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, ExternalTool.class);
+            ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, ExternalTool.class);
 
-            ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) httpEntity;
-
-            externalCourseToolResult = new ExternalCourseToolResult(responseEntity.getStatusCode(), responseEntity.getStatusCodeValue(), responseEntity.getBody());
+            externalCourseToolResult = new ExternalCourseToolResult(responseEntity.getStatusCode(), responseEntity.getStatusCode().value(), responseEntity.getBody());
 
         } catch (Exception e) {
             log.error("Error ", e);
@@ -1028,11 +959,9 @@ public class CourseService extends SpringBaseService {
         try {
             restTemplate.setErrorHandler(new ClientErrorHandler());
 
-            HttpEntity<ExternalTool> httpEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
+            ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
 
-            ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) httpEntity;
-
-            externalCourseToolResult = new ExternalCourseToolResult(responseEntity.getStatusCode(), responseEntity.getStatusCodeValue(), responseEntity.getBody());
+            externalCourseToolResult = new ExternalCourseToolResult(responseEntity.getStatusCode(), responseEntity.getStatusCode().value(), responseEntity.getBody());
 
         } catch (Exception e) {
             log.error("Error ", e);
@@ -1175,7 +1104,7 @@ public class CourseService extends SpringBaseService {
     }
 
 
-    private class ClientErrorHandler extends DefaultResponseErrorHandler {
+    private static class ClientErrorHandler extends DefaultResponseErrorHandler {
         @Override
         public void handleError(ClientHttpResponse response) throws IOException
         {

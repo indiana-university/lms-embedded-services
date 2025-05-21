@@ -33,6 +33,19 @@ package edu.iu.uits.lms.iuonly.rest;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.iuonly.repository.AuthorizedUserRepository;
+import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
+import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
+import edu.iu.uits.lms.iuonly.repository.FeatureAccessRepository;
+import edu.iu.uits.lms.iuonly.repository.FileStorageRepository;
+import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import edu.iu.uits.lms.iuonly.repository.LmsBatchEmailRepository;
+import edu.iu.uits.lms.iuonly.repository.NodeHierarchyRepository;
+import edu.iu.uits.lms.iuonly.repository.TemplatedCourseRepository;
+import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
+import edu.iu.uits.lms.iuonly.services.HierarchyResourceService;
+import edu.iu.uits.lms.iuonly.services.SisServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,6 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,11 +65,49 @@ import java.util.stream.Collectors;
 
 import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
 
-//@NestedTestConfiguration(INHERIT)
 @SpringBootTest
 public class RestControllerAvailabilityTest {
 
    private static final String PACKAGE = "edu.iu.uits.lms.iuonly";
+
+   @MockitoBean
+   public AuthorizedUserRepository authorizedUserRepository;
+
+   @MockitoBean
+   public ErrorContactEventRepository errorContactEventRepository;
+
+   @MockitoBean
+   public ErrorContactJobProfileRepository errorContactJobProfileRepository;
+
+   @MockitoBean
+   public FeatureAccessRepository featureAccessRepository;
+
+   @MockitoBean
+   public LmsBatchEmailRepository lmsBatchEmailRepository;
+
+   @MockitoBean
+   public NodeHierarchyRepository nodeHierarchyRepository;
+
+   @MockitoBean
+   public TemplatedCourseRepository templatedCourseRepository;
+
+   @MockitoBean
+   public HierarchyResourceRepository hierarchyResourceRepository;
+
+   @MockitoBean
+   public FileStorageRepository fileStorageRepository;
+
+   @MockitoBean
+   private FeatureAccessServiceImpl featureAccessService;
+
+   @MockitoBean
+   private HierarchyResourceService hierarchyResourceService;
+
+   @MockitoBean
+   private SisServiceImpl sisService;
+
+   @MockitoBean
+   private CourseService courseService;
 
    @Nested
    @ActiveProfiles({IUCUSTOMREST_PROFILE})

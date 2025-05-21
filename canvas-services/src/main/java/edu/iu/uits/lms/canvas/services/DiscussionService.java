@@ -40,6 +40,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -90,7 +91,7 @@ public class DiscussionService extends SpringBaseService {
             newDiscussionTopic.setAnnouncement(false);
 
             HttpEntity<DiscussionTopic> newDiscussionTopicRequest = new HttpEntity<>(newDiscussionTopic, headers);
-            HttpEntity<DiscussionTopic> newDiscussionTopicResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, newDiscussionTopicRequest, DiscussionTopic.class);
+            ResponseEntity<DiscussionTopic> newDiscussionTopicResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, newDiscussionTopicRequest, DiscussionTopic.class);
             log.debug("{}", newDiscussionTopicResponse);
 
             savedDiscussionTopic = newDiscussionTopicResponse.getBody();

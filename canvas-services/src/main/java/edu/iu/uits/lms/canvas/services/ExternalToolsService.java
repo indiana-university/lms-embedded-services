@@ -135,13 +135,8 @@ public class ExternalToolsService extends SpringBaseService {
       builder.path("/" + toolId);
 
       try {
-         HttpHeaders headers = new HttpHeaders();
-         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
-         HttpEntity<ExternalTool> externalToolResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
-         log.debug("{}", externalToolResponse);
-
-         ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) externalToolResponse;
+         ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
+         log.debug("{}", responseEntity);
 
          if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -149,16 +144,12 @@ public class ExternalToolsService extends SpringBaseService {
                     + ", body: " + responseEntity.getBody());
          }
 
-         if (externalToolResponse != null) {
-            log.info("Deleted ExternalTool toolId " + toolId + " from Canvas courseId: " + courseId);
-            return externalToolResponse.getBody();
-         }
+          log.info("Deleted ExternalTool toolId " + toolId + " from Canvas courseId: " + courseId);
+          return responseEntity.getBody();
       } catch (HttpClientErrorException hcee) {
          log.error("Error deleting external tool", hcee);
          throw new RuntimeException("Error deleting external tool", hcee);
       }
-
-      return null;
    }
 
    /**
@@ -185,14 +176,9 @@ public class ExternalToolsService extends SpringBaseService {
       builder.path("/" + toolId);
 
       try {
-         HttpHeaders headers = new HttpHeaders();
-         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-
          log.debug("Uri to DELETE: {}", builder.build().toUri());
-         HttpEntity<ExternalTool> externalToolResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
-         log.debug("{}", externalToolResponse);
-
-         ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) externalToolResponse;
+         ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
+         log.debug("{}", responseEntity);
 
          if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -200,10 +186,8 @@ public class ExternalToolsService extends SpringBaseService {
                     + ", body: " + responseEntity.getBody());
          }
 
-         if (externalToolResponse != null) {
-            log.info("Deleted ExternalTool toolId " + toolId + " from Canvas accountId: " + accountId);
-            return externalToolResponse.getBody();
-         }
+          log.info("Deleted ExternalTool toolId " + toolId + " from Canvas accountId: " + accountId);
+          return responseEntity.getBody();
       } catch (HttpClientErrorException hcee) {
          if (HttpStatus.NOT_FOUND.equals(hcee.getStatusCode())) {
             log.warn("External tool not found for accountId {} and toolId {} on {}", accountId, toolId, serverUrl);
@@ -251,10 +235,8 @@ public class ExternalToolsService extends SpringBaseService {
          headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
          HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(multiValueMap, headers);
 
-         HttpEntity<ExternalTool> externalToolResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, ExternalTool.class);
-         log.debug("{}", externalToolResponse);
-
-         ResponseEntity<ExternalTool> responseEntity = (ResponseEntity<ExternalTool>) externalToolResponse;
+         ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, ExternalTool.class);
+         log.debug("{}", responseEntity);
 
          if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Request to Canvas was not successful. Response code: "
@@ -262,16 +244,12 @@ public class ExternalToolsService extends SpringBaseService {
                     + ", body: " + responseEntity.getBody());
          }
 
-         if (externalToolResponse != null) {
-            log.info("Edited ExternalTool toolId " + toolId + " from Canvas courseId: " + courseId);
-            return externalToolResponse.getBody();
-         }
+          log.info("Edited ExternalTool toolId " + toolId + " from Canvas courseId: " + courseId);
+          return responseEntity.getBody();
       } catch (HttpClientErrorException hcee) {
          log.error("Error updating external tool", hcee);
          throw new RuntimeException("Error updating external tool", hcee);
       }
-
-      return null;
    }
 
    /**
@@ -316,12 +294,10 @@ public class ExternalToolsService extends SpringBaseService {
          headers.setContentType(MediaType.APPLICATION_JSON);
 
          HttpEntity<LtiSettings> requestEntity = new HttpEntity<>(ltiSettings, headers);
-         HttpEntity<ExternalTool> responseEntity = this.restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, ExternalTool.class);
+         ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, ExternalTool.class);
          log.debug("{}", responseEntity);
 
-         if (responseEntity != null) {
-            return responseEntity.getBody();
-         }
+          return responseEntity.getBody();
       } catch (HttpClientErrorException | HttpServerErrorException hcee) {
          log.error("Unable to PUT the external tool changes", hcee);
       }
@@ -365,16 +341,12 @@ public class ExternalToolsService extends SpringBaseService {
                     + ", body: " + responseEntity.getBody());
          }
 
-         if (responseEntity != null) {
-            log.info("Created ExternalTool for Canvas courseId: " + courseId);
-            return responseEntity.getBody();
-         }
+          log.info("Created ExternalTool for Canvas courseId: " + courseId);
+          return responseEntity.getBody();
       } catch (HttpClientErrorException hcee) {
          log.error("Error creating external tool", hcee);
          throw new RuntimeException("Error creating external tool", hcee);
       }
-
-      return null;
    }
 
    /**

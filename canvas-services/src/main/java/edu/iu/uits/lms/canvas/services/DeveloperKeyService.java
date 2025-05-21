@@ -38,6 +38,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -76,12 +77,10 @@ public class DeveloperKeyService extends SpringBaseService {
          headers.setContentType(MediaType.APPLICATION_JSON);
 
          HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
-         HttpEntity<String> responseEntity = this.restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+         ResponseEntity<String> responseEntity = this.restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
          log.debug("{}", responseEntity);
 
-         if (responseEntity != null) {
-            return responseEntity.getBody();
-         }
+          return responseEntity.getBody();
       } catch (HttpClientErrorException | HttpServerErrorException hcee) {
          log.error("Unable to PUT the developer key changes", hcee);
       }
@@ -110,12 +109,10 @@ public class DeveloperKeyService extends SpringBaseService {
 
          HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(multiValueMap, headers);
 
-         HttpEntity<String> responseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+         ResponseEntity<String> responseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
          log.debug("{}", responseEntity);
 
-         if (responseEntity != null) {
-            return responseEntity.getBody();
-         }
+          return responseEntity.getBody();
       } catch (HttpClientErrorException | HttpServerErrorException hcee) {
          log.error("Unable to PUT the developer key account binding changes", hcee);
       }

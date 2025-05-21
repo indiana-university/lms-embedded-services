@@ -52,7 +52,8 @@ import java.util.List;
 public class DiscussionTopic implements Serializable {
     public enum TYPE {
         SIDE_COMMENT,
-        THREADED;
+        THREADED,
+        NOT_THREADED;
 
         @JsonCreator
         public static TYPE fromString(String value) {

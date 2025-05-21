@@ -42,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -128,7 +129,7 @@ public class ContentMigrationService extends SpringBaseService {
       HttpEntity<ContentMigrationCreateWrapper> requestEntity = new HttpEntity<>(wrapper, headers);
 
       try {
-         HttpEntity<ContentMigration> response = restTemplate.postForEntity(builder.build().toUri(), requestEntity, ContentMigration.class);
+         ResponseEntity<ContentMigration> response = restTemplate.postForEntity(builder.build().toUri(), requestEntity, ContentMigration.class);
          contentMigration = response.getBody();
       } catch (HttpStatusCodeException rce) {
          log.error("Error performing content migration for course: " + courseId, rce);
@@ -174,7 +175,7 @@ public class ContentMigrationService extends SpringBaseService {
       String altCourseId = buildAlternateId(courseId, idFieldName);
       URI uri = GET_MIGRATION_STATUS_BY_ID.expand(canvasConfiguration.getBaseApiUrl(), altCourseId, migrationId);
       log.debug("uri {}", uri);
-      HttpEntity<ContentMigration> template = this.restTemplate.getForEntity(uri, ContentMigration.class);
+      ResponseEntity<ContentMigration> template = this.restTemplate.getForEntity(uri, ContentMigration.class);
       log.debug("template {}", template);
       return template.getBody();
    }

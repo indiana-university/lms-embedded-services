@@ -97,12 +97,10 @@ public class NewQuizzesService extends SpringBaseService {
         builder.queryParam("as_user_id", asUser);
 
         try {
-            HttpEntity<Quiz> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), Quiz.class);
+            ResponseEntity<Quiz> quizResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), Quiz.class);
             log.debug("quizResponseEntity: {}", quizResponseEntity);
 
-            if (quizResponseEntity != null) {
-                return quizResponseEntity.getBody();
-            }
+            return quizResponseEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error:", hcee);
         }

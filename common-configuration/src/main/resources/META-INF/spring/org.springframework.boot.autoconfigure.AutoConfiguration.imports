@@ -4,4 +4,4 @@ edu.iu.uits.lms.common.actuator.LmsCustomActuatorEndpoint
 edu.iu.uits.lms.common.it12logging.AuditConfig
 edu.iu.uits.lms.common.it12logging.LmsAuthorizationEventPublisher
 edu.iu.uits.lms.common.cors.CorsSwaggerConfig
-edu.iu.uits.lms.common.server.FaviconConfiguration
+edu.iu.uits.lms.common.server.BrandingConfiguration

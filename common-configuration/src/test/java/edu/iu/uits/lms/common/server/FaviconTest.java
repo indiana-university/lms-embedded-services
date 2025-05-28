@@ -42,7 +42,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.NestedTestConfiguration;
 
-@ContextConfiguration(classes = {FaviconConfiguration.class})
+@ContextConfiguration(classes = {BrandingConfiguration.class})
 @ActiveProfiles("none")
 @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
 public class FaviconTest {
@@ -53,7 +53,7 @@ public class FaviconTest {
     public class NotConfiguredTest extends FaviconBase {
         @Test
         void testConfig() {
-            Assertions.assertFalse(faviconControllerAdvice.getFaviconProperties().isEnabled());
+            Assertions.assertFalse(faviconControllerAdvice.getBrandingProperties().isFaviconEnabled());
         }
     }
 
@@ -62,7 +62,7 @@ public class FaviconTest {
     public class DisabledTest extends FaviconBase {
         @Test
         void testConfig() {
-            Assertions.assertFalse(faviconControllerAdvice.getFaviconProperties().isEnabled());
+            Assertions.assertFalse(faviconControllerAdvice.getBrandingProperties().isFaviconEnabled());
         }
     }
 
@@ -71,9 +71,9 @@ public class FaviconTest {
     public class EnabledDefaultTest extends FaviconBase {
         @Test
         void testConfig() {
-            Assertions.assertTrue(faviconControllerAdvice.getFaviconProperties().isEnabled());
-            Assertions.assertEquals("/favicon.ico", faviconControllerAdvice.getFaviconProperties().getUrl());
-            Assertions.assertEquals(FaviconProperties.TYPE.PATH, faviconControllerAdvice.getFaviconProperties().getType());
+            Assertions.assertTrue(faviconControllerAdvice.getBrandingProperties().isFaviconEnabled());
+            Assertions.assertEquals("/favicon.ico", faviconControllerAdvice.getBrandingProperties().getFaviconUrl());
+            Assertions.assertEquals(BrandingProperties.TYPE.PATH, faviconControllerAdvice.getBrandingProperties().getFaviconType());
         }
     }
 
@@ -82,9 +82,9 @@ public class FaviconTest {
     public class EnabledUrlTest extends FaviconBase {
         @Test
         void testConfig() {
-            Assertions.assertTrue(faviconControllerAdvice.getFaviconProperties().isEnabled());
-            Assertions.assertEquals("http://asdf.foo/favicon.ico", faviconControllerAdvice.getFaviconProperties().getUrl());
-            Assertions.assertEquals(FaviconProperties.TYPE.URL, faviconControllerAdvice.getFaviconProperties().getType());
+            Assertions.assertTrue(faviconControllerAdvice.getBrandingProperties().isFaviconEnabled());
+            Assertions.assertEquals("http://asdf.foo/favicon.ico", faviconControllerAdvice.getBrandingProperties().getFaviconUrl());
+            Assertions.assertEquals(BrandingProperties.TYPE.URL, faviconControllerAdvice.getBrandingProperties().getFaviconType());
         }
     }
 
@@ -93,9 +93,9 @@ public class FaviconTest {
     public class EnabledPathTest extends FaviconBase {
         @Test
         void testConfig() {
-            Assertions.assertTrue(faviconControllerAdvice.getFaviconProperties().isEnabled());
-            Assertions.assertEquals("/asdf.ico", faviconControllerAdvice.getFaviconProperties().getUrl());
-            Assertions.assertEquals(FaviconProperties.TYPE.PATH, faviconControllerAdvice.getFaviconProperties().getType());
+            Assertions.assertTrue(faviconControllerAdvice.getBrandingProperties().isFaviconEnabled());
+            Assertions.assertEquals("/asdf.ico", faviconControllerAdvice.getBrandingProperties().getFaviconUrl());
+            Assertions.assertEquals(BrandingProperties.TYPE.PATH, faviconControllerAdvice.getBrandingProperties().getFaviconType());
         }
     }
 
@@ -103,7 +103,7 @@ public class FaviconTest {
 
     private static class FaviconBase {
         @Autowired
-        protected FaviconControllerAdvice faviconControllerAdvice;
+        protected BrandingControllerAdvice faviconControllerAdvice;
     }
 
 }

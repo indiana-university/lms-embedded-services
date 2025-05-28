@@ -35,6 +35,6 @@
 
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<link th:fragment="favicon" th:if="${FaviconProperties?.enabled}" rel="icon" type="image/x-icon" th:href="${FaviconProperties.url}" />
+<link th:fragment="favicon" th:if="${BrandingProperties?.faviconEnabled}" rel="icon" type="image/x-icon" th:href="${BrandingProperties.faviconUrl}" />
 </body>
 </html>

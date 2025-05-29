@@ -9,6 +9,7 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
+    <name>lms-embedded-services-parent</name>
     <artifactId>lms-embedded-services-parent</artifactId>
     <groupId>edu.iu.uits.lms</groupId>
     <packaging>pom</packaging>

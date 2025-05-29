@@ -8,6 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>lms-canvas-common-configuration</name>
     <artifactId>lms-canvas-common-configuration</artifactId>
     <packaging>jar</packaging>
     <description>Common configuration bits that are useful to the lms-canvas LTI tools</description>

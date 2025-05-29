@@ -38,11 +38,12 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FaviconProperties {
+public class BrandingProperties {
 
-    private boolean enabled;
-    private String url;
-    private TYPE type;
+    private boolean faviconEnabled;
+    private String faviconUrl;
+    private TYPE faviconType;
+    private boolean footerBrandingEnabled;
 
     public enum TYPE {
         URL, PATH

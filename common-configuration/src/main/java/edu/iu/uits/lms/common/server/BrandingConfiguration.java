@@ -51,44 +51,47 @@ import java.util.List;
  */
 @Configuration
 @Slf4j
-public class FaviconConfiguration {
+public class BrandingConfiguration {
 
     @Value("${lms.favicon.enabled:false}")
-    private boolean enabled;
+    private boolean faviconEnabled;
 
     @Value("${lms.favicon.url:}")
-    private String url;
+    private String faviconUrl;
 
     @Value("${lms.favicon.path:/favicon.ico}")
-    private String path;
+    private String faviconPath;
+
+    @Value("${lms.footer.branding.enabled:false}")
+    private boolean footerBrandingEnabled;
 
     @Autowired
     private GenericWebApplicationContext context;
 
     @Bean
-    public FaviconControllerAdvice faviconControllerAdvice() {
-        return new FaviconControllerAdvice(faviconProperties());
+    public BrandingControllerAdvice faviconControllerAdvice() {
+        return new BrandingControllerAdvice(faviconProperties());
     }
 
-    private FaviconProperties faviconProperties() {
-        String faviconUrl = path;
-        FaviconProperties.TYPE type = FaviconProperties.TYPE.PATH;
+    private BrandingProperties faviconProperties() {
+        String faviconUrl = faviconPath;
+        BrandingProperties.TYPE type = BrandingProperties.TYPE.PATH;
 
-        if (enabled && StringUtils.isNotBlank(url)) {
-            faviconUrl = url;
-            type = FaviconProperties.TYPE.URL;
-            log.info("Enabling favicon via external URL: {}", url);
+        if (faviconEnabled && StringUtils.isNotBlank(this.faviconUrl)) {
+            faviconUrl = this.faviconUrl;
+            type = BrandingProperties.TYPE.URL;
+            log.info("Enabling favicon via external URL: {}", this.faviconUrl);
         }
 
-        if (enabled && type.equals(FaviconProperties.TYPE.PATH)) {
+        if (faviconEnabled && type.equals(BrandingProperties.TYPE.PATH)) {
             SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
             mapping.setOrder(Integer.MIN_VALUE);
-            mapping.setUrlMap(Collections.singletonMap(path, faviconRequestHandler()));
+            mapping.setUrlMap(Collections.singletonMap(faviconPath, faviconRequestHandler()));
             context.registerBean("FaviconHandler", SimpleUrlHandlerMapping.class, () -> mapping);
-            log.info("Enabling favicon via path handler: {}", path);
+            log.info("Enabling favicon via path handler: {}", faviconPath);
         }
 
-        return new FaviconProperties(enabled, faviconUrl, type);
+        return new BrandingProperties(faviconEnabled, faviconUrl, type, footerBrandingEnabled);
     }
 
     private static final List<String> CLASSPATH_RESOURCE_LOCATIONS = List.of(

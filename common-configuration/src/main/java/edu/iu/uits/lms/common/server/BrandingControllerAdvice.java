@@ -40,16 +40,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 @ControllerAdvice(annotations = Controller.class)
 @Slf4j
-public class FaviconControllerAdvice {
+public class BrandingControllerAdvice {
 
-    private FaviconProperties faviconProperties;
+    private BrandingProperties brandingProperties;
 
-    public FaviconControllerAdvice(FaviconProperties faviconProperties) {
-        this.faviconProperties = faviconProperties;
+    public BrandingControllerAdvice(BrandingProperties brandingProperties) {
+        this.brandingProperties = brandingProperties;
     }
 
-    @ModelAttribute("FaviconProperties")
-    public FaviconProperties getFaviconProperties() {
-        return faviconProperties;
+    @ModelAttribute("BrandingProperties")
+    public BrandingProperties getBrandingProperties() {
+        return brandingProperties;
     }
 }

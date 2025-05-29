@@ -54,7 +54,7 @@ import java.util.List;
 public class BrandingConfiguration {
 
     @Value("${lms.favicon.enabled:false}")
-    private boolean faciconEnabled;
+    private boolean faviconEnabled;
 
     @Value("${lms.favicon.url:}")
     private String faviconUrl;
@@ -77,13 +77,13 @@ public class BrandingConfiguration {
         String faviconUrl = faviconPath;
         BrandingProperties.TYPE type = BrandingProperties.TYPE.PATH;
 
-        if (faciconEnabled && StringUtils.isNotBlank(this.faviconUrl)) {
+        if (faviconEnabled && StringUtils.isNotBlank(this.faviconUrl)) {
             faviconUrl = this.faviconUrl;
             type = BrandingProperties.TYPE.URL;
             log.info("Enabling favicon via external URL: {}", this.faviconUrl);
         }
 
-        if (faciconEnabled && type.equals(BrandingProperties.TYPE.PATH)) {
+        if (faviconEnabled && type.equals(BrandingProperties.TYPE.PATH)) {
             SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
             mapping.setOrder(Integer.MIN_VALUE);
             mapping.setUrlMap(Collections.singletonMap(faviconPath, faviconRequestHandler()));
@@ -91,7 +91,7 @@ public class BrandingConfiguration {
             log.info("Enabling favicon via path handler: {}", faviconPath);
         }
 
-        return new BrandingProperties(faciconEnabled, faviconUrl, type, footerBrandingEnabled);
+        return new BrandingProperties(faviconEnabled, faviconUrl, type, footerBrandingEnabled);
     }
 
     private static final List<String> CLASSPATH_RESOURCE_LOCATIONS = List.of(

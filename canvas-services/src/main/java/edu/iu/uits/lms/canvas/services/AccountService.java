@@ -84,6 +84,9 @@ public class AccountService extends SpringBaseService {
     private static final UriTemplate SSO_SETTINGS_TEMPLATE = new UriTemplate(SSO_SETTINGS_URI);
     private static final UriTemplate SAML_TEMPLATE = new UriTemplate(SAML_URI);
 
+    public static final String ORDER_BY_ID = "id";
+    public static final String ORDER_BY_NAME = "name";
+
     /**
      * Get all roles that are defined in the system
      * @return List of CanvasRole objects
@@ -272,6 +275,26 @@ public class AccountService extends SpringBaseService {
 
         builder.queryParam("recursive","true");
         builder.queryParam("per_page", "50");
+
+        return doGet(builder.build().toUri(), Account[].class);
+    }
+
+    /**
+     *
+     * @param accountId
+     * @param recursive If true, the entire account tree underneath this account will be returned (though still paginated). If false, only direct sub-accounts of this account will be returned.
+     * @param order Values: {@link #ORDER_BY_ID}, {@link #ORDER_BY_NAME} Sorts the accounts by id or name. Only applies when recursive is false. Defaults to id.
+     * @return
+     */
+    public List<Account> getSubAccountsForAccount(String accountId, boolean recursive, String order) {
+        URI uri = SUBACCOUNTS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), accountId);
+        log.debug("uri: {}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        builder.queryParam("recursive",recursive);
+        builder.queryParam("per_page", "50");
+        builder.queryParam("order", order);
 
         return doGet(builder.build().toUri(), Account[].class);
     }

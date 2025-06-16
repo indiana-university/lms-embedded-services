@@ -35,32 +35,28 @@ package edu.iu.uits.lms.canvas.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
-/**
- * Created by chmaurer on 12/16/14.
- */
-@JsonIgnoreProperties(ignoreUnknown=true)
+
 @Data
-public class CanvasRole implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class AccountNotification implements Serializable {
     private String id;
+    private String subject;
+    private String message;
+    private String icon;
 
-    private String role;
+    @JsonProperty("start_at")
+    private String startDate;
 
-    private String label;
+    @JsonProperty("end_at")
+    private String endDate;
 
-    @JsonProperty("base_role_type")
-    private String baseRoleType;
+    @JsonProperty("role_ids")
+    private List<String> roleIds;
 
-    @JsonProperty("workflow_state")
-    private String workflowState;
-
-    public boolean isAccountRole() {
-        return CanvasConstants.ACCOUNT_MEMBERSHIP.equals(baseRoleType);
-    }
-
+    private AccountNotificationAuthor author;
 }
-

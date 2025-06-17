@@ -34,6 +34,7 @@ package edu.iu.uits.lms.canvas.services;
  */
 
 import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
+import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
 import edu.iu.uits.lms.canvas.model.Course;
 import edu.iu.uits.lms.canvas.model.CourseCreateWrapper;
 import edu.iu.uits.lms.canvas.model.CourseSectionUpdateWrapper;
@@ -267,7 +268,24 @@ public class CourseService extends SpringBaseService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
-        builder.queryParam("type[]", "StudentEnrollment");
+        builder.queryParam("type[]", EnrollmentHelper.TYPE_STUDENT);
+        builder.queryParam("per_page", "50");
+        builder.queryParam("state[]", "active");
+
+        return doGet(builder.build().toUri(), Enrollment[].class);
+    }
+
+    /**
+     *
+     * @param courseId
+     * @return the Enrollments for "active" teachers enrolled in the given course
+     */
+    public List<Enrollment> getTeacherCourseEnrollment(@NonNull String courseId) {
+        URI uri = COURSE_ENROLLMENTS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        builder.queryParam("type[]", EnrollmentHelper.TYPE_TEACHER);
         builder.queryParam("per_page", "50");
         builder.queryParam("state[]", "active");
 

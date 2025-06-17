@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
 import edu.iu.uits.lms.canvas.model.CourseSectionUpdateWrapper;
 import edu.iu.uits.lms.canvas.model.Enrollment;
 import edu.iu.uits.lms.canvas.model.Section;
@@ -156,7 +157,7 @@ public class SectionService extends SpringBaseService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
-        builder.queryParam("type[]", "StudentEnrollment");
+        builder.queryParam("type[]", EnrollmentHelper.TYPE_STUDENT);
         builder.queryParam("per_page", "50");
         builder.queryParam("state[]", "active");
 

@@ -270,7 +270,7 @@ public class CourseService extends SpringBaseService {
 
         builder.queryParam("type[]", EnrollmentHelper.TYPE_STUDENT);
         builder.queryParam("per_page", "50");
-        builder.queryParam("state[]", "active");
+        builder.queryParam("state[]", CanvasConstants.ACTIVE_STATUS);
 
         return doGet(builder.build().toUri(), Enrollment[].class);
     }
@@ -287,7 +287,7 @@ public class CourseService extends SpringBaseService {
 
         builder.queryParam("type[]", EnrollmentHelper.TYPE_TEACHER);
         builder.queryParam("per_page", "50");
-        builder.queryParam("state[]", "active");
+        builder.queryParam("state[]", CanvasConstants.ACTIVE_STATUS);
 
         return doGet(builder.build().toUri(), Enrollment[].class);
     }

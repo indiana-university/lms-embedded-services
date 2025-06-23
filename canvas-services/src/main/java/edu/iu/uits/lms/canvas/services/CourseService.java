@@ -50,10 +50,12 @@ import edu.iu.uits.lms.canvas.model.SectionCreateWrapper;
 import edu.iu.uits.lms.canvas.model.User;
 import edu.iu.uits.lms.canvas.model.WikiPage;
 import edu.iu.uits.lms.canvas.model.WikiPageCreateWrapper;
+import edu.iu.uits.lms.canvas.utils.CacheConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -280,6 +282,7 @@ public class CourseService extends SpringBaseService {
      * @param courseId
      * @return the Enrollments for "active" teachers enrolled in the given course
      */
+    @Cacheable(value = CacheConstants.TEACHER_COURSE_ENROLLMENT_CACHE_NAME, cacheManager = "CanvasServicesCacheManager")
     public List<Enrollment> getTeacherCourseEnrollment(@NonNull String courseId) {
         URI uri = COURSE_ENROLLMENTS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 

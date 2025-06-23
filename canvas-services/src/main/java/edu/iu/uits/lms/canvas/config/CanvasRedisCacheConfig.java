@@ -86,6 +86,7 @@ public class CanvasRedisCacheConfig {
         return RedisCacheManager.builder(redisConnectionFactory)
               .withCacheConfiguration(CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, canvasCacheConfiguration())
               .withCacheConfiguration(CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, canvasCacheLongConfiguration())
+              .withCacheConfiguration(CacheConstants.TEACHER_COURSE_ENROLLMENT_CACHE_NAME, canvasCacheConfiguration())
               .build();
     }
 }

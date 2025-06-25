@@ -219,30 +219,6 @@ public class CourseService extends SpringBaseService {
         return doGet(builder.build().toUri(), Course[].class);
     }
 
-//    public List<Course> getCoursesForUser(String userId, String[] includes) {
-//        // {url}/api/v1/users/sis_login_id:{networkId}/courses?
-//        // exclude_blueprint_courses=false&state[]=available&state[]=unpublished&state[]=completed&enrollment_type=teacher&per_page=100
-////        String bonusPath = "sis_login_id:" + iuNetworkId + "/courses";
-//
-//        URI uri = ACCOUNTS_COURSES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), canvasConfiguration.getAccountId());
-//
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-//
-//        builder.queryParam("exclude_blueprint_courses", excludeBlueprint);
-//
-//        if (includes != null) {
-//            for (String include : includes) {
-//                builder.queryParam("include[]", include);
-//            }
-//        }
-//
-//        builder.queryParam("enrollment_type", enrollmentType);
-//
-//        builder.queryParam("per_page", "100");
-//
-//        return doGet(builder.build().toUri(), Course[].class);
-//    }
-
     /**
      * Get courses the supplied user can see
      * @param iuNetworkId User to find courses for

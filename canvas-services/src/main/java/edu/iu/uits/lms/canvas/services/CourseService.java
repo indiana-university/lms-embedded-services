@@ -34,6 +34,7 @@ package edu.iu.uits.lms.canvas.services;
  */
 
 import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
+import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
 import edu.iu.uits.lms.canvas.model.Course;
 import edu.iu.uits.lms.canvas.model.CourseCreateWrapper;
 import edu.iu.uits.lms.canvas.model.CourseSectionUpdateWrapper;
@@ -49,10 +50,12 @@ import edu.iu.uits.lms.canvas.model.SectionCreateWrapper;
 import edu.iu.uits.lms.canvas.model.User;
 import edu.iu.uits.lms.canvas.model.WikiPage;
 import edu.iu.uits.lms.canvas.model.WikiPageCreateWrapper;
+import edu.iu.uits.lms.canvas.utils.CacheConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -267,9 +270,27 @@ public class CourseService extends SpringBaseService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
-        builder.queryParam("type[]", "StudentEnrollment");
+        builder.queryParam("type[]", EnrollmentHelper.TYPE_STUDENT);
         builder.queryParam("per_page", "50");
-        builder.queryParam("state[]", "active");
+        builder.queryParam("state[]", CanvasConstants.ACTIVE_STATUS);
+
+        return doGet(builder.build().toUri(), Enrollment[].class);
+    }
+
+    /**
+     *
+     * @param courseId
+     * @return the Enrollments for "active" teachers enrolled in the given course
+     */
+    @Cacheable(value = CacheConstants.TEACHER_COURSE_ENROLLMENT_CACHE_NAME, cacheManager = "CanvasServicesCacheManager")
+    public List<Enrollment> getTeacherCourseEnrollment(@NonNull String courseId) {
+        URI uri = COURSE_ENROLLMENTS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        builder.queryParam("type[]", EnrollmentHelper.TYPE_TEACHER);
+        builder.queryParam("per_page", "50");
+        builder.queryParam("state[]", CanvasConstants.ACTIVE_STATUS);
 
         return doGet(builder.build().toUri(), Enrollment[].class);
     }

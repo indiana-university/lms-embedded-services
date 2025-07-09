@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.Account;
 import edu.iu.uits.lms.canvas.model.AccountAdmin;
 import edu.iu.uits.lms.canvas.model.AccountAdminCreate;
@@ -188,7 +189,7 @@ public class AccountService extends SpringBaseService {
         List<AccountAdmin> accountAdmins = doGet(builder.build().toUri(), AccountAdmin[].class);
 
         for (AccountAdmin accountAdmin : accountAdmins) {
-            if ("active".equals(accountAdmin.getWorkflow_state())) {
+            if (CanvasConstants.ACTIVE_STATUS.equals(accountAdmin.getWorkflow_state())) {
                 return true;
             }
         }

@@ -44,6 +44,8 @@ public class CacheConstants {
 
     public static final String PARENT_ACCOUNTS_CACHE_NAME = "parentAccounts";
 
+    public static final String TEACHER_COURSE_ENROLLMENT_CACHE_NAME = "teacherCourseEnrollments";
+
     private CacheConstants() {
         throw new IllegalStateException("Utility class");
     }

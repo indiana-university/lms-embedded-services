@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.model;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,49 +34,35 @@ package edu.iu.uits.lms.canvas.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-@JsonIgnoreProperties (ignoreUnknown=true)
 @Data
-public class Section implements Serializable {
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class GradeDataWrapper implements Serializable {
+    private Map<String, GradeDetails> gradeData;
 
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String id;
+    public void addGradeDetail(String studentId, String postedGrade, String textComment) {
+        if (gradeData == null) {
+            gradeData = new HashMap<>();
+        }
+        GradeDetails details = new GradeDetails(postedGrade, textComment);
+        gradeData.put(studentId, details);
+    }
 
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String name;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String sis_section_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String integration_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String sis_import_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String course_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String sis_course_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String start_at;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String end_at;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String nonxlist_course_id;
-
-	private boolean restrict_enrollments_to_section_dates;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private List<User> students;
-
+    @Data
+    @AllArgsConstructor
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonIgnoreProperties(ignoreUnknown=true)
+    public static class GradeDetails implements Serializable {
+        private String postedGrade;
+        private String textComment;
+    }
 }

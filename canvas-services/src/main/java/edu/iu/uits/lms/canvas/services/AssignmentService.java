@@ -38,6 +38,7 @@ import edu.iu.uits.lms.canvas.model.Assignment;
 import edu.iu.uits.lms.canvas.model.AssignmentCreateWrapper;
 import edu.iu.uits.lms.canvas.model.AssignmentGroup;
 import edu.iu.uits.lms.canvas.model.AssignmentSubmission;
+import edu.iu.uits.lms.canvas.model.GradeDataWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -62,15 +63,19 @@ import java.util.List;
 @Slf4j
 public class AssignmentService extends SpringBaseService {
     private static final String CANVAS_BASE_URI = "{url}";
-    private static final String BASE_URI = CANVAS_BASE_URI +  "/courses/{course_id}/assignments";
-    private static final String ASSIGNMENT_URI = BASE_URI +  "/{assignment_id}";
+    private static final String BASE_COURSE_URI = CANVAS_BASE_URI +  "/courses/{course_id}/assignments";
+    private static final String BASE_SECTION_URI = CANVAS_BASE_URI +  "/sections/{section_id}/assignments";
+    private static final String COURSE_ASSIGNMENT_URI = BASE_COURSE_URI +  "/{assignment_id}";
+    private static final String SECTION_ASSIGNMENT_URI = BASE_SECTION_URI +  "/{assignment_id}";
     private static final String ASSIGNMENT_GROUPS_URI = CANVAS_BASE_URI +  "/courses/{course_id}/assignment_groups";
-    private static final String SUBMISSION_URI = ASSIGNMENT_URI + "/submissions/{user_id}";
+    private static final String COURSE_SUBMISSION_URI = COURSE_ASSIGNMENT_URI + "/submissions/{user_id}";
+    private static final String SECTION_SUBMISSION_URI = SECTION_ASSIGNMENT_URI + "/submissions/{user_id}";
 
-    private static final UriTemplate BASE_TEMPLATE = new UriTemplate(BASE_URI);
-    private static final UriTemplate ASSIGNMENT_TEMPLATE = new UriTemplate(ASSIGNMENT_URI);
+    private static final UriTemplate BASE_TEMPLATE = new UriTemplate(BASE_COURSE_URI);
+    private static final UriTemplate ASSIGNMENT_TEMPLATE = new UriTemplate(COURSE_ASSIGNMENT_URI);
     private static final UriTemplate ASSIGNMENT_GROUPS_TEMPLATE = new UriTemplate(ASSIGNMENT_GROUPS_URI);
-    private static final UriTemplate SUBMISSION_TEMPLATE = new UriTemplate(SUBMISSION_URI);
+    private static final UriTemplate COURSE_SUBMISSION_TEMPLATE = new UriTemplate(COURSE_SUBMISSION_URI);
+    private static final UriTemplate SECTION_SUBMISSION_TEMPLATE = new UriTemplate(SECTION_SUBMISSION_URI);
 
     /**
      * get Assignment by assignment id
@@ -104,7 +109,7 @@ public class AssignmentService extends SpringBaseService {
     public AssignmentSubmission getAssignmentSubmissionByUserId(String courseId, String assignmentId, String userId) {
         final String userIdPath = "sis_login_id:" + userId;
 
-        URI uri = SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId, userIdPath);
+        URI uri = COURSE_SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId, userIdPath);
         log.debug("{}", uri);
 
         try {
@@ -125,7 +130,25 @@ public class AssignmentService extends SpringBaseService {
      * @return List of Assignments
      */
     public List<Assignment> getAssignments(String courseId) {
-        URI uri = BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+        return getAssignments(courseId, null);
+    }
+
+    /**
+     * Get all assignments for a given course
+     * @param courseId Canvas course id
+     * @param includes List of optional includes to add to the call
+     * @return List of Assignments
+     */
+    public List<Assignment> getAssignments(String courseId, String[] includes) {
+        URI baseUri = BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(baseUri);
+        if (includes != null) {
+            for (String include : includes) {
+                builder.queryParam("include[]", include);
+            }
+        }
+        URI uri = builder.build().toUri();
         log.debug("{}", uri);
         return doGet(uri, Assignment[].class);
     }
@@ -245,6 +268,137 @@ public class AssignmentService extends SpringBaseService {
 
             HttpEntity<MultiValueMap<String, String>> updateRequest = new HttpEntity<>(multiValueMap, headers);
             ResponseEntity<Assignment> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, updateRequest, Assignment.class);
+            log.debug("responseEntity: {}", responseEntity);
+
+            if (responseEntity != null) {
+                return responseEntity.getBody();
+            }
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error:", hcee);
+        }
+
+        return null;
+    }
+
+    public AssignmentSubmission getAssignmentSubmissionBySection(String sectionId, String assignmentId, String userId) {
+        URI uri = SECTION_SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sectionId, assignmentId, userId);
+        return getAssignmentSubmission(uri);
+    }
+
+    public AssignmentSubmission getAssignmentSubmissionByCourse(String courseId, String assignmentId, String userId) {
+        URI uri = COURSE_SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId, userId);
+        return getAssignmentSubmission(uri);
+    }
+
+    private AssignmentSubmission getAssignmentSubmission(URI uri) {
+        log.debug("{}", uri);
+
+        try {
+            ResponseEntity<AssignmentSubmission> assignmentEntity = this.restTemplate.getForEntity(uri, AssignmentSubmission.class);
+            log.debug("{}", assignmentEntity);
+
+            return assignmentEntity.getBody();
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error getting assignment submission: " + uri.toString(), hcee);
+        }
+
+        return null;
+    }
+
+
+
+    /**
+     * Submits a grade or comment for an assignment submission.
+     *
+     * @param sectionId the Canvas section id
+     * @param assignmentId the Canvas assignment id
+     * @param userId the Canvas user id (or sis_login_id)
+     * @param grade the grade to submit
+     * @param comment the comment to submit
+     * @param asUser optional - masquerade as this user when submitting the grade or comment. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+     * @return the response body from the submission
+     */
+    public String submitGradeOrCommentForSectionAssignment(String sectionId, String assignmentId, String userId, String grade, String comment, String asUser) {
+        URI uri = SECTION_SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sectionId, assignmentId, userId);
+        return submitGradeOrComment(uri, grade, comment, asUser);
+    }
+
+    public String submitGradeOrCommentForSectionAssignment(String sectionId, String assignmentId, GradeDataWrapper gradeDataWrapper, String asUser) {
+        URI uri = SECTION_SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sectionId, assignmentId, "update_grades");
+        return submitGradeOrComment(uri, gradeDataWrapper, asUser);
+    }
+
+    /**
+     * Submits a grade or comment for an assignment submission.
+     *
+     * @param courseId the Canvas course id
+     * @param assignmentId the Canvas assignment id
+     * @param userId the Canvas user id (or sis_login_id)
+     * @param grade the grade to submit
+     * @param comment the comment to submit
+     * @param asUser optional - masquerade as this user when submitting the grade or comment. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+     * @return the response body from the submission
+     */
+    public String submitGradeOrCommentForCourseAssignment(String courseId, String assignmentId, String userId, String grade, String comment, String asUser) {
+        URI uri = COURSE_SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId, userId);
+        return submitGradeOrComment(uri, grade, comment, asUser);
+    }
+
+    public String submitGradeOrCommentForCourseAssignment(String courseId, String assignmentId, GradeDataWrapper gradeDataWrapper, String asUser) {
+        URI uri = COURSE_SUBMISSION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId, "update_grades");
+        return submitGradeOrComment(uri, gradeDataWrapper, asUser);
+    }
+
+    /**
+     * Submits a grade or comment for an assignment submission.
+     *
+     * @param uri the URI for the assignment submission
+     * @param grade the grade to submit
+     * @param comment the comment to submit
+     * @param asUser optional - masquerade as this user when submitting the grade or comment. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (i.e., sis_login_id:octest1)
+     * @return the response body from the submission
+     */
+    private String submitGradeOrComment(URI uri, String grade, String comment, String asUser) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.queryParam("as_user_id", asUser);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+            multiValueMap.add("comment[text_comment]", comment);
+            multiValueMap.add("submission[posted_grade]", grade);
+
+            HttpEntity<MultiValueMap<String, String>> updateRequest = new HttpEntity<>(multiValueMap, headers);
+            // TODO: need the correct response type here, as well as return value
+            ResponseEntity<String> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, updateRequest, String.class);
+            log.debug("responseEntity: {}", responseEntity);
+
+            if (responseEntity != null) {
+                return responseEntity.getBody();
+            }
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error:", hcee);
+        }
+
+        return null;
+    }
+
+    private String submitGradeOrComment(URI uri, GradeDataWrapper gradeDataWrapper, String asUser) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.queryParam("as_user_id", asUser);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<GradeDataWrapper> updateRequest = new HttpEntity<>(gradeDataWrapper, headers);
+            // TODO: need the correct response type here, as well as return value
+            ResponseEntity<String> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, updateRequest, String.class);
             log.debug("responseEntity: {}", responseEntity);
 
             if (responseEntity != null) {

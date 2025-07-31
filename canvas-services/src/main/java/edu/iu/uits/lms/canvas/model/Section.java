@@ -38,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 @JsonIgnoreProperties (ignoreUnknown=true)
 @Data
@@ -74,5 +75,8 @@ public class Section implements Serializable {
 	private String nonxlist_course_id;
 
 	private boolean restrict_enrollments_to_section_dates;
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private List<User> students;
 
 }

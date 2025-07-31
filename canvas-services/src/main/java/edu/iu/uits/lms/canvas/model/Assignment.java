@@ -59,4 +59,7 @@ public class Assignment implements Serializable {
     private String quizId;
     private boolean isQuizAssignment;
     private boolean isQuizLtiAssignment;
+    private String dueAt;
+    private String unlockAt;
+    private List<AssignmentOverride> overrides;
 }

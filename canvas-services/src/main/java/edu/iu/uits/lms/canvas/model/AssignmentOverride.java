@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.model;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,49 +34,31 @@ package edu.iu.uits.lms.canvas.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 
-@JsonIgnoreProperties (ignoreUnknown=true)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown=true)
 @Data
-public class Section implements Serializable {
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String name;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String sis_section_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String integration_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String sis_import_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String course_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String sis_course_id;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String start_at;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String end_at;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String nonxlist_course_id;
-
-	private boolean restrict_enrollments_to_section_dates;
-
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private List<User> students;
+public class AssignmentOverride implements Serializable {
+    private String id;
+    private String assignmentId;
+    private String quizId;
+    private String contextModuleId;
+    private String discussionTopicId;
+    private String wikiPageId;
+    private String attachmentId;
+    private String[] studentIds;
+    private String groupId;
+    private String courseSectionId;
+    private String title;
+    private String dueAt;
+    private Boolean allDay;
+    private String allDayDate;
+    private String unlockAt;
+    private String lockAt;
 
 }

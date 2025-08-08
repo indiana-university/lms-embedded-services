@@ -74,7 +74,20 @@ public class SectionService extends SpringBaseService {
 
     // feel free to pass in "sis_section_id:1234" for the id if you need the SIS id instead of Canvas's section id
     public Section getSection(String id) {
-        URI uri = SECTION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), id);
+        return getSection(id, null);
+    }
+
+
+    public Section getSection(String id, String[] includes) {
+        URI baseUri = SECTION_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), id);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(baseUri);
+        if (includes != null) {
+            for (String include : includes) {
+                builder.queryParam("include[]", include);
+            }
+        }
+        URI uri = builder.build().toUri();
         log.debug("uri: {}", uri);
 
         try {

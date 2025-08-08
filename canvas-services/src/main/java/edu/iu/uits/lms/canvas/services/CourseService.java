@@ -631,7 +631,7 @@ public class CourseService extends SpringBaseService {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<CourseCreateWrapper> createNewCourseRequest = new HttpEntity<>(newCourse, headers);
             ResponseEntity<Course> createNewCourseResponse = this.restTemplate.exchange(uri, HttpMethod.POST, createNewCourseRequest, Course.class);
@@ -685,7 +685,7 @@ public class CourseService extends SpringBaseService {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<EnrollmentCreateWrapper> createNewCourseSectionEnrollmentRequest = new HttpEntity<>(enrollmentWrapper, headers);
             ResponseEntity<Enrollment> responseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, createNewCourseSectionEnrollmentRequest, Enrollment.class);
@@ -950,7 +950,7 @@ public class CourseService extends SpringBaseService {
             valueMap.put("name", newToolName);
 
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(valueMap, headers);
 
@@ -1036,7 +1036,7 @@ public class CourseService extends SpringBaseService {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<WikiPageCreateWrapper> createNewWikiPageRequest = new HttpEntity<>(newWikiPage, headers);
             HttpEntity<WikiPage> createNewWikiPageResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, createNewWikiPageRequest, WikiPage.class);
@@ -1109,7 +1109,7 @@ public class CourseService extends SpringBaseService {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<CourseSyllabusBodyWrapper> modifiedCourseSyllabusRequest = new HttpEntity<>(modifiedCourseSyllabusBodyWrapper, headers);
             HttpEntity<Course> modifedCourseResponse = this.restTemplate.exchange(uri, HttpMethod.PUT, modifiedCourseSyllabusRequest, Course.class);

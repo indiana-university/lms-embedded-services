@@ -48,6 +48,7 @@ import edu.iu.uits.lms.canvas.model.QuotaInfo;
 import edu.iu.uits.lms.canvas.model.Section;
 import edu.iu.uits.lms.canvas.model.SectionCreateWrapper;
 import edu.iu.uits.lms.canvas.model.User;
+import edu.iu.uits.lms.canvas.model.UserProgress;
 import edu.iu.uits.lms.canvas.model.WikiPage;
 import edu.iu.uits.lms.canvas.model.WikiPageCreateWrapper;
 import edu.iu.uits.lms.canvas.utils.CacheConstants;
@@ -104,6 +105,7 @@ public class CourseService extends SpringBaseService {
     private static final String SECTION_ENROLLMENTS_URI = SECTIONS_BASE_URI + "/{id}/enrollments";
     private static final String COURSE_WIKI_PAGES_URI = COURSE_URI + "/pages";
     private static final String COURSE_WIKI_PAGE_URI = COURSE_URI + "/pages/{id}";
+    private static final String BULK_USER_PROGRESS_URI = COURSE_URI + "/bulk_user_progress";
 
     private final UriTemplate ACCOUNTS_COURSES_TEMPLATE = new UriTemplate(ACCOUNTS_COURSES_URI);
     private final UriTemplate COURSE_BASE_TEMPLATE = new UriTemplate(COURSES_BASE_URI);
@@ -117,6 +119,7 @@ public class CourseService extends SpringBaseService {
     private final UriTemplate SECTION_ENROLLMENTS_TEMPLATE = new UriTemplate(SECTION_ENROLLMENTS_URI);
     private final UriTemplate COURSE_WIKI_PAGES_TEMPLATE = new UriTemplate(COURSE_WIKI_PAGES_URI);
     private final UriTemplate COURSE_WIKI_PAGE_TEMPLATE = new UriTemplate(COURSE_WIKI_PAGE_URI);
+    private final UriTemplate BULK_USER_PROGRESS_TEMPLATE = new UriTemplate(BULK_USER_PROGRESS_URI);
 
 
 
@@ -265,7 +268,17 @@ public class CourseService extends SpringBaseService {
      * @param courseId
      * @return the Enrollments for "active" students enrolled in the given course
      */
-    public List<Enrollment> getStudentCourseEnrollment(@NonNull String courseId) {
+    public List<Enrollment> getStudentCourseEnrollments(@NonNull String courseId) {
+        return getStudentCourseEnrollments(courseId, null);
+    }
+
+    /**
+     *
+     * @param courseId
+     * @param includes optional parameters to include in the request
+     * @return the Enrollments for "active" students enrolled in the given course
+     */
+    public List<Enrollment> getStudentCourseEnrollments(@NonNull String courseId, String[] includes) {
         URI uri = COURSE_ENROLLMENTS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -273,6 +286,12 @@ public class CourseService extends SpringBaseService {
         builder.queryParam("type[]", EnrollmentHelper.TYPE_STUDENT);
         builder.queryParam("per_page", "50");
         builder.queryParam("state[]", CanvasConstants.ACTIVE_STATUS);
+
+        if (includes != null) {
+            for (String include : includes) {
+                builder.queryParam("include[]", include);
+            }
+        }
 
         return doGet(builder.build().toUri(), Enrollment[].class);
     }
@@ -1122,6 +1141,17 @@ public class CourseService extends SpringBaseService {
         }
 
         return modifiedCourse;
+    }
+
+    public List<UserProgress> getUserProgressForCourse(String courseId, String asUser) {
+        URI uri = BULK_USER_PROGRESS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
+
+        return doGet(builder.build().toUri(), UserProgress[].class);
     }
 
 

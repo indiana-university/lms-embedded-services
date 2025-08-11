@@ -1143,6 +1143,50 @@ public class CourseService extends SpringBaseService {
         return modifiedCourse;
     }
 
+    /**
+     * Update a course with the given properties
+     * @param courseId Canvas course id
+     * @param courseProperties Map of properties to update
+     * @param asUser optional - masquerade as this user when updating the course. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
+     * @return Updated Course object
+     */
+    public Course updateCourse(String courseId, Map<String, String> courseProperties, String asUser) {
+        if (courseId == null) {
+            throw new IllegalArgumentException("Null courseId passed to updateCourse.");
+        }
+
+        Course modifiedCourse = null;
+
+        URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+        log.debug("{}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+            multiValueMap.setAll(courseProperties);
+
+            HttpEntity<MultiValueMap<String, String>> updateCourseRequest = new HttpEntity<>(multiValueMap, headers);
+            ResponseEntity<Course> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, updateCourseRequest, Course.class);
+            log.debug("{}", responseEntity);
+
+            modifiedCourse = responseEntity.getBody();
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error updating course: " + courseId, hcee);
+            throw new RuntimeException("Error updating course", hcee);
+        }
+
+        return modifiedCourse;
+    }
+  
     public List<UserProgress> getUserProgressForCourse(String courseId, String asUser) {
         URI uri = BULK_USER_PROGRESS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 

@@ -164,16 +164,27 @@ public class SectionService extends SpringBaseService {
     }
 
     public List<Enrollment> getStudentSectionEnrollments(String sisSectionId) {
+        return getStudentSectionEnrollments(sisSectionId, null);
+    }
+
+    public List<Enrollment> getStudentSectionEnrollments(String sisSectionId, String[] includes) {
         final String sisSectionIdPath = "sis_section_id:" + sisSectionId;
 
         URI uri = STUDENT_SECTION_ENROLLMENT_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sisSectionIdPath);
-        log.debug("{}", uri);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
         builder.queryParam("type[]", EnrollmentHelper.TYPE_STUDENT);
         builder.queryParam("per_page", "50");
         builder.queryParam("state[]", CanvasConstants.ACTIVE_STATUS);
+
+        if (includes != null) {
+            for (String include : includes) {
+                builder.queryParam("include[]", include);
+            }
+        }
+
+        log.debug("{}", builder.build().toUri());
 
         return doGet(builder.build().toUri(), Enrollment[].class);
     }

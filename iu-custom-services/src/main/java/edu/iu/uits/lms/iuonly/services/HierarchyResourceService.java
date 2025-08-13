@@ -137,7 +137,7 @@ public class HierarchyResourceService {
       if (hierarchyResources == null || hierarchyResources.isEmpty()) {
          throw new HierarchyResourceException("Could not find default homepage template");
       }
-      return hierarchyResources.getFirst();
+      return hierarchyResources.get(0);
    }
 
    /**

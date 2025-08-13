@@ -36,6 +36,7 @@ package edu.iu.uits.lms.canvas.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -59,4 +60,8 @@ public class AccountNotification implements Serializable {
     private List<String> roleIds;
 
     private AccountNotificationAuthor author;
+
+    public boolean isValid() {
+        return StringUtils.isNoneBlank(subject, message, icon, startDate, endDate);
+    }
 }

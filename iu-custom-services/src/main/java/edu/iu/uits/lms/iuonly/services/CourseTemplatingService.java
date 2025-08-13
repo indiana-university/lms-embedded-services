@@ -154,7 +154,7 @@ public class CourseTemplatingService {
          // this is likely only a scenario on test environments, but slows things down quite a bit!
          if (saveTemplatedCourse) {
             // Set the status on the templatedCourse to match the last one in the list (most recent attempt)
-            templatedCourse.setStatus(contentMigrationStatuses.getLast().getStatus());
+            templatedCourse.setStatus(contentMigrationStatuses.get(contentMigrationStatuses.size()-1).getStatus());
             saveTemplatedCourse(templatedCourse);
          }
       }

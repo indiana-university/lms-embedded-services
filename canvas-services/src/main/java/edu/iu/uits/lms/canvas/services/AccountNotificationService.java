@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.services;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ package edu.iu.uits.lms.canvas.services;
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 
 import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.AccountNotification;

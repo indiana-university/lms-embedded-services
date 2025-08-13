@@ -631,7 +631,7 @@ public class CourseService extends SpringBaseService {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<CourseCreateWrapper> createNewCourseRequest = new HttpEntity<>(newCourse, headers);
             ResponseEntity<Course> createNewCourseResponse = this.restTemplate.exchange(uri, HttpMethod.POST, createNewCourseRequest, Course.class);
@@ -685,7 +685,7 @@ public class CourseService extends SpringBaseService {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<EnrollmentCreateWrapper> createNewCourseSectionEnrollmentRequest = new HttpEntity<>(enrollmentWrapper, headers);
             ResponseEntity<Enrollment> responseEntity = this.restTemplate.exchange(uri, HttpMethod.POST, createNewCourseSectionEnrollmentRequest, Enrollment.class);
@@ -950,7 +950,7 @@ public class CourseService extends SpringBaseService {
             valueMap.put("name", newToolName);
 
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(valueMap, headers);
 
@@ -1036,7 +1036,7 @@ public class CourseService extends SpringBaseService {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<WikiPageCreateWrapper> createNewWikiPageRequest = new HttpEntity<>(newWikiPage, headers);
             HttpEntity<WikiPage> createNewWikiPageResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, createNewWikiPageRequest, WikiPage.class);
@@ -1109,7 +1109,7 @@ public class CourseService extends SpringBaseService {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<CourseSyllabusBodyWrapper> modifiedCourseSyllabusRequest = new HttpEntity<>(modifiedCourseSyllabusBodyWrapper, headers);
             HttpEntity<Course> modifedCourseResponse = this.restTemplate.exchange(uri, HttpMethod.PUT, modifiedCourseSyllabusRequest, Course.class);
@@ -1119,6 +1119,50 @@ public class CourseService extends SpringBaseService {
         } catch (HttpClientErrorException hcee) {
             log.error("Error modifying course syllabus body", hcee);
             throw new RuntimeException("Error modifying course syllabus body", hcee);
+        }
+
+        return modifiedCourse;
+    }
+
+    /**
+     * Update a course with the given properties
+     * @param courseId Canvas course id
+     * @param courseProperties Map of properties to update
+     * @param asUser optional - masquerade as this user when updating the course. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
+     * @return Updated Course object
+     */
+    public Course updateCourse(String courseId, Map<String, String> courseProperties, String asUser) {
+        if (courseId == null) {
+            throw new IllegalArgumentException("Null courseId passed to updateCourse.");
+        }
+
+        Course modifiedCourse = null;
+
+        URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+        log.debug("{}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+            multiValueMap.setAll(courseProperties);
+
+            HttpEntity<MultiValueMap<String, String>> updateCourseRequest = new HttpEntity<>(multiValueMap, headers);
+            ResponseEntity<Course> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, updateCourseRequest, Course.class);
+            log.debug("{}", responseEntity);
+
+            modifiedCourse = responseEntity.getBody();
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error updating course: " + courseId, hcee);
+            throw new RuntimeException("Error updating course", hcee);
         }
 
         return modifiedCourse;

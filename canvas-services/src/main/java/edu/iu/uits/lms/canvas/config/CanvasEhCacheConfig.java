@@ -111,6 +111,7 @@ public class CanvasEhCacheConfig {
         createCacheIfMissing(cacheManager, CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, mutableMediumAccessedConfiguration);
         createCacheIfMissing(cacheManager, CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, mutableLongConfiguration);
         createCacheIfMissing(cacheManager, CacheConstants.TEACHER_COURSE_ENROLLMENT_CACHE_NAME, mutableMediumAccessedConfiguration);
+        createCacheIfMissing(cacheManager, CacheConstants.SUB_ACCOUNTS_CACHE_NAME, mutableMediumAccessedConfiguration);
 
         return new JCacheCacheManager(cacheManager);
     }

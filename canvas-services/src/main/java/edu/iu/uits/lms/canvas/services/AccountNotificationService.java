@@ -102,7 +102,7 @@ public class AccountNotificationService extends SpringBaseService {
      * @param accountId
      * @param accountNotificationId
      * @return the AccountNotification with the given ID for the specified account. Note: This method requires retrieving
-     * all of the notifications for the account and filtering them by ID, so it may not be as efficient as getActiveAccountNotification.
+     * all the notifications for the account and filtering them by ID, so it may not be as efficient as getActiveAccountNotification.
      * It will return notifications regardless of their status (active, deleted, future, or expired).
      */
     public AccountNotification getAccountNotification(String accountId, String accountNotificationId) {

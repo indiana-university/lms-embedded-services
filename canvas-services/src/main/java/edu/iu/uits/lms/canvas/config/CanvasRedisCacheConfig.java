@@ -87,6 +87,7 @@ public class CanvasRedisCacheConfig {
               .withCacheConfiguration(CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, canvasCacheConfiguration())
               .withCacheConfiguration(CacheConstants.PARENT_ACCOUNTS_CACHE_NAME, canvasCacheLongConfiguration())
               .withCacheConfiguration(CacheConstants.TEACHER_COURSE_ENROLLMENT_CACHE_NAME, canvasCacheConfiguration())
+              .withCacheConfiguration(CacheConstants.SUB_ACCOUNTS_CACHE_NAME, canvasCacheConfiguration())
               .build();
     }
 }

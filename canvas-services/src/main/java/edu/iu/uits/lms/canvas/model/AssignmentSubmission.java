@@ -34,7 +34,8 @@ package edu.iu.uits.lms.canvas.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -43,15 +44,14 @@ import java.util.List;
 /**
  * Created by yingwang on 11/16/15.
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown=true)
 @Data
 public class AssignmentSubmission implements Serializable {
-    String id;
-
-    @JsonProperty("user_id")
-    String userId;
-    List<CanvasFile> attachments;
-
-    @JsonProperty("submitted_at")
+    private String id;
+    private String userId;
+    private List<CanvasFile> attachments;
     private String submittedAt;
+    private String grade;
+    private String workflowState;
 }

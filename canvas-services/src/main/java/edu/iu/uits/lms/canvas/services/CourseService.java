@@ -1186,13 +1186,25 @@ public class CourseService extends SpringBaseService {
 
         return modifiedCourse;
     }
-  
-    public List<UserProgress> getUserProgressForCourse(String courseId, String asUser) {
+
+    /**
+     * Get user progress for all users in a course
+     * @param courseId Canvas course id
+     * @param asUser optional - masquerade as this user when retrieving the user progress. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
+     * @param pageSize optional - number of results to return per page. If not supplied, Canvas will use its default value.
+     * @return List of UserProgress objects
+     */
+    public List<UserProgress> getUserProgressForCourse(String courseId, String asUser, String pageSize) {
         URI uri = BULK_USER_PROGRESS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
         if (asUser != null) {
             builder.queryParam("as_user_id", asUser);
+        }
+
+        if (pageSize != null) {
+            builder.queryParam("per_page", pageSize);
         }
 
         return doGet(builder.build().toUri(), UserProgress[].class);

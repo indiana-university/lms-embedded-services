@@ -265,6 +265,7 @@ public class AccountService extends SpringBaseService {
      * Get all subaccounts that are defined in the system
      * @return List of Account objects
      */
+    @Cacheable(value = CacheConstants.SUB_ACCOUNTS_CACHE_NAME, cacheManager = "CanvasServicesCacheManager")
     public List<Account> getSubAccounts() {
         URI uri = SUBACCOUNTS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), canvasConfiguration.getAccountId());
         log.debug("uri: {}", uri);

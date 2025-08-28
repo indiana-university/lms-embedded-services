@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.model;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,32 +33,36 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.List;
 
-/**
- * Created by chmaurer on 12/16/14.
- */
-@JsonIgnoreProperties(ignoreUnknown=true)
+
 @Data
-public class CanvasRole implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class AccountNotification implements Serializable {
     private String id;
+    private String subject;
+    private String message;
+    private String icon;
 
-    private String role;
+    @JsonProperty("start_at")
+    private String startDate;
 
-    private String label;
+    @JsonProperty("end_at")
+    private String endDate;
 
-    @JsonProperty("base_role_type")
-    private String baseRoleType;
+    @JsonProperty("role_ids")
+    private List<String> roleIds;
 
-    @JsonProperty("workflow_state")
-    private String workflowState;
+    private AccountNotificationAuthor author;
 
-    @JsonProperty("is_account_role")
-    private boolean isAccountRole;
-
+    public boolean isValid() {
+        return StringUtils.isNoneBlank(subject, message, icon, startDate, endDate);
+    }
 }
-

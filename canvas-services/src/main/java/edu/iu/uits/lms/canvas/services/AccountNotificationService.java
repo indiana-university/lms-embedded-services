@@ -68,8 +68,8 @@ public class AccountNotificationService extends SpringBaseService {
     /**
      *
      * @param accountId notifications will be for the given accountId
-     * @param includeAll Include all global announcements, regardless of user’s role or availability date.
-     * @return Returns a list of all global notifications in the account for the current user
+     * @param includeAll Include all account notifications, regardless of user’s role or availability date.
+     * @return Returns a list of all account notification for the given account. If include_all is false, only active
      */
     public List<AccountNotification> getNotificationsForAccount(String accountId, boolean includeAll) {
         URI uri = ALL_NOTIF_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), accountId);

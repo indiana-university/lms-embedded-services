@@ -35,7 +35,6 @@ package edu.iu.uits.lms.canvas.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -58,9 +57,8 @@ public class CanvasRole implements Serializable {
     @JsonProperty("workflow_state")
     private String workflowState;
 
-    public boolean isAccountRole() {
-        return CanvasConstants.ACCOUNT_MEMBERSHIP.equals(baseRoleType);
-    }
+    @JsonProperty("is_account_role")
+    private boolean isAccountRole;
 
 }
 

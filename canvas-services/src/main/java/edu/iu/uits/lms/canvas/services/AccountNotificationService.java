@@ -85,25 +85,11 @@ public class AccountNotificationService extends SpringBaseService {
      *
      * @param accountId
      * @param accountNotificationId
-     * @return the AccountNotification with the given ID for the specified account.  CAUTION!!!!!: will only return
-     * ACTIVE notifications.  Will not return notifications that have been deleted, in the future, or are expired.
-     */
-    public AccountNotification getActiveAccountNotification(String accountId, String accountNotificationId) {
-        URI uri = GET_NOTIF_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), accountId, accountNotificationId);
-        log.debug("{}", uri);
-
-        HttpEntity<AccountNotification> notification = this.restTemplate.getForEntity(uri, AccountNotification.class);
-        log.debug("Account Notification: {}", notification);
-        return notification.getBody();
-    }
-
-    /**
-     *
-     * @param accountId
-     * @param accountNotificationId
      * @return the AccountNotification with the given ID for the specified account. Note: This method requires retrieving
-     * all the notifications for the account and filtering them by ID, so it may not be as efficient as getActiveAccountNotification.
-     * It will return notifications regardless of their status (active, deleted, future, or expired).
+     * all the notifications for the account and filtering them by ID. It will return notifications regardless of their status (active, deleted, future, or expired).
+     * Canvas does not provide a direct endpoint that to retrieve a single notification by ID. Their API only alows
+     * retrieval for a specific announcement for a single user.
+     *
      */
     public AccountNotification getAccountNotification(String accountId, String accountNotificationId) {
         List<AccountNotification> allNotifications = getNotificationsForAccount(accountId, true);

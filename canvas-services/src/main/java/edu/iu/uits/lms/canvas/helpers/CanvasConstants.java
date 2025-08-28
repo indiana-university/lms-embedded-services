@@ -65,9 +65,4 @@ public class CanvasConstants {
    public static final String API_FIELD_SIS_SECTION_ID = "sis_section_id";
    public static final String API_FIELD_SIS_GROUP_ID = "sis_group_id";
 
-   /**
-    * Base role type for account roles
-    */
-   public static final String ACCOUNT_MEMBERSHIP = "AccountMembership";
-
 }

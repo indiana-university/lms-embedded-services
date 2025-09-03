@@ -42,6 +42,7 @@ import edu.iu.uits.lms.iuonly.repository.FileStorageRepository;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
 import edu.iu.uits.lms.iuonly.repository.LmsBatchEmailRepository;
 import edu.iu.uits.lms.iuonly.repository.NodeHierarchyRepository;
+import edu.iu.uits.lms.iuonly.repository.ProvisioningTermRepository;
 import edu.iu.uits.lms.iuonly.repository.TemplatedCourseRepository;
 import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.iuonly.services.HierarchyResourceService;
@@ -108,6 +109,9 @@ public class RestControllerAvailabilityTest {
 
    @MockitoBean
    private CourseService courseService;
+
+   @MockitoBean
+   public ProvisioningTermRepository provisioningTermRepository;
 
    @Nested
    @ActiveProfiles({IUCUSTOMREST_PROFILE})

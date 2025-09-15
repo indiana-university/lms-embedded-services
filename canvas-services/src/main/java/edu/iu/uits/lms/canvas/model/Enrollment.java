@@ -60,5 +60,6 @@ public class Enrollment implements Serializable {
 	private String createdAt;
 	private String updatedAt;
 	private String lastActivityAt;
+    private boolean notify;
 
 }

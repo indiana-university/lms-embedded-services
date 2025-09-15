@@ -37,6 +37,7 @@ import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
 import edu.iu.uits.lms.canvas.model.Course;
 import edu.iu.uits.lms.canvas.model.CourseCreateWrapper;
+import edu.iu.uits.lms.canvas.model.CourseProgress;
 import edu.iu.uits.lms.canvas.model.CourseSectionUpdateWrapper;
 import edu.iu.uits.lms.canvas.model.CourseSyllabusBodyWrapper;
 import edu.iu.uits.lms.canvas.model.Enrollment;
@@ -106,6 +107,7 @@ public class CourseService extends SpringBaseService {
     private static final String COURSE_WIKI_PAGES_URI = COURSE_URI + "/pages";
     private static final String COURSE_WIKI_PAGE_URI = COURSE_URI + "/pages/{id}";
     private static final String BULK_USER_PROGRESS_URI = COURSE_URI + "/bulk_user_progress";
+    private static final String USER_PROGRESS_URI = COURSE_USERS_URI + "/{userId}/progress";
 
     private final UriTemplate ACCOUNTS_COURSES_TEMPLATE = new UriTemplate(ACCOUNTS_COURSES_URI);
     private final UriTemplate COURSE_BASE_TEMPLATE = new UriTemplate(COURSES_BASE_URI);
@@ -120,6 +122,7 @@ public class CourseService extends SpringBaseService {
     private final UriTemplate COURSE_WIKI_PAGES_TEMPLATE = new UriTemplate(COURSE_WIKI_PAGES_URI);
     private final UriTemplate COURSE_WIKI_PAGE_TEMPLATE = new UriTemplate(COURSE_WIKI_PAGE_URI);
     private final UriTemplate BULK_USER_PROGRESS_TEMPLATE = new UriTemplate(BULK_USER_PROGRESS_URI);
+    private final UriTemplate USER_PROGRESS_TEMPLATE = new UriTemplate(USER_PROGRESS_URI);
 
 
 
@@ -1195,7 +1198,7 @@ public class CourseService extends SpringBaseService {
      * @param pageSize optional - number of results to return per page. If not supplied, Canvas will use its default value.
      * @return List of UserProgress objects
      */
-    public List<UserProgress> getUserProgressForCourse(String courseId, String asUser, String pageSize) {
+    public List<UserProgress> getBulkUserProgressForCourse(String courseId, String asUser, String pageSize) {
         URI uri = BULK_USER_PROGRESS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -1208,6 +1211,35 @@ public class CourseService extends SpringBaseService {
         }
 
         return doGet(builder.build().toUri(), UserProgress[].class);
+    }
+
+    /**
+     * Get user's progress in a course
+     * @param courseId Canvas course id
+     * @param userId Id of user when retrieving the user progress. If you wish to use an sis_login_id,
+     *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
+     * @param asUser optional - masquerade as this user when retrieving the user progress. If you wish to use an sis_login_id,
+      *               prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
+     * @return UserProgress object
+     */
+    public CourseProgress getUserProgressForCourse(String courseId, String userId, String asUser) {
+        URI uri = USER_PROGRESS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, userId);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        if (asUser != null) {
+            builder.queryParam("as_user_id", asUser);
+        }
+
+        try {
+            ResponseEntity<CourseProgress> responseEntity = this.restTemplate.getForEntity(builder.build().toUri(), CourseProgress.class);
+
+            if (responseEntity != null) {
+                return responseEntity.getBody();
+            }
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error: ", hcee);
+        }
+        return null;
     }
 
 

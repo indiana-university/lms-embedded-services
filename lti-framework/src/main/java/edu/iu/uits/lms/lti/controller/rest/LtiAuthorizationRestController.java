@@ -85,9 +85,6 @@ public class LtiAuthorizationRestController {
     public List<LmsLtiAuthz> getAuthzs(@RequestParam(required = false, defaultValue = "false") boolean includeSecrets) {
         List<LmsLtiAuthz> results = (List<LmsLtiAuthz>)ltiAuthorizationRepository.findAll();
 
-        if (!includeSecrets) {
-            results.forEach(a -> a.setSecret("********"));
-        }
         return results;
     }
 
@@ -102,9 +99,6 @@ public class LtiAuthorizationRestController {
         }
         if (lmsLtiAuthz.getClientId() != null) {
             updatedAuthz.setClientId(lmsLtiAuthz.getClientId());
-        }
-        if (lmsLtiAuthz.getSecret() != null) {
-            updatedAuthz.setSecret(lmsLtiAuthz.getSecret());
         }
         if (lmsLtiAuthz.getEnv() != null) {
             updatedAuthz.setEnv(lmsLtiAuthz.getEnv());

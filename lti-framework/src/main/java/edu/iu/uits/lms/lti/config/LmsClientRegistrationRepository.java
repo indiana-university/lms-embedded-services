@@ -90,8 +90,7 @@ public class LmsClientRegistrationRepository implements ClientRegistrationReposi
                   .issuerUri(registrationDetails.getIssuer())
                   .userNameAttributeName("sub")
                   .clientName(ltiAuthz.getRegistrationId())
-                  .clientId(ltiAuthz.getClientId())
-                  .clientSecret(ltiAuthz.getSecret());
+                  .clientId(ltiAuthz.getClientId());
 
             registrations.put(ltiAuthz.getRegistrationId(), builder.build());
          }

@@ -1,0 +1,8 @@
+Portions of this library are derived from the following work:
+https://github.com/oxctl/spring-security-lti13
+
+At the time the code was pulled in, the version was 0.3.3.
+
+The code was kept in its original package structure (uk.ac.ox.ctl.lti13) to help differentiate it from the existing code in this project.
+
+Original licensing was Apache 2.0 (https://github.com/oxctl/spring-security-lti13/blob/0.3.3/LICENSE.txt)

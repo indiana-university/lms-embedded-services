@@ -9,14 +9,14 @@
     <parent>
         <artifactId>lms-embedded-services-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>6.2.13-SNAPSHOT</version>
+        <version>6.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <description>Shared services for the lms-canvas LTI tools to send email</description>
 
     <properties>
-        <commons-io.version>2.19.0</commons-io.version>
+        <commons-io.version>2.20.0</commons-io.version>
         <reflections.version>0.10.2</reflections.version>
     </properties>
 

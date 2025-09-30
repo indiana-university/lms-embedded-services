@@ -2,7 +2,7 @@
     <parent>
         <artifactId>lms-embedded-services-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>6.2.13-SNAPSHOT</version>
+        <version>6.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -14,12 +14,11 @@
     <description>Shared services for the lms-canvas LTI tools around the LTI tool launch</description>
 
     <properties>
-        <bcprov-jdk18on.version>1.80</bcprov-jdk18on.version>
-        <commons-io.version>2.19.0</commons-io.version>
+        <bcprov-jdk18on.version>1.82</bcprov-jdk18on.version>
+        <commons-io.version>2.20.0</commons-io.version>
         <hibernate6-ddl-maven-plugin.version>1.0.2</hibernate6-ddl-maven-plugin.version>
         <reflections.version>0.10.2</reflections.version>
-        <spring-security-lti13.version>0.3.3</spring-security-lti13.version>
-
+        <guava.version>33.5.0-jre</guava.version>
     </properties>
 
     <dependencies>
@@ -68,10 +67,15 @@
             <artifactId>bcprov-jdk18on</artifactId>
             <version>${bcprov-jdk18on.version}</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>uk.ac.ox.ctl</groupId>-->
+<!--            <artifactId>spring-security-lti13</artifactId>-->
+<!--            <version>${spring-security-lti13.version}</version>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>uk.ac.ox.ctl</groupId>
-            <artifactId>spring-security-lti13</artifactId>
-            <version>${spring-security-lti13.version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

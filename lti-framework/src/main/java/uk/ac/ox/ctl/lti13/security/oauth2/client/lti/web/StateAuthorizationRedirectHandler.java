@@ -25,7 +25,7 @@ public class StateAuthorizationRedirectHandler implements AuthorizationRedirectH
 
 	public StateAuthorizationRedirectHandler() {
 		try {
-			htmlTemplate = StringReader.readString(this.getClass().getResourceAsStream(name));
+			htmlTemplate = StringReader.readString(getClass().getResourceAsStream(name));
 		} catch (IOException e) {
 			throw new IllegalStateException("Failed to read "+ name, e);
 		}

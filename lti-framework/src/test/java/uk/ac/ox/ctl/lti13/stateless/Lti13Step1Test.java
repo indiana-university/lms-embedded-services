@@ -3,10 +3,13 @@ package uk.ac.ox.ctl.lti13.stateless;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -18,13 +21,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@WebMvcTest(properties = {"use.state=true"})
-@ContextConfiguration(classes = {Lti13Configuration.class})
-//@ExtendWith(SpringExtension.class)
-//@WebAppConfiguration
-//@TestPropertySource(properties = "use.state=true")
-//@SpringJUnitWebConfig(classes = {Lti13Configuration.class})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@TestPropertySource(properties = "use.state=true")
+@SpringJUnitWebConfig(classes = {Lti13Configuration.class})
 public class Lti13Step1Test {
 
     private MockMvc mockMvc;

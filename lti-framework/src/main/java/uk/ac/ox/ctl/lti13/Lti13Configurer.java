@@ -5,6 +5,7 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -93,41 +94,22 @@ public class Lti13Configurer extends AbstractHttpConfigurer<Lti13Configurer, Htt
 
     @SuppressWarnings("unchecked")
     @Override
-    public void init(HttpSecurity http) throws Exception {
-//        http
-//            .securityMatcher(ltiPath + "/**")
-//            .authorizeHttpRequests(authz -> authz.requestMatchers("/**").permitAll());
-
+    public void init(HttpSecurity http) {
         // Allow LTI launches to bypass CSRF protection
-        http.csrf(csrf -> csrf.ignoringRequestMatchers(ltiPath + "/**"));
+        CsrfConfigurer<HttpSecurity> configurer = http.getConfigurer(CsrfConfigurer.class);
+        if (configurer != null) {
+            // I'm not sure about this.
+            configurer.ignoringRequestMatchers(ltiPath + "/**");
+        }
         // In the future we should use CSP to limit the domains that can embed this tool
-        http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-
-//        CsrfConfigurer<HttpSecurity> configurer = http.getConfigurer(CsrfConfigurer.class);
-//        if (configurer != null) {
-//            // I'm not sure about this.
-//            configurer.ignoringRequestMatchers(ltiPath + "/**");
-//        }
-//
-//        HeadersConfigurer<HttpSecurity> headersConfigurer = http.getConfigurer(HeadersConfigurer.class);
-//        if (headersConfigurer != null) {
-//            headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
-//        }
-
-
-//        http.securityMatcher(ltiPath + "/**")
-//                .authorizeHttpRequests(authz -> authz
-//                .requestMatchers(ltiPath + "/**").permitAll());
+        HeadersConfigurer<HttpSecurity> headersConfigurer = http.getConfigurer(HeadersConfigurer.class);
+        if (headersConfigurer != null) {
+            headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
+        }
     }
 
     @Override
-    public void configure(HttpSecurity http) throws Exception {
-
-//        http
-//                .securityMatcher(ltiPath + "/**")
-//                .authorizeHttpRequests(authz -> authz
-//                        .requestMatchers("/**").permitAll());
-
+    public void configure(HttpSecurity http) {
         ClientRegistrationRepository clientRegistrationRepository = Lti13ConfigurerUtils.getClientRegistrationRepository(http);
 
         OidcLaunchFlowAuthenticationProvider oidcLaunchFlowAuthenticationProvider = configureAuthenticationProvider(http);

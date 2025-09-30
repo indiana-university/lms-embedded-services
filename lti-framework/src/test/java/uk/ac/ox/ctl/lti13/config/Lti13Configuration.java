@@ -9,7 +9,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import uk.ac.ox.ctl.lti13.Lti13Configurer;
@@ -26,15 +25,9 @@ public class Lti13Configuration {
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authz -> authz
-                .anyRequest().authenticated()
-        );
-//        http.authorizeHttpRequests().anyRequest().authenticated();
+        http.authorizeHttpRequests().anyRequest().authenticated();
         Lti13Configurer lti13Configurer = new Lti13Configurer();
-//        http.apply(lti13Configurer);
-//        http.with(new Lti13Configurer());
-        http.with(lti13Configurer, lti ->
-                lti.setSecurityContextRepository(new HttpSessionSecurityContextRepository()));
+        http.apply(lti13Configurer);
         return http.build();
     }
 

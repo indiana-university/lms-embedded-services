@@ -60,6 +60,7 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequ
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -128,7 +129,9 @@ public class Lti13Step3Test {
 
         @Bean
         protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
-            http.authorizeHttpRequests().anyRequest().authenticated();
+            http.authorizeHttpRequests(authz -> authz
+                    .anyRequest().authenticated()
+            );
             Lti13Configurer lti13Configurer = new Lti13Configurer() {
 
                 @Override
@@ -151,7 +154,8 @@ public class Lti13Step3Test {
                     return oAuth2LoginAuthenticationFilter;
                 }
             };
-            http.apply(lti13Configurer);
+            http.with(lti13Configurer, lti ->
+                    lti.setSecurityContextRepository(new HttpSessionSecurityContextRepository()));
             return http.build();
         }
     }

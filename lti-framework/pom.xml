@@ -67,11 +67,6 @@
             <artifactId>bcprov-jdk18on</artifactId>
             <version>${bcprov-jdk18on.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>uk.ac.ox.ctl</groupId>-->
-<!--            <artifactId>spring-security-lti13</artifactId>-->
-<!--            <version>${spring-security-lti13.version}</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

@@ -75,7 +75,6 @@ public class LmsLtiAuthz {
 
     @Column(name = "CLIENT_ID")
     private String clientId;
-    private String secret;
     private boolean active;
     private Date created;
     private Date modified;

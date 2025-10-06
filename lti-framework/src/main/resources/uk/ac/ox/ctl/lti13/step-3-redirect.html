@@ -1,0 +1,160 @@
+<!--
+  #%L
+  LMS Canvas LTI Framework Services
+  %%
+  Copyright (C) 2015 - 2025 Indiana University
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  
+  3. Neither the name of the Indiana University nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Redirect step 3</title>
+</head>
+<body>
+<noscript><h1>You need to have JavaScript enable to use this.</h1></noscript>
+<h1>Redirecting....</h1>
+</body>
+<script>
+    function showError(message) {
+        const h1 = document.createElement("h1")
+        h1.textContent = "Error: "+ message
+        document.body.append(h1)
+    }
+
+    const state = "@@state@@";
+    const url = "@@url@@"
+    const nonce = "@@nonce@@";
+
+    // Have we set the values in the storage?
+    let savedState = null;
+    let savedNonce = null;
+    
+    try {
+        /**
+         * Attempt to generate a uuid, falls back to a random string on
+         * @returns {string}
+         */
+        function uuid() {
+            if (self.crypto && self.crypto.randomUUID) {
+                return self.crypto.randomUUID();
+            } else {
+                // IE 11 Doesn't have randomUUID so fall back to short random string.
+                return (Math.random() + 1).toString(36).substring(2, 5)
+            }
+        }
+        const platformOrigin = "*"; // Canvas doesn't support origin.
+        let targetFrame = window.parent || window.opener
+
+        // If we don't get any response from the platform show something to the user.
+        setTimeout(function() {
+            showError("Timeout handling LTI authentication (retrieval), please retry");
+        }, 5000)
+
+
+
+        let stateUuid = uuid();
+        postAndHandle(targetFrame, {
+            "subject": "lti.get_data",
+            "message_id": stateUuid,
+            "key": "state_"+ state
+        } , platformOrigin, function(event) {
+            savedState = event.data.value
+            checkAndRedirect()
+        })
+
+        let nonceUuid = uuid();
+        postAndHandle(targetFrame, {
+            "subject": "lti.get_data",
+            "message_id": nonceUuid,
+            "key": "nonce_"+ nonce
+        } , platformOrigin, function(event) {
+            savedNonce = event.data.value
+            checkAndRedirect()
+        })
+
+        function checkAndRedirect() {
+            // Only redirect once we've had confirmation both are set
+            if (savedNonce && savedState) {
+                if (nonce === savedNonce && state === savedState) {
+                    document.location = url
+                } else {
+                    showError('Saved state and nonce do not match');
+                }
+            }
+        }
+
+        /**
+         * Send a message and handle its response.
+         * @param target
+         * @param message
+         * @param origin
+         * @param onResponse
+         */
+        function postAndHandle(target, message, origin, onResponse) {
+            function handler(event) {
+                // This isn't a message we're expecting
+                if (typeof event.data !== "object"){
+                    return;
+                }
+                // Validate it's the response type you expect
+                if (event.data.subject !== message.subject+ ".response") {
+                    return;
+                }
+                // Validate the message id matches the id you sent
+                if (event.data.message_id !== message.message_id) {
+                    return;
+                }
+                // Validate that the event's origin is the same as the derived platform origin
+                if (origin !== '*' && event.origin !== origin) {
+                    return;
+                }
+                // handle errors
+                if (event.data.error){
+                    // handle errors (message and code)
+                    console.log(event.data.error)
+                    return;
+                }
+                onResponse(event)
+                // Cleanup now we've got our message.
+                window.removeEventListener('message', handler)
+            }
+            window.addEventListener('message', handler);
+            // Now the handler is setup we can send our message.
+            target.postMessage(message, origin);
+        }
+
+    } catch (error) {
+        if (error.name === 'SecurityError') {
+            showError('You have cookies disabled, please enable them for this site.')
+        } else {
+            showError(error.message)
+            throw error;
+        }
+    }
+</script>
+</html>

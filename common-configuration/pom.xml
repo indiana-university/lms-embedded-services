@@ -3,7 +3,7 @@
     <parent>
         <artifactId>lms-embedded-services-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>6.2.13-SNAPSHOT</version>
+        <version>6.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,8 +14,8 @@
     <description>Common configuration bits that are useful to the lms-canvas LTI tools</description>
 
     <properties>
-        <commons-lang3.version>3.17.0</commons-lang3.version>
-        <jjwt-api.version>0.12.6</jjwt-api.version>
+        <commons-lang3.version>3.19.0</commons-lang3.version>
+        <jjwt-api.version>0.13.0</jjwt-api.version>
     </properties>
 
     <dependencies>

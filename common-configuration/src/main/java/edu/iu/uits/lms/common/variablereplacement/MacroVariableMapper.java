@@ -79,12 +79,15 @@ public class MacroVariableMapper implements Serializable {
     /** Macro name: Canvas Course Id */
     public static final String MACRO_CANVAS_COURSE_ID    = "${CANVAS_COURSE_ID}";
 
+    /** Macro name: Canvas Course Code */
+    public static final String MACRO_CANVAS_COURSE_CODE    = "${CANVAS_COURSE_CODE}";
+
     /** Macro name: Canvas Account Id */
     public static final String MACRO_CANVAS_ACCOUNT_ID    = "${CANVAS_ACCOUNT_ID}";
 
     public static List<String> ALLOWED_MACROS_LIST = Arrays.asList(MACRO_USER_ID, MACRO_USER_EID, MACRO_USER_FIRST_NAME,
             MACRO_USER_LAST_NAME, MACRO_USER_ROLE, MACRO_SIS_COURSE_ID, MACRO_CLASS_NBR, MACRO_SIS_TERM_ID, MACRO_SIS_CAMPUS ,
-            MACRO_CANVAS_COURSE_ID, MACRO_CANVAS_ACCOUNT_ID);
+            MACRO_CANVAS_COURSE_ID, MACRO_CANVAS_COURSE_CODE, MACRO_CANVAS_ACCOUNT_ID);
 
     @Setter @Getter
     private String userId;
@@ -115,6 +118,9 @@ public class MacroVariableMapper implements Serializable {
 
     @Setter @Getter
     private String canvasCourseId;
+
+    @Setter @Getter
+    private String canvasCourseCode;
 
     @Setter @Getter
     private String canvasAccountId;
@@ -158,6 +164,9 @@ public class MacroVariableMapper implements Serializable {
                 break;
             case MACRO_CANVAS_COURSE_ID:
                 output = getCanvasCourseId();
+                break;
+            case MACRO_CANVAS_COURSE_CODE:
+                output = getCanvasCourseCode();
                 break;
             case MACRO_CANVAS_ACCOUNT_ID:
                 output = getCanvasAccountId();

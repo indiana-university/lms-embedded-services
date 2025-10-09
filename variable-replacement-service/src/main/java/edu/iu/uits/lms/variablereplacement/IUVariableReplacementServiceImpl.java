@@ -66,6 +66,7 @@ public class IUVariableReplacementServiceImpl extends DefaultVariableReplacement
       Course course = courseService.getCourse(macroVariableMapper.getCanvasCourseId());
       if (course != null) {
          macroVariableMapper.setSisCourseId(course.getSisCourseId());
+         macroVariableMapper.setCanvasCourseCode(course.getCourseCode());
 
          SisCourse sudsCourse = sisService.getSisCourseBySiteId(course.getSisCourseId());
          if (sudsCourse != null) {

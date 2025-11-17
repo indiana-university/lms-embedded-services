@@ -33,8 +33,11 @@ package edu.iu.uits.lms.iuonly.services.rest;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.model.Account;
 import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.iuonly.services.SisServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,6 +53,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
 
@@ -65,6 +70,12 @@ public class HonorLockRestController {
    @Autowired
    private CourseService courseService;
 
+   @Autowired
+   private FeatureAccessServiceImpl featureAccessService;
+
+   @Autowired
+   private AccountService accountService;
+
    /**
     * NOTE: CrossOrigin annotation needs to be on this method and not the class in order for it to be properly handled
     * by the api-portal
@@ -79,7 +90,18 @@ public class HonorLockRestController {
       Course course = courseService.getCourse(canvasCourseId);
       if (course != null) {
          String sisCourseId = course.getSisCourseId();
-         isEligible = sisService.isHonorLockEligible(sisCourseId);
+         boolean isSisCourseEligible = sisService.isHonorLockEligible(sisCourseId);
+         boolean isCourseOverridden = false;
+
+         // Only check if we don't already know the course is eligible via SIS
+         if (!isSisCourseEligible) {
+             // Typically the featureAccessService uses account ids, but we can also use course ids for more granular control
+             List<Account> parentAccounts = accountService.getParentAccounts(course.getAccountId());
+             List<String> parentAccountIds = new ArrayList<>(parentAccounts.stream().map(Account::getId).toList());
+             parentAccountIds.add(course.getAccountId());
+             isCourseOverridden = featureAccessService.isFeatureEnabledForAccount("honorlock.override", course.getId(), parentAccountIds);
+         }
+         isEligible = isSisCourseEligible || isCourseOverridden;
       }
       return ResponseEntity.ok().body(new HonorLockEligible(isEligible));
    }

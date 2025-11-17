@@ -33,6 +33,7 @@ package edu.iu.uits.lms.iuonly.rest;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.iuonly.repository.AuthorizedUserRepository;
 import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
@@ -112,6 +113,9 @@ public class RestControllerAvailabilityTest {
 
    @MockitoBean
    public ProvisioningTermRepository provisioningTermRepository;
+
+    @MockitoBean
+    private AccountService accountService;
 
    @Nested
    @ActiveProfiles({IUCUSTOMREST_PROFILE})

@@ -104,4 +104,10 @@ public class User implements Serializable {
 
 	// if this doesn't exist for a user, Canvas won't bother to return it
 	private String pronouns;
+
+    @JsonProperty("last_name")
+    private String lastName;
+
+    @JsonProperty("first_name")
+    private String firstName;
 }

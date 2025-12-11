@@ -39,6 +39,7 @@ import edu.iu.uits.lms.canvas.model.AssignmentCreateWrapper;
 import edu.iu.uits.lms.canvas.model.AssignmentGroup;
 import edu.iu.uits.lms.canvas.model.AssignmentSubmission;
 import edu.iu.uits.lms.canvas.model.GradeDataWrapper;
+import edu.iu.uits.lms.canvas.model.UserAssignmentSubmissions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -68,15 +69,22 @@ public class AssignmentService extends SpringBaseService {
     private static final String COURSE_ASSIGNMENT_URI = BASE_COURSE_URI +  "/{assignment_id}";
     private static final String SECTION_ASSIGNMENT_URI = BASE_SECTION_URI +  "/{assignment_id}";
     private static final String ASSIGNMENT_GROUPS_URI = CANVAS_BASE_URI +  "/courses/{course_id}/assignment_groups";
-    private static final String COURSE_SUBMISSION_URI = COURSE_ASSIGNMENT_URI + "/submissions/{user_id}";
-    private static final String SECTION_SUBMISSION_URI = SECTION_ASSIGNMENT_URI + "/submissions/{user_id}";
+    private static final String COURSE_SUBMISSIONS_URI = COURSE_ASSIGNMENT_URI + "/submissions";
+    private static final String SECTION_SUBMISSIONS_URI = SECTION_ASSIGNMENT_URI + "/submissions";
+    private static final String ALL_COURSE_SUBMISSIONS_URI = CANVAS_BASE_URI + "/courses/{course_id}/students/submissions";
+    private static final String ALL_SECTION_SUBMISSIONS_URI = CANVAS_BASE_URI + "/sections/{section_id}/students/submissions";
+    private static final String COURSE_SUBMISSION_URI = COURSE_SUBMISSIONS_URI + "/{user_id}";
+    private static final String SECTION_SUBMISSION_URI = SECTION_SUBMISSIONS_URI + "/{user_id}";
 
     private static final UriTemplate BASE_TEMPLATE = new UriTemplate(BASE_COURSE_URI);
     private static final UriTemplate ASSIGNMENT_TEMPLATE = new UriTemplate(COURSE_ASSIGNMENT_URI);
     private static final UriTemplate ASSIGNMENT_GROUPS_TEMPLATE = new UriTemplate(ASSIGNMENT_GROUPS_URI);
     private static final UriTemplate COURSE_SUBMISSION_TEMPLATE = new UriTemplate(COURSE_SUBMISSION_URI);
     private static final UriTemplate SECTION_SUBMISSION_TEMPLATE = new UriTemplate(SECTION_SUBMISSION_URI);
-
+    private static final UriTemplate COURSE_SUBMISSIONS_TEMPLATE = new UriTemplate(COURSE_SUBMISSION_URI);
+    private static final UriTemplate SECTION_SUBMISSIONS_TEMPLATE = new UriTemplate(SECTION_SUBMISSION_URI);
+    private static final UriTemplate ALL_COURSE_SUBMISSIONS_TEMPLATE = new UriTemplate(ALL_COURSE_SUBMISSIONS_URI);
+    private static final UriTemplate ALL_SECTION_SUBMISSIONS_TEMPLATE = new UriTemplate(ALL_SECTION_SUBMISSIONS_URI);
     /**
      * get Assignment by assignment id
      * @param courseId Canvas course id -12345
@@ -300,6 +308,65 @@ public class AssignmentService extends SpringBaseService {
             return assignmentEntity.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Error getting assignment submission: " + uri.toString(), hcee);
+        }
+
+        return null;
+    }
+
+    public List<AssignmentSubmission> getAssignmentSubmissionsBySection(String sectionId, String assignmentId) {
+        URI uri = SECTION_SUBMISSIONS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sectionId, assignmentId);
+        return getAssignmentSubmissions(uri);
+    }
+
+    public List<AssignmentSubmission> getAssignmentSubmissionsByCourse(String courseId, String assignmentId) {
+        URI uri = COURSE_SUBMISSIONS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, assignmentId);
+        return getAssignmentSubmissions(uri);
+    }
+
+    private List<AssignmentSubmission> getAssignmentSubmissions(URI uri) {
+        log.debug("{}", uri);
+
+        try {
+            return doGet(uri, AssignmentSubmission[].class);
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error getting assignment submissions: " + uri.toString(), hcee);
+        }
+
+        return null;
+    }
+
+    public List<UserAssignmentSubmissions> getAssignmentSubmissionsBySection(String sectionId, List<String> studentIds, List<String> assignmentIds) {
+        URI uri = ALL_SECTION_SUBMISSIONS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), sectionId);
+        return getAssignmentSubmissions(uri, studentIds, assignmentIds);
+    }
+
+    public List<UserAssignmentSubmissions> getAssignmentSubmissionsByCourse(String courseId, List<String> studentIds, List<String> assignmentIds) {
+        URI uri = ALL_COURSE_SUBMISSIONS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
+        return getAssignmentSubmissions(uri, studentIds, assignmentIds);
+    }
+
+    private List<UserAssignmentSubmissions> getAssignmentSubmissions(URI uri, List<String> studentIds, List<String> assignmentIds) {
+        log.debug("{}", uri);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        builder.queryParam("grouped", true);
+        builder.queryParam("per_page", 100);
+
+        if (studentIds != null && !studentIds.isEmpty()) {
+            for (String studentId : studentIds) {
+                builder.queryParam("student_ids[]", studentId);
+            }
+        }
+
+        if (assignmentIds != null && !assignmentIds.isEmpty()) {
+            for (String assignmentId : assignmentIds) {
+                builder.queryParam("assignment_ids[]", assignmentId);
+            }
+        }
+
+        try {
+            return doGet(builder.build().toUri(), UserAssignmentSubmissions[].class);
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error getting assignment submissions: " + uri.toString(), hcee);
         }
 
         return null;

@@ -419,7 +419,7 @@ public class CourseService extends SpringBaseService {
      * @return
      */
     public List<User> getUsersForCourseByType(String courseId, List<String> enrollmentTypes, List<String> enrollmentStates) {
-        return getUsersForCourseByTypeOptionalEnrollments(courseId, enrollmentTypes, enrollmentStates, false);
+        return getUsersForCourseByType(courseId, enrollmentTypes, enrollmentStates, null);
     }
 
     /**
@@ -432,12 +432,28 @@ public class CourseService extends SpringBaseService {
      */
     public List<User> getUsersForCourseByTypeOptionalEnrollments(String courseId, List<String> enrollmentTypes,
                                               List<String> enrollmentStates, boolean includeEnrollments) {
+        List<String> includes = includeEnrollments ? List.of("enrollments") : null;
+        return getUsersForCourseByType(courseId, enrollmentTypes, enrollmentStates, includes);
+    }
+
+    /**
+     * Get users for the given course of the given enrollment_type
+     * @param courseId
+     * @param enrollmentTypes
+     * @param enrollmentStates
+     * @param includes
+     * @return
+     */
+    public List<User> getUsersForCourseByType(String courseId, List<String> enrollmentTypes,
+                                                                 List<String> enrollmentStates, List<String> includes) {
         URI uri = COURSE_USERS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
-        if (includeEnrollments) {
-            builder.queryParam("include[]", "enrollments");
+        if (includes != null) {
+            for (String include : includes) {
+                builder.queryParam("include[]", include);
+            }
         }
 
         if (enrollmentTypes != null) {

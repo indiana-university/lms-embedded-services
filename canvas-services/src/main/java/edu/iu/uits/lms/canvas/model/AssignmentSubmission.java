@@ -53,5 +53,7 @@ public class AssignmentSubmission implements Serializable {
     private List<CanvasFile> attachments;
     private String submittedAt;
     private String grade;
+    private String score;
     private String workflowState;
+    private String assignmentId;
 }

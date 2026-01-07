@@ -43,6 +43,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -69,6 +70,9 @@ public class ToolPermission implements Serializable {
     @Column(name="TOOL_PERMISSION")
     private String toolPermission;
 
+    @Column(name="NOTES")
+    private String notes;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "AUTHORIZED_TOOL_PERMISSION_PROPERTIES",
             joinColumns = @JoinColumn(name = "AUTHORIZED_TOOL_PERMISSION_ID",
@@ -77,4 +81,7 @@ public class ToolPermission implements Serializable {
     @Column(name = "PROPERTY_VALUE")
     private Map<String, String> toolPermissionProperties = new HashMap<>();
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "TOOL_PERMISSION", referencedColumnName = "TOOL_PERMISSION", insertable = false, updatable = false)
+    private ToolPermissionDetails toolPermissionDetails;
 }

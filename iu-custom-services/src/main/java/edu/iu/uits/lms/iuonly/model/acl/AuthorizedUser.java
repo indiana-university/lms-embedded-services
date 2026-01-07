@@ -73,6 +73,9 @@ public class AuthorizedUser implements Serializable {
     @Column(name = "USERNAME")
     private String username;
 
+    @Column(name = "ALT_USERNAME")
+    private String alternateUsername;
+
     @Column(name = "CANVAS_USER_ID")
     private String canvasUserId;
 

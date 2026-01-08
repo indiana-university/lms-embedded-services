@@ -62,4 +62,5 @@ public class Assignment implements Serializable {
     private String dueAt;
     private String unlockAt;
     private List<AssignmentOverride> overrides;
+    private String pointsPossible;
 }

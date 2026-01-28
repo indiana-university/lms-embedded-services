@@ -93,16 +93,44 @@ public class CanvasDateFormatUtil {
         return null;
     }
 
+    /**
+     * Convert a date string in ISO 8601 format to an OffsetDateTime using the default ISO_ZONED_DATE_TIME formatter.
+     *
+     * @param dateString the date string in ISO 8601 format (e.g., "2024-01-28T15:30:00Z")
+     * @return the parsed OffsetDateTime, or null if the input is null or cannot be parsed
+     */
     public static OffsetDateTime string2OffsetDateTime(String dateString) {
         return string2OffsetDateTime(dateString, DateTimeFormatter.ISO_ZONED_DATE_TIME);
     }
 
+    /**
+     * Convert a date string to an OffsetDateTime using the provided DateTimeFormatter.
+     *
+     * @param dateString the date string to parse
+     * @param format the DateTimeFormatter to use for parsing
+     * @return the parsed OffsetDateTime, or null if the input is null or cannot be parsed
+     * @throws java.time.format.DateTimeParseException if the date string cannot be parsed and is not null
+     */
     public static OffsetDateTime string2OffsetDateTime(String dateString, DateTimeFormatter format) {
         if (dateString != null) {
             return OffsetDateTime.parse(dateString, format);
         }
-
         return null;
+    }
+
+    /**
+     * Safely convert a date string in ISO 8601 format to an OffsetDateTime, returning null if parsing fails.
+     *
+     * @param dateString the date string in ISO 8601 format (e.g., "2024-01-28T15:30:00Z")
+     * @return the parsed OffsetDateTime, or null if the input is null or cannot be parsed
+     */
+    public static OffsetDateTime safeString2OffsetDateTime(String dateString) {
+        try {
+            return CanvasDateFormatUtil.string2OffsetDateTime(dateString);
+        } catch (Exception e) {
+            log.warn("Could not parse date string '{}': {}", dateString, e.getMessage());
+            return null;
+        }
     }
 
     /**

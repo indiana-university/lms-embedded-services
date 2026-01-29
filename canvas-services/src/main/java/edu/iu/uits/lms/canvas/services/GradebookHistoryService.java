@@ -93,7 +93,7 @@ public class GradebookHistoryService extends SpringBaseService {
         List<SubmissionVersion> submissionVersions = getSubmissionVersions(courseId, assignmentId, userId);
 
         if (latestSubmissionsOnly) {
-            // When grouped by assignmentId, userId, id, there could be multiple versions. We want only the most recent version basedo n the gradedAt date.
+            // When grouped by assignmentId, userId, id, there could be multiple versions. We want only the most recent version based on the gradedAt date.
             return  submissionVersions.stream()
                     .collect(
                             Collectors.groupingBy(

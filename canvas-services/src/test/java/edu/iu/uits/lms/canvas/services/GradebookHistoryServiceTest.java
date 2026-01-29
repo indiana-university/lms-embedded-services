@@ -206,20 +206,6 @@ public class GradebookHistoryServiceTest {
         Assertions.assertTrue(recentResults.get(0).getScore().equals("80.0") || recentResults.get(0).getScore().equals("90.0"));
     }
 
-//    @Test
-//    void testFilteringByAssignmentIdOrUserId() {
-//        SubmissionVersion sv1 = createSubmissionVersion("A1", "u1", "s1", "80.0", "2024-01-01T10:00:00Z");
-//        SubmissionVersion sv2 = createSubmissionVersion("A2", "u2", "s2", "90.0", "2024-01-02T10:00:00Z");
-//        List<SubmissionVersion> raw = List.of(sv1, sv2);
-//        doReturn(raw).when(gradebookHistoryService).getSubmissionVersions(anyString(), any(), any());
-//        List<SubmissionVersion> resultsA1 = gradebookHistoryService.getSubmissionVersions("C1", "A1", null, true);
-//        Assertions.assertEquals(1, resultsA1.size());
-//        Assertions.assertEquals("A1", resultsA1.get(0).getAssignmentId());
-//        List<SubmissionVersion> resultsU2 = gradebookHistoryService.getSubmissionVersions("C1", null, "u2", true);
-//        Assertions.assertEquals(1, resultsU2.size());
-//        Assertions.assertEquals("u2", resultsU2.get(0).getUserId());
-//    }
-
     @Test
     void testMalformedGradedAtValues() {
         SubmissionVersion sv1 = createSubmissionVersion("A1", "u1", "s1", "80.0", "not-a-date");

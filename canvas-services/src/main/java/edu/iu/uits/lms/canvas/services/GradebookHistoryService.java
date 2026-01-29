@@ -81,18 +81,18 @@ public class GradebookHistoryService extends SpringBaseService {
     }
 
     /**
-     * Retrieve submission versions for a given course, assignment, and/or user, with an option to return only the most recent submission per assignment/user/id.
+     * Retrieve submission versions for a given course, assignment, and/or user, with an option to return only the latest (by graded_at) submission per assignment/user/id.
      *
      * @param courseId The Canvas course ID to query.
      * @param assignmentId (Optional) The Canvas assignment ID to filter results. If null, all assignments are included.
      * @param userId (Optional) The Canvas user ID to filter results. If null, all users are included.
-     * @param recentSubmissionsOnly If true, only the most recent submission version per assignment/user/id is returned; if false, all versions are returned.
+     * @param latestSubmissionsOnly If true, only the latest (by graded_at) submission version per assignment/user/id is returned; if false, all versions are returned.
      * @return List of SubmissionVersion objects matching the provided filters and recency criteria.
      */
-    public List<SubmissionVersion> getSubmissionVersions(String courseId, String assignmentId, String userId, boolean recentSubmissionsOnly) {
+    public List<SubmissionVersion> getSubmissionVersions(String courseId, String assignmentId, String userId, boolean latestSubmissionsOnly) {
         List<SubmissionVersion> submissionVersions = getSubmissionVersions(courseId, assignmentId, userId);
 
-        if (recentSubmissionsOnly) {
+        if (latestSubmissionsOnly) {
             // When grouped by assignmentId, userId, id, there could be multiple versions. We want only the most recent version basedo n the gradedAt date.
             return  submissionVersions.stream()
                     .collect(

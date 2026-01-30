@@ -65,4 +65,7 @@ public interface AuthorizedUserRepository extends PagingAndSortingRepository<Aut
 
    @Query("SELECT au FROM AuthorizedUser au JOIN au.toolPermissions tp WHERE au.active = true AND KEY(tp) = :toolPermission")
    List<AuthorizedUser> findByActiveToolPermission(@Param("toolPermission") String toolPermission);
+
+   @Query("SELECT au FROM AuthorizedUser au JOIN au.toolPermissions tp WHERE KEY(tp) = :toolPermission")
+   List<AuthorizedUser> findByToolPermission(@Param("toolPermission") String toolPermission);
 }

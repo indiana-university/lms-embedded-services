@@ -33,8 +33,9 @@ package edu.iu.uits.lms.iuonly.services;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.ToolPermission;
+import edu.iu.uits.lms.iuonly.model.acl.ToolPermissionDetails;
 import edu.iu.uits.lms.iuonly.repository.AuthorizedToolPermissionRepository;
+import edu.iu.uits.lms.iuonly.repository.ToolPermissionDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +47,41 @@ public class AuthorizedToolPermissionService {
     @Autowired
     private AuthorizedToolPermissionRepository authorizedToolPermissionRepository;
 
-    public List<ToolPermission> getAllToolPermissions() {
-        return authorizedToolPermissionRepository.findAll();
+    @Autowired
+    ToolPermissionDetailsRepository toolPermissionDetailsRepository;
+
+    /**
+     * Get a list of tool names that have permissions associated with them
+     * @return
+     */
+    public List<String> getToolsWithPermissions() {
+        return toolPermissionDetailsRepository.findDistinctToolNames();
+    }
+
+    /**
+     * Get the ToolPermissionDetails records for the given tool name
+     * @param toolName
+     * @return
+     */
+    public List<ToolPermissionDetails> getToolPermissionDetailsByToolName(String toolName) {
+        return toolPermissionDetailsRepository.findByToolName(toolName);
+    }
+
+    /**
+     * Get all ToolPermissionDetails records
+     * @return
+     */
+    public List<ToolPermissionDetails> getAllToolPermissionDetails() {
+        return toolPermissionDetailsRepository.findAll();
+    }
+
+    /**
+     * Get the ToolPermissionDetails records for the given permission
+     * @param permissionName
+     * @return
+     */
+    public ToolPermissionDetails getToolPermissionDetailsByPermissionName(String permissionName) {
+        return toolPermissionDetailsRepository.findByToolPermission(permissionName);
     }
 
 }

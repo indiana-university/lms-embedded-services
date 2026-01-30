@@ -7,6 +7,8 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "AUTHORIZED_TOOL_PERMISSION_DETAILS")
 @Data
@@ -22,4 +24,15 @@ public class ToolPermissionDetails {
 
     @Column(name = "TOOL_NAME")
     private String toolName;
+
+    @Column(name = "PROPERTY_KEYS")
+    private List<String> propertyKeys;
+
+    /**
+     *
+     * @return true if there are property keys defined, false otherwise
+     */
+    public boolean hasProperties() {
+        return propertyKeys != null && !propertyKeys.isEmpty();
+    }
 }

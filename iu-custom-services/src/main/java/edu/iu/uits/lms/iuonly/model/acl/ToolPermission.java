@@ -73,6 +73,9 @@ public class ToolPermission implements Serializable {
     @Column(name="NOTES")
     private String notes;
 
+    @Column(name="ACTIVE")
+    private boolean active = true;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "AUTHORIZED_TOOL_PERMISSION_PROPERTIES",
             joinColumns = @JoinColumn(name = "AUTHORIZED_TOOL_PERMISSION_ID",

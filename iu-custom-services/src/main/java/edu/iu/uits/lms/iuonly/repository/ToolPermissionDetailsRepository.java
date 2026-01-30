@@ -33,13 +33,20 @@ package edu.iu.uits.lms.iuonly.repository;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.ToolPermission;
+import edu.iu.uits.lms.iuonly.model.acl.ToolPermissionDetails;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
-public interface AuthorizedToolPermissionRepository extends PagingAndSortingRepository<ToolPermission, Long>, ListCrudRepository<ToolPermission, Long> {
+public interface ToolPermissionDetailsRepository extends PagingAndSortingRepository<ToolPermissionDetails, Long>, ListCrudRepository<ToolPermissionDetails, Long> {
+    @Query("SELECT DISTINCT t.toolName FROM ToolPermissionDetails t WHERE t.toolName IS NOT NULL ORDER BY t.toolName ASC")
+    List<String> findDistinctToolNames();
 
+    List<ToolPermissionDetails> findByToolName(String toolName);
 
+    ToolPermissionDetails findByToolPermission(String toolPermission);
 }

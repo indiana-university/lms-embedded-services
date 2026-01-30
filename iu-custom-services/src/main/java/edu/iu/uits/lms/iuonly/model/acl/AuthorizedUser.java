@@ -108,7 +108,7 @@ public class AuthorizedUser implements Serializable {
      * @return
      */
     public boolean hasToolPermission(String toolPermission) {
-        return toolPermissions.containsKey(toolPermission);
+        return toolPermissions != null && toolPermissions.containsKey(toolPermission);
     }
 
     @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)

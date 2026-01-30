@@ -34,15 +34,12 @@ package edu.iu.uits.lms.iuonly.services;
  */
 
 import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
-import edu.iu.uits.lms.iuonly.model.acl.ToolPermission;
 import edu.iu.uits.lms.iuonly.repository.AuthorizedUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,10 +47,6 @@ public class AuthorizedUserService {
 
     @Autowired
     private AuthorizedUserRepository authorizedUserRepository;
-
-    public List<AuthorizedUser> getAllAuthorizedUsers() {
-        return (List<AuthorizedUser>) authorizedUserRepository.findAll();
-    }
 
     /**
      * Find the AuthorizedUser with the given username
@@ -129,11 +122,21 @@ public class AuthorizedUserService {
                 .collect(Collectors.toList());
     }
 
-    public Map<String, ToolPermission> findToolPermissionsByUsername(String username) {
-        AuthorizedUser user = authorizedUserRepository.findByUsername(username);
-        if (user != null && user.getToolPermissions() != null) {
-            return user.getToolPermissions();
-        }
-        return new HashMap<>();
+    /**
+     * Get all AuthorizedUsers associated with the given permission name
+     * @param permissionName
+     * @return
+     */
+    public List<AuthorizedUser> getUsersWithPermission(String permissionName) {
+        return authorizedUserRepository.findByToolPermission(permissionName);
     }
+
+    public List<AuthorizedUser> getAllAuthorizedUsers() {
+        return authorizedUserRepository.findAll();
+    }
+
+    public AuthorizedUser createOrUpdateAuthorizedUser(AuthorizedUser authorizedUser) {
+       return authorizedUserRepository.save(authorizedUser);
+    }
+
 }

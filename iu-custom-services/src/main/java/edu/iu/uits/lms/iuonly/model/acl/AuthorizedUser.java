@@ -73,6 +73,9 @@ public class AuthorizedUser implements Serializable {
     @Column(name = "USERNAME")
     private String username;
 
+    @Column(name = "ALT_USERNAME")
+    private String alternateUsername;
+
     @Column(name = "CANVAS_USER_ID")
     private String canvasUserId;
 
@@ -105,7 +108,7 @@ public class AuthorizedUser implements Serializable {
      * @return
      */
     public boolean hasToolPermission(String toolPermission) {
-        return toolPermissions.containsKey(toolPermission);
+        return toolPermissions != null && toolPermissions.containsKey(toolPermission);
     }
 
     @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)

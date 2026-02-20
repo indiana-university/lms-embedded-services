@@ -1,25 +1,25 @@
-package edu.iu.uits.lms.iuonly.repository;
+package edu.iu.uits.lms.iuonly.model.tps;
 
 /*-
  * #%L
  * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,13 +33,21 @@ package edu.iu.uits.lms.iuonly.repository;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.ToolPermission;
-import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Component;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Component
-public interface AuthorizedToolPermissionRepository extends PagingAndSortingRepository<ToolPermission, Long>, ListCrudRepository<ToolPermission, Long> {
+@Entity
+@Table(name = "auth_tool")
+@Getter
+@Setter
+public class AuthTool {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "auth_tool_id")
+    private Long id;
 
-
+    @Column(name = "tool_name", nullable = false, unique = true)
+    private String name;
 }

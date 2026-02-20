@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.model.acl;
+package edu.iu.uits.lms.iuonly.model.tps;
 
 /*-
  * #%L
  * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2025 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,48 +33,68 @@ package edu.iu.uits.lms.iuonly.model.acl;
  * #L%
  */
 
-import jakarta.persistence.CollectionTable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "AUTHORIZED_TOOL_PERMISSION",
-        uniqueConstraints = @UniqueConstraint(name = "U_AUTHORIZED_TOOL_PERMISSION_USER",
-                columnNames = {"TOOL_PERMISSION", "AUTHORIZED_USER_ID"}) )
-@Data
-@NoArgsConstructor
-public class ToolPermission implements Serializable {
-
+@Getter
+@Setter
+@RequiredArgsConstructor
+@Table(
+        name = "auth_user_permission",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"auth_user_id", "auth_permission_id"})
+)
+public class AuthUserPermission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "AUTHORIZED_TOOL_PERMISSION_ID")
+    @Column(name = "auth_user_permission_id")
     private Long id;
 
-    @Column(name="TOOL_PERMISSION")
-    private String toolPermission;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "auth_user_id")
+    private AuthUser authUser;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "AUTHORIZED_TOOL_PERMISSION_PROPERTIES",
-            joinColumns = @JoinColumn(name = "AUTHORIZED_TOOL_PERMISSION_ID",
-                    foreignKey = @ForeignKey(name = "FK_ATPP_ATP") ))
-    @MapKeyColumn(name = "PROPERTY_KEY")
-    @Column(name = "PROPERTY_VALUE")
-    private Map<String, String> toolPermissionProperties = new HashMap<>();
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "auth_permission_id")
+    private AuthPermission authPermission;
 
+    @OneToMany(mappedBy = "authUserPermission", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @BatchSize(size = 10)
+    private List<AuthUserPermissionProperty> userProperties = new ArrayList<>();
+
+    private boolean active = true;
+    private String notes;
+
+    private OffsetDateTime created;
+    private OffsetDateTime modified;
+
+    @PreUpdate
+    @PrePersist
+    public void updateTimeStamps() {
+        modified = OffsetDateTime.now();
+        if (created == null) {
+            created = OffsetDateTime.now();
+        }
+    }
 }

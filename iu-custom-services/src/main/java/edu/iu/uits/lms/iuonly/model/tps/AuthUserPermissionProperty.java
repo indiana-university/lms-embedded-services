@@ -1,25 +1,25 @@
-package edu.iu.uits.lms.iuonly.repository;
+package edu.iu.uits.lms.iuonly.model.tps;
 
 /*-
  * #%L
  * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,20 +33,41 @@ package edu.iu.uits.lms.iuonly.repository;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.ToolPermissionDetails;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Component;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
+import java.time.OffsetDateTime;
 
-@Component
-public interface ToolPermissionDetailsRepository extends PagingAndSortingRepository<ToolPermissionDetails, Long>, ListCrudRepository<ToolPermissionDetails, Long> {
-    @Query("SELECT DISTINCT t.toolName FROM ToolPermissionDetails t WHERE t.toolName IS NOT NULL ORDER BY t.toolName ASC")
-    List<String> findDistinctToolNames();
+@Entity
+@Getter
+@Setter
+@Table(name = "auth_user_permission_property")
+public class AuthUserPermissionProperty {
+    @EmbeddedId
+    private AuthUserPermissionPropertyId id;
 
-    List<ToolPermissionDetails> findByToolName(String toolName);
+    private String value;
 
-    ToolPermissionDetails findByToolPermission(String toolPermission);
+    private OffsetDateTime created;
+    private OffsetDateTime modified;
+
+    @ManyToOne(optional = false)
+    @MapsId("authUserPermissionId")
+    @JoinColumn(name = "auth_user_permission_id")
+    private AuthUserPermission authUserPermission;
+
+    @ManyToOne(optional = false)
+    @MapsId("authPermissionPropertyId")
+    @JoinColumn(name = "auth_permission_property_id")
+    private AuthPermissionProperty authPermissionProperty;
+
+    @PreUpdate
+    @PrePersist
+    public void updateTimeStamps() {
+        modified = OffsetDateTime.now();
+        if (created == null) {
+            created = OffsetDateTime.now();
+        }
+    }
 }

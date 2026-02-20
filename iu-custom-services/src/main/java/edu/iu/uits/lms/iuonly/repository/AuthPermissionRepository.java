@@ -1,25 +1,25 @@
-package edu.iu.uits.lms.iuonly.services;
+package edu.iu.uits.lms.iuonly.repository;
 
 /*-
  * #%L
  * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2025 Indiana University
+ * Copyright (C) 2015 - 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,55 +33,38 @@ package edu.iu.uits.lms.iuonly.services;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.ToolPermissionDetails;
-import edu.iu.uits.lms.iuonly.repository.AuthorizedToolPermissionRepository;
-import edu.iu.uits.lms.iuonly.repository.ToolPermissionDetailsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import edu.iu.uits.lms.iuonly.model.tps.AuthPermission;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
-@Service
-public class AuthorizedToolPermissionService {
-
-    @Autowired
-    private AuthorizedToolPermissionRepository authorizedToolPermissionRepository;
-
-    @Autowired
-    ToolPermissionDetailsRepository toolPermissionDetailsRepository;
-
+@Component
+public interface AuthPermissionRepository extends PagingAndSortingRepository<AuthPermission, Long>, ListCrudRepository<AuthPermission, Long> {
     /**
-     * Get a list of tool names that have permissions associated with them
+     * Find all permissions for a given tool
+     * @param authToolId
      * @return
      */
-    public List<String> getToolsWithPermissions() {
-        return toolPermissionDetailsRepository.findDistinctToolNames();
-    }
+    List<AuthPermission> findByAuthToolId(Long authToolId);
 
     /**
-     * Get the ToolPermissionDetails records for the given tool name
-     * @param toolName
+     * Find a permission by id, loading its properties as well
+     * @param id
      * @return
      */
-    public List<ToolPermissionDetails> getToolPermissionDetailsByToolName(String toolName) {
-        return toolPermissionDetailsRepository.findByToolName(toolName);
-    }
+    @Query("SELECT ap FROM AuthPermission ap LEFT JOIN FETCH ap.properties WHERE ap.id = :id")
+    AuthPermission findByIdWithProperties(@Param("id") Long id);
 
     /**
-     * Get all ToolPermissionDetails records
-     * @return
+     * Find permissions excluding specific IDs
+     * @param excludedIds Set of permission IDs to exclude
+     * @return List of permissions not in the excluded IDs
      */
-    public List<ToolPermissionDetails> getAllToolPermissionDetails() {
-        return toolPermissionDetailsRepository.findAll();
-    }
-
-    /**
-     * Get the ToolPermissionDetails records for the given permission
-     * @param permissionName
-     * @return
-     */
-    public ToolPermissionDetails getToolPermissionDetailsByPermissionName(String permissionName) {
-        return toolPermissionDetailsRepository.findByToolPermission(permissionName);
-    }
-
+    @Query("SELECT ap FROM AuthPermission ap WHERE ap.id NOT IN :excludedIds")
+    List<AuthPermission> findPermissionsExcludingIds(@Param("excludedIds") Set<Long> excludedIds);
 }

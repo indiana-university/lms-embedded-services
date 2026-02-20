@@ -121,22 +121,4 @@ public class AuthorizedUserService {
                 .map(String::trim)
                 .collect(Collectors.toList());
     }
-
-    /**
-     * Get all AuthorizedUsers associated with the given permission name
-     * @param permissionName
-     * @return
-     */
-    public List<AuthorizedUser> getUsersWithPermission(String permissionName) {
-        return authorizedUserRepository.findByToolPermission(permissionName);
-    }
-
-    public List<AuthorizedUser> getAllAuthorizedUsers() {
-        return authorizedUserRepository.findAll();
-    }
-
-    public AuthorizedUser createOrUpdateAuthorizedUser(AuthorizedUser authorizedUser) {
-       return authorizedUserRepository.save(authorizedUser);
-    }
-
 }

@@ -34,7 +34,6 @@ package edu.iu.uits.lms.iuonly.model.tps;
  */
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

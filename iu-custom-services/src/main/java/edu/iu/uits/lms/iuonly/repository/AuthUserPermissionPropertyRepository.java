@@ -38,8 +38,6 @@ import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public interface AuthUserPermissionPropertyRepository extends PagingAndSortingRepository<AuthUserPermissionProperty, Long>, ListCrudRepository<AuthUserPermissionProperty, Long> {
 

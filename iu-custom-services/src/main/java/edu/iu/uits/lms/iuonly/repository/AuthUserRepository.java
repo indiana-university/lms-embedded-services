@@ -37,10 +37,32 @@ import edu.iu.uits.lms.iuonly.model.tps.AuthUser;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 @Component
 public interface AuthUserRepository extends PagingAndSortingRepository<AuthUser, Long>, ListCrudRepository<AuthUser, Long> {
 
+    /**
+     * Find the AuthUser associated with the given username
+     * @param username
+     * @return
+     */
     AuthUser findByUsername(String username);
+
+    /**
+     * Check if an AuthUser exists for the given username
+     * @param username
+     * @return true if exists, false otherwise
+     */
+    boolean existsByUsername(String username);
+
+    /**
+     * Find all AuthUsers who do not have any associated AuthUserPermission records.
+     * @return List of AuthUsers without permissions.
+     */
+    @Query("SELECT au FROM AuthUser au LEFT JOIN AuthUserPermission aup ON au.id = aup.authUser.id WHERE aup.id IS NULL")
+    List<AuthUser> findAllWithoutPermissions();
 
 }

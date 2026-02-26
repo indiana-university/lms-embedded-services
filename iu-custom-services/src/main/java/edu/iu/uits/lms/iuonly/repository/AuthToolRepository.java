@@ -40,6 +40,4 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface AuthToolRepository extends PagingAndSortingRepository<AuthTool, Long>, ListCrudRepository<AuthTool, Long> {
-
-
 }

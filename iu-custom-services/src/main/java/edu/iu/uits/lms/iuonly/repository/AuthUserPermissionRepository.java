@@ -50,7 +50,7 @@ import java.util.Set;
 public interface AuthUserPermissionRepository extends PagingAndSortingRepository<AuthUserPermission, Long>, ListCrudRepository<AuthUserPermission, Long> {
 
     /**
-     * Find an AuthUserPermission by its ID.
+     * Find an AuthUserPermission by its associated permission ID
      *
      * @param authPermissionId The ID of the authorization permission.
      * @return The authorization user permission associated with the given ID.
@@ -67,7 +67,7 @@ public interface AuthUserPermissionRepository extends PagingAndSortingRepository
     boolean existsByAuthUserIdAndAuthPermissionId(Long authUserId, Long permissionId);
 
     /**
-     * Find a user permission by username and permission id, loading the user properties as well.
+     * Find a user permission by username and permission id, loading the user properties, as well.
      * @param username The username of the user.
      * @param permissionId The ID of the permission.
      * @return The AuthUserPermission object associated with the given username and permission ID.
@@ -113,5 +113,4 @@ public interface AuthUserPermissionRepository extends PagingAndSortingRepository
      * @return A list of AuthUserPermission records associated with the user ID.
      */
     List<AuthUserPermission> findByAuthUserId(Long id);
-
 }

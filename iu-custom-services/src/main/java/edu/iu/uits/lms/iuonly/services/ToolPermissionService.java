@@ -46,7 +46,6 @@ import edu.iu.uits.lms.iuonly.repository.AuthToolRepository;
 import edu.iu.uits.lms.iuonly.repository.AuthUserPermissionPropertyRepository;
 import edu.iu.uits.lms.iuonly.repository.AuthUserPermissionRepository;
 import edu.iu.uits.lms.iuonly.repository.AuthUserRepository;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,13 +65,13 @@ public class ToolPermissionService {
     private AuthPermissionRepository authPermissionRepository;
 
     @Autowired
-    AuthUserPermissionRepository authUserPermissionRepository;
+    private AuthUserPermissionRepository authUserPermissionRepository;
 
     @Autowired
-    AuthUserRepository authUserRepository;
+    private AuthUserRepository authUserRepository;
 
     @Autowired
-    AuthUserPermissionPropertyRepository authUserPermissionPropertyRepository;
+    private AuthUserPermissionPropertyRepository authUserPermissionPropertyRepository;
 
     /**
      * Get a list of tools that use TPS
@@ -91,10 +90,12 @@ public class ToolPermissionService {
         return authPermissionRepository.findByAuthToolId(toolId);
     }
 
-    public List<AuthPermission> getAllPermissions() {
-        return authPermissionRepository.findAll();
-    }
-
+    /**
+     * Get a permission by id, with the option to include the associated properties
+     * @param permissionId
+     * @param includeProperties
+     * @return
+     */
     public AuthPermission getPermissionById(Long permissionId, boolean includeProperties) {
         if (includeProperties) {
             return authPermissionRepository.findByIdWithProperties(permissionId);
@@ -103,10 +104,21 @@ public class ToolPermissionService {
         }
     }
 
+    /**
+     * Get a list of AuthUserPermissions associated with a given permission id
+     * @param authPermissionId
+     * @return
+     */
     public List<AuthUserPermission> getUsersWithPermission(Long authPermissionId) {
         return authUserPermissionRepository.findByAuthPermissionId(authPermissionId);
     }
 
+    /**
+     * Get an AuthUserPermission by id, with the option to include the associated user properties
+     * @param authUserPermissionId
+     * @param includeProperties
+     * @return
+     */
     public AuthUserPermission getAuthUserPermissionById(Long authUserPermissionId, boolean includeProperties) {
         if (includeProperties) {
             return authUserPermissionRepository.findByIdWithUserProperties(authUserPermissionId);
@@ -115,10 +127,20 @@ public class ToolPermissionService {
         }
     }
 
+    /**
+     * Get an AuthUser by username
+     * @param username
+     * @return
+     */
     public AuthUser getAuthUserByUsername(String username) {
         return authUserRepository.findByUsername(username);
     }
 
+    /**
+     * Save an AuthUser
+     * @param authUser
+     * @return
+     */
     public AuthUser saveAuthUser(AuthUser authUser) {
         return authUserRepository.save(authUser);
     }
@@ -133,14 +155,38 @@ public class ToolPermissionService {
         return authUserPermissionRepository.findByUsernameAndPermissionIdWithUserProperties(username, permissionId);
     }
 
-    public AuthUserPermission saveAuthUserPermission(AuthUserPermission newPermission) {
-        return authUserPermissionRepository.save(newPermission);
+    /**
+     * Save AuthUserPermission
+     * @param permission
+     * @return
+     */
+    public AuthUserPermission saveAuthUserPermission(AuthUserPermission permission) {
+        return authUserPermissionRepository.save(permission);
     }
 
-    public boolean userPermissionExistsByAuthUserId(Long authUserId, Long permissionId) {
+    /**
+     * Check if a user has a permission by authUserId and permissionId.
+     *
+     * @param authUserId The ID of the authorized user.
+     * @param permissionId The ID of the permission.
+     * @return True if the user has the permission, false otherwise.
+     */
+    public boolean authUserHasPermission(Long authUserId, Long permissionId) {
         return authUserPermissionRepository.existsByAuthUserIdAndAuthPermissionId(authUserId, permissionId);
     }
 
+    /**
+     * Save an AuthUserPermission for a given username and permission id.
+     * If the user permission already exists, it will be updated.
+     * If it does not exist, a new user permission will be created.
+     *
+     * @param username The username of the user.
+     * @param permissionId The ID of the associated permission.
+     * @param activePermission The active status of the permission.
+     * @param notes Any notes associated with the permission.
+     * @param userProperties A list of user properties to associate with the permission (optional).
+     * @return The saved AuthUserPermission object.
+     */
     public AuthUserPermission saveAuthUserPermissionWithProperties(String username, Long permissionId, boolean activePermission, String notes, List<AuthUserPermissionProperty> userProperties) {
         AuthUser authUser = getAuthUserByUsername(username);
         if (authUser == null) {
@@ -239,6 +285,11 @@ public class ToolPermissionService {
         return authUserPermissionPropertyRepository.save(property);
     }
 
+    /**
+     * Get a list of AuthUserPermission for a given username
+     * @param username
+     * @return
+     */
     public List<AuthUserPermission> getToolPermissionsForUser(String username) {
         AuthUser authUser = authUserRepository.findByUsername(username);
         if (authUser == null) {
@@ -261,10 +312,14 @@ public class ToolPermissionService {
         return authPermissionRepository.findPermissionsExcludingIds(associatedPermissionIds);
     }
 
+    /**
+     * Get all AuthUserInformationDto, which includes user details and their associated tool permissions, if any.
+     * @return
+     */
     public List<AuthUserInformationDto> getAllAuthUserInformation() {
         List<AuthUserPermission> permissions = authUserPermissionRepository.findAllWithDetails();
 
-        return permissions.stream()
+        List<AuthUserInformationDto> usersWithPermissions = permissions.stream()
                 .collect(Collectors.groupingBy(AuthUserPermission::getAuthUser))
                 .entrySet().stream()
                 .map(entry -> {
@@ -284,5 +339,57 @@ public class ToolPermissionService {
                     );
                 })
                 .collect(Collectors.toList());
+
+        // Add users without permissions
+        List<AuthUser> usersWithoutPermissions = authUserRepository.findAllWithoutPermissions();
+        List<AuthUserInformationDto> usersWithoutPermissionsDto = usersWithoutPermissions.stream()
+                .map(user -> new AuthUserInformationDto(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getDisplayName(),
+                        user.getEmail(),
+                        new ArrayList<>(),
+                        user.isActive()
+                ))
+                .collect(Collectors.toList());
+
+        usersWithPermissions.addAll(usersWithoutPermissionsDto);
+
+        return usersWithPermissions;
     }
+
+    public List<AuthPermission> getAllPermissionsWithTools() {
+        return authPermissionRepository.findAllWithAuthTool();
+    }
+
+    /**
+     * Check if the user has an active permission with the given property key
+     * @param username
+     * @param propertyKey
+     * @return
+     */
+    public boolean isAuthorized(String username, String propertyKey) {
+        AuthUser authUser = authUserRepository.findByUsername(username);
+        if (authUser == null || !authUser.isActive()) {
+            return false;
+        }
+
+        List<AuthUserPermission> userPermissions = authUserPermissionRepository.findByAuthUserId(authUser.getId());
+        for (AuthUserPermission userPermission : userPermissions) {
+            if (userPermission.isActive()) {
+                for (AuthUserPermissionProperty userProperty : userPermission.getUserProperties()) {
+                    if (userProperty.getAuthPermissionProperty().getKey().equals(propertyKey)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean userExists(String username) {
+        return authUserRepository.existsByUsername(username);
+    }
+
 }

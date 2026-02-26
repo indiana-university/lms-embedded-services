@@ -67,4 +67,11 @@ public interface AuthPermissionRepository extends PagingAndSortingRepository<Aut
      */
     @Query("SELECT ap FROM AuthPermission ap WHERE ap.id NOT IN :excludedIds")
     List<AuthPermission> findPermissionsExcludingIds(@Param("excludedIds") Set<Long> excludedIds);
+
+    /**
+     * Retrieve all AuthPermission records with their associated AuthTool populated
+     * @return List of AuthPermission with AuthTool eagerly loaded
+     */
+    @Query("SELECT ap FROM AuthPermission ap LEFT JOIN FETCH ap.authTool")
+    List<AuthPermission> findAllWithAuthTool();
 }

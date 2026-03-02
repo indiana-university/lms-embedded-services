@@ -34,14 +34,12 @@ package edu.iu.uits.lms.iuonly.model.tps;
  */
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.OffsetDateTime;
 
 @Entity
-@Getter
-@Setter
+@Data
 @Table(
         name = "auth_permission_property",
         uniqueConstraints = @UniqueConstraint(columnNames = {"auth_permission_id", "property_key"})
@@ -70,9 +68,10 @@ public class AuthPermissionProperty {
      * The data type of the value for this property (e.g., string, integer, boolean)
      */
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "value_type")
     private ValueType valueType;
 
-    private Boolean required = false;
+    private boolean required = false;
     private String description;
     private OffsetDateTime created;
     private OffsetDateTime modified;

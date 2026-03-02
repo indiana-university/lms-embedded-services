@@ -34,14 +34,12 @@ package edu.iu.uits.lms.iuonly.model.tps;
  */
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.OffsetDateTime;
 
 @Entity
-@Getter
-@Setter
+@Data
 @Table(name = "auth_user_permission_property")
 public class AuthUserPermissionProperty {
     @EmbeddedId

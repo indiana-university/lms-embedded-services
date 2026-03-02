@@ -115,6 +115,31 @@
 
     <build>
         <plugins>
+<!--            <plugin>-->
+<!--                <groupId>de.jpdigital</groupId>-->
+<!--                <artifactId>hibernate65-ddl-maven-plugin</artifactId>-->
+<!--                <version>1.0.2</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>gen-ddl</goal>-->
+<!--                        </goals>-->
+<!--                        <phase>compile</phase>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <dialects>-->
+<!--                        <param>postgresql</param>-->
+<!--                    </dialects>-->
+<!--                    <outputFile>${project.build.directory}/schema.ddl.sql</outputFile>-->
+<!--                    <packages>-->
+<!--                        <param>edu.iu.uits.lms.iuonly.model.tps</param>-->
+<!--                    </packages>-->
+<!--                    <classpath>${project.build.outputDirectory}</classpath>-->
+<!--                    <failOnError>true</failOnError>-->
+<!--                    <format>true</format>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

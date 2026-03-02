@@ -34,7 +34,7 @@ package edu.iu.uits.lms.iuonly.model.tps;
  */
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
@@ -44,8 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Data
 @RequiredArgsConstructor
 @Table(
         name = "auth_permission",

@@ -34,15 +34,13 @@ package edu.iu.uits.lms.iuonly.model.tps;
  */
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "auth_user")
-@Getter
-@Setter
+@Data
 public class AuthUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

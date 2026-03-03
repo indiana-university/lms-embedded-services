@@ -264,6 +264,11 @@ public class ToolPermissionService {
         return saveAuthUserPermission(userPermission);
     }
 
+    /**
+     * Save an AuthUserPermissionProperty, ensuring that the composite key is properly set.
+     * @param property The AuthUserPermissionProperty to save
+     * @return The saved AuthUserPermissionProperty
+     */
     @Transactional(transactionManager = "postgresdbTransactionMgr")
     public AuthUserPermissionProperty saveAuthUserPermissionProperty(AuthUserPermissionProperty property) {
         if (property.getAuthUserPermission() == null || property.getAuthPermissionProperty() == null) {
@@ -358,36 +363,39 @@ public class ToolPermissionService {
         return usersWithPermissions;
     }
 
+    /**
+     * Get all AuthPermission records with their associated AuthTool populated.
+     * @return List of AuthPermission with AuthTool eagerly loaded
+     */
     public List<AuthPermission> getAllPermissionsWithTools() {
         return authPermissionRepository.findAllWithAuthTool();
     }
 
     /**
-     * Check if the user has an active permission with the given property key
-     * @param username
-     * @param propertyKey
-     * @return
+     * Check if the user has an active AuthUserPermission for the given username and permission key.
+     * AuthUser must also be active.
+     * @param username The username to check
+     * @param permissionKey The permission key to check
+     * @return true if an active AuthUserPermission exists and AuthUser is active, false otherwise
      */
-    public boolean isAuthorized(String username, String propertyKey) {
+    public boolean isAuthorized(String username, String permissionKey) {
         AuthUser authUser = authUserRepository.findByUsername(username);
         if (authUser == null || !authUser.isActive()) {
             return false;
         }
-
-        List<AuthUserPermission> userPermissions = authUserPermissionRepository.findByAuthUserId(authUser.getId());
-        for (AuthUserPermission userPermission : userPermissions) {
-            if (userPermission.isActive()) {
-                for (AuthUserPermissionProperty userProperty : userPermission.getUserProperties()) {
-                    if (userProperty.getAuthPermissionProperty().getKey().equals(propertyKey)) {
-                        return true;
-                    }
-                }
-            }
+        AuthPermission authPermission = authPermissionRepository.findByKey(permissionKey);
+        if (authPermission == null) {
+            return false;
         }
-
-        return false;
+        AuthUserPermission userPermission = authUserPermissionRepository.findByUsernameAndPermissionIdWithUserProperties(username, authPermission.getId());
+        return userPermission != null && userPermission.isActive();
     }
 
+    /**
+     * Check if a user exists in TPS by username
+     * @param username
+     * @return
+     */
     public boolean userExists(String username) {
         return authUserRepository.existsByUsername(username);
     }

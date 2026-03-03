@@ -109,8 +109,8 @@ public interface AuthUserPermissionRepository extends PagingAndSortingRepository
     /**
      * Find all AuthUserPermission records for a given user ID.
      *
-     * @param id The ID of the user.
+     * @param authUserId The ID of the user.
      * @return A list of AuthUserPermission records associated with the user ID.
      */
-    List<AuthUserPermission> findByAuthUserId(Long id);
+    List<AuthUserPermission> findByAuthUserId(Long authUserId);
 }

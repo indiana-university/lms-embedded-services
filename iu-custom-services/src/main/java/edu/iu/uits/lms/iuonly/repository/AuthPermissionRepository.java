@@ -74,4 +74,11 @@ public interface AuthPermissionRepository extends PagingAndSortingRepository<Aut
      */
     @Query("SELECT ap FROM AuthPermission ap LEFT JOIN FETCH ap.authTool")
     List<AuthPermission> findAllWithAuthTool();
+
+    /**
+     * Find an AuthPermission by its permission key
+     * @param key The permission key
+     * @return The AuthPermission with the given key, or null if not found
+     */
+    AuthPermission findByKey(String key);
 }

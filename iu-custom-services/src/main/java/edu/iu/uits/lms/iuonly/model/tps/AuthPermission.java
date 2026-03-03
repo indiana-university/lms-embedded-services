@@ -36,7 +36,6 @@ package edu.iu.uits.lms.iuonly.model.tps;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 
 import java.time.OffsetDateTime;

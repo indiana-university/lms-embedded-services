@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.model;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,34 +33,23 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.util.List;
-
-/**
- * Created by yingwang on 11/16/15.
- */
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown=true)
 @Data
-public class Assignment implements Serializable {
+public class SubmissionVersion {
     private String id;
-    private String name;
-    private String description;
-    private List<String> allowedExtensions;
-    private boolean published;
-    private Integer assignmentGroupId;
-    private List<String> submissionTypes;
-    private String quizId;
-    private boolean isQuizAssignment;
-    private boolean isQuizLtiAssignment;
-    private String dueAt;
-    private String unlockAt;
-    private List<AssignmentOverride> overrides;
-    private String pointsPossible;
+    private String userId;
+    private String submittedAt;
+    private String currentGrade;
+    private String score;
+    private String workflowState;
+    private String assignmentId;
+    private String assignmentVisible;
+    private String gradedAt;
+
 }

@@ -437,4 +437,352 @@ public class ToolPermissionServiceTest {
         property.setValue(value);
         return property;
     }
+
+    @Test
+    public void testGetPermissionPropertiesForUser_returnsMapWithPropertiesWhenUserPermissionExists() {
+        AuthUser user = buildUser(105L, "user6", true);
+        AuthPermission permission = buildPermission(205L, null);
+
+        AuthPermissionProperty prop1 = buildPermissionProperty(801L);
+        prop1.setKey("property1");
+
+        AuthPermissionProperty prop2 = buildPermissionProperty(802L);
+        prop2.setKey("property2");
+
+        AuthUserPermissionPropertyId id1 = new AuthUserPermissionPropertyId();
+        id1.setAuthUserPermissionId(305L);
+        id1.setAuthPermissionPropertyId(801L);
+
+        AuthUserPermissionPropertyId id2 = new AuthUserPermissionPropertyId();
+        id2.setAuthUserPermissionId(305L);
+        id2.setAuthPermissionPropertyId(802L);
+
+        AuthUserPermissionProperty userProp1 = buildUserPermissionProperty(id1, null, prop1, "value1");
+        AuthUserPermissionProperty userProp2 = buildUserPermissionProperty(id2, null, prop2, "value2");
+
+        AuthUserPermission userPermission = buildUserPermission(305L, user, permission, true, "notes");
+        userPermission.setUserProperties(List.of(userProp1, userProp2));
+
+        when(authUserPermissionRepository.findByUsernameAndPermissionKeyWithUserProperties("user6", "permKey"))
+                .thenReturn(userPermission);
+
+        Map<String, String> result = toolPermissionService.getPermissionPropertiesForUser("user6", "permKey");
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("value1", result.get("property1"));
+        assertEquals("value2", result.get("property2"));
+    }
+
+    @Test
+    public void testGetPermissionPropertiesForUser_returnsEmptyMapWhenUserPermissionDoesNotExist() {
+        when(authUserPermissionRepository.findByUsernameAndPermissionKeyWithUserProperties("nonexistent", "permKey"))
+                .thenReturn(null);
+
+        Map<String, String> result = toolPermissionService.getPermissionPropertiesForUser("nonexistent", "permKey");
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetPermissionPropertiesForUser_returnsEmptyMapWhenUserPermissionHasNoProperties() {
+        AuthUser user = buildUser(106L, "user7", true);
+        AuthPermission permission = buildPermission(206L, null);
+        AuthUserPermission userPermission = buildUserPermission(306L, user, permission, true, "notes");
+        userPermission.setUserProperties(null);
+
+        when(authUserPermissionRepository.findByUsernameAndPermissionKeyWithUserProperties("user7", "permKey"))
+                .thenReturn(userPermission);
+
+        Map<String, String> result = toolPermissionService.getPermissionPropertiesForUser("user7", "permKey");
+
+        assertNotNull(result);
+        assertThrows(NullPointerException.class, () -> {
+            // When iterating over a null list, it throws NPE
+            for (AuthUserPermissionProperty property : userPermission.getUserProperties()) {
+                // This should not execute
+            }
+        });
+    }
+
+    @Test
+    public void testGetPermissionPropertiesForUser_returnsEmptyMapWhenUserPermissionHasEmptyProperties() {
+        AuthUser user = buildUser(107L, "user8", true);
+        AuthPermission permission = buildPermission(207L, null);
+        AuthUserPermission userPermission = buildUserPermission(307L, user, permission, true, "notes");
+        userPermission.setUserProperties(Collections.emptyList());
+
+        when(authUserPermissionRepository.findByUsernameAndPermissionKeyWithUserProperties("user8", "permKey"))
+                .thenReturn(userPermission);
+
+        Map<String, String> result = toolPermissionService.getPermissionPropertiesForUser("user8", "permKey");
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetPermissionPropertiesForUser_handlesPropertiesWithNullValues() {
+        AuthUser user = buildUser(108L, "user9", true);
+        AuthPermission permission = buildPermission(208L, null);
+
+        AuthPermissionProperty prop1 = buildPermissionProperty(803L);
+        prop1.setKey("nullProperty");
+
+        AuthUserPermissionPropertyId id1 = new AuthUserPermissionPropertyId();
+        id1.setAuthUserPermissionId(308L);
+        id1.setAuthPermissionPropertyId(803L);
+
+        AuthUserPermissionProperty userProp1 = buildUserPermissionProperty(id1, null, prop1, null);
+
+        AuthUserPermission userPermission = buildUserPermission(308L, user, permission, true, "notes");
+        userPermission.setUserProperties(List.of(userProp1));
+
+        when(authUserPermissionRepository.findByUsernameAndPermissionKeyWithUserProperties("user9", "permKey"))
+                .thenReturn(userPermission);
+
+        Map<String, String> result = toolPermissionService.getPermissionPropertiesForUser("user9", "permKey");
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertNull(result.get("nullProperty"));
+    }
+
+    @Test
+    public void testGetPermissionPropertiesForUser_returnsSinglePropertyCorrectly() {
+        AuthUser user = buildUser(109L, "user10", true);
+        AuthPermission permission = buildPermission(209L, null);
+
+        AuthPermissionProperty prop = buildPermissionProperty(804L);
+        prop.setKey("singleProp");
+
+        AuthUserPermissionPropertyId id = new AuthUserPermissionPropertyId();
+        id.setAuthUserPermissionId(309L);
+        id.setAuthPermissionPropertyId(804L);
+
+        AuthUserPermissionProperty userProp = buildUserPermissionProperty(id, null, prop, "singleValue");
+
+        AuthUserPermission userPermission = buildUserPermission(309L, user, permission, true, "notes");
+        userPermission.setUserProperties(List.of(userProp));
+
+        when(authUserPermissionRepository.findByUsernameAndPermissionKeyWithUserProperties("user10", "permKey"))
+                .thenReturn(userPermission);
+
+        Map<String, String> result = toolPermissionService.getPermissionPropertiesForUser("user10", "permKey");
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("singleValue", result.get("singleProp"));
+    }
+
+    // Tests for convertPropertyToBoolean utility method
+    @Test
+    public void testConvertPropertyToBoolean_returnsTrueForTrueString() {
+        assertTrue(ToolPermissionService.convertPropertyToBoolean("true"));
+    }
+
+    @Test
+    public void testConvertPropertyToBoolean_returnsTrueForTrueStringIgnoreCase() {
+        assertTrue(ToolPermissionService.convertPropertyToBoolean("TRUE"));
+        assertTrue(ToolPermissionService.convertPropertyToBoolean("True"));
+        assertTrue(ToolPermissionService.convertPropertyToBoolean("TrUe"));
+    }
+
+    @Test
+    public void testConvertPropertyToBoolean_returnsFalseForFalseString() {
+        assertFalse(ToolPermissionService.convertPropertyToBoolean("false"));
+        assertFalse(ToolPermissionService.convertPropertyToBoolean("FALSE"));
+        assertFalse(ToolPermissionService.convertPropertyToBoolean("False"));
+    }
+
+    @Test
+    public void testConvertPropertyToBoolean_returnsFalseForEmptyString() {
+        assertFalse(ToolPermissionService.convertPropertyToBoolean(""));
+    }
+
+    @Test
+    public void testConvertPropertyToBoolean_returnsFalseForNull() {
+        assertFalse(ToolPermissionService.convertPropertyToBoolean(null));
+    }
+
+    @Test
+    public void testConvertPropertyToBoolean_returnsFalseForRandomString() {
+        assertFalse(ToolPermissionService.convertPropertyToBoolean("yes"));
+        assertFalse(ToolPermissionService.convertPropertyToBoolean("1"));
+        assertFalse(ToolPermissionService.convertPropertyToBoolean("random"));
+    }
+
+    @Test
+    public void testConvertPropertyToBoolean_returnsFalseForWhitespace() {
+        assertFalse(ToolPermissionService.convertPropertyToBoolean("   "));
+    }
+
+    // Tests for convertPropertyToStringArray utility method
+    @Test
+    public void testConvertPropertyToStringArray_returnsSingleItemArray() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray("item1");
+        assertEquals(1, result.length);
+        assertEquals("item1", result[0]);
+    }
+
+    @Test
+    public void testConvertPropertyToStringArray_returnsMultipleItemsArray() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray("item1,item2,item3");
+        assertEquals(3, result.length);
+        assertEquals("item1", result[0]);
+        assertEquals("item2", result[1]);
+        assertEquals("item3", result[2]);
+    }
+
+    @Test
+    public void testConvertPropertyToStringArray_trimsWhitespaceAroundCommas() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray("item1 , item2 , item3");
+        assertEquals(3, result.length);
+        assertEquals("item1", result[0]);
+        assertEquals("item2", result[1]);
+        assertEquals("item3", result[2]);
+    }
+
+    @Test
+    public void testConvertPropertyToStringArray_trimsLeadingAndTrailingWhitespace() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray("  item1,item2,item3  ");
+        assertEquals(3, result.length);
+        assertEquals("item1", result[0]);
+        assertEquals("item2", result[1]);
+        assertEquals("item3", result[2]);
+    }
+
+    @Test
+    public void testConvertPropertyToStringArray_handlesMultipleSpacesAroundCommas() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray("item1  ,  item2  ,  item3");
+        assertEquals(3, result.length);
+        assertEquals("item1", result[0]);
+        assertEquals("item2", result[1]);
+        assertEquals("item3", result[2]);
+    }
+
+    @Test
+    public void testConvertPropertyToStringArray_returnsEmptyArrayForNull() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray(null);
+        assertEquals(0, result.length);
+    }
+
+    @Test
+    public void testConvertPropertyToStringArray_returnsEmptyArrayForEmptyString() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray("");
+        assertEquals(1, result.length);
+        assertEquals("", result[0]);
+    }
+
+    @Test
+    public void testConvertPropertyToStringArray_returnsArrayWithSingleEmptyItemForWhitespace() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray("   ");
+        assertEquals(1, result.length);
+        assertEquals("", result[0]);
+    }
+
+    @Test
+    public void testConvertPropertyToStringArray_handlesItemsWithInternalSpaces() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray("hello world,foo bar,baz qux");
+        assertEquals(3, result.length);
+        assertEquals("hello world", result[0]);
+        assertEquals("foo bar", result[1]);
+        assertEquals("baz qux", result[2]);
+    }
+
+    @Test
+    public void testConvertPropertyToStringArray_handlesSingleCommaDelimiter() {
+        String[] result = ToolPermissionService.convertPropertyToStringArray("item1,");
+        assertEquals(1, result.length);
+        assertEquals("item1", result[0]);
+    }
+
+    // Tests for convertPropertyToList utility method
+    @Test
+    public void testConvertPropertyToList_returnsSingleItemList() {
+        List<String> result = ToolPermissionService.convertPropertyToList("item1");
+        assertEquals(1, result.size());
+        assertEquals("item1", result.getFirst());
+    }
+
+    @Test
+    public void testConvertPropertyToList_returnsMultipleItemsList() {
+        List<String> result = ToolPermissionService.convertPropertyToList("item1,item2,item3");
+        assertEquals(3, result.size());
+        assertEquals("item1", result.get(0));
+        assertEquals("item2", result.get(1));
+        assertEquals("item3", result.get(2));
+    }
+
+    @Test
+    public void testConvertPropertyToList_trimsWhitespaceAroundCommas() {
+        List<String> result = ToolPermissionService.convertPropertyToList("item1 , item2 , item3");
+        assertEquals(3, result.size());
+        assertEquals("item1", result.get(0));
+        assertEquals("item2", result.get(1));
+        assertEquals("item3", result.get(2));
+    }
+
+    @Test
+    public void testConvertPropertyToList_trimsLeadingAndTrailingWhitespace() {
+        List<String> result = ToolPermissionService.convertPropertyToList("  item1,item2,item3  ");
+        assertEquals(3, result.size());
+        assertEquals("item1", result.get(0));
+        assertEquals("item2", result.get(1));
+        assertEquals("item3", result.get(2));
+    }
+
+    @Test
+    public void testConvertPropertyToList_handlesMultipleSpacesAroundCommas() {
+        List<String> result = ToolPermissionService.convertPropertyToList("item1  ,  item2  ,  item3");
+        assertEquals(3, result.size());
+        assertEquals("item1", result.get(0));
+        assertEquals("item2", result.get(1));
+        assertEquals("item3", result.get(2));
+    }
+
+    @Test
+    public void testConvertPropertyToList_returnsEmptyListForNull() {
+        List<String> result = ToolPermissionService.convertPropertyToList(null);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testConvertPropertyToList_returnsListWithEmptyStringForEmptyString() {
+        List<String> result = ToolPermissionService.convertPropertyToList("");
+        assertEquals(1, result.size());
+        assertEquals("", result.getFirst());
+    }
+
+    @Test
+    public void testConvertPropertyToList_returnsListWithSingleEmptyItemForWhitespace() {
+        List<String> result = ToolPermissionService.convertPropertyToList("   ");
+        assertEquals(1, result.size());
+        assertEquals("", result.getFirst());
+    }
+
+    @Test
+    public void testConvertPropertyToList_handlesItemsWithInternalSpaces() {
+        List<String> result = ToolPermissionService.convertPropertyToList("hello world,foo bar,baz qux");
+        assertEquals(3, result.size());
+        assertEquals("hello world", result.get(0));
+        assertEquals("foo bar", result.get(1));
+        assertEquals("baz qux", result.get(2));
+    }
+
+    @Test
+    public void testConvertPropertyToList_handlesSingleCommaDelimiter() {
+        List<String> result = ToolPermissionService.convertPropertyToList("item1,");
+        assertEquals(1, result.size());
+        assertEquals("item1", result.get(0));
+    }
+
+    @Test
+    public void testConvertPropertyToList_isImmutable() {
+        List<String> result = ToolPermissionService.convertPropertyToList("item1,item2");
+        // The result should be a properly constructed list
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
 }

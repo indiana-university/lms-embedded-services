@@ -51,7 +51,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -398,6 +402,59 @@ public class ToolPermissionService {
      */
     public boolean userExists(String username) {
         return authUserRepository.existsByUsername(username);
+    }
+
+    /**
+     * Convert the input to a boolean.  Does a case-insensitive compare to "true".  Anything that doesn't match is false.
+     * @param propertyValue
+     * @return
+     */
+    public static boolean convertPropertyToBoolean(String propertyValue) {
+        return Boolean.parseBoolean(propertyValue);
+    }
+
+    /**
+     * Convert the input it a String[].  Trims any leading/trailing spaces for the entire input value, as well as each
+     * individual item in the list.  Expects items to be comma-delimited.
+     * @param propertyValue
+     * @return
+     */
+    public static String[] convertPropertyToStringArray(String propertyValue) {
+        if (propertyValue == null) {
+            return new String[]{};
+        }
+        //Split on the comma and trim all white space
+        return propertyValue.trim().split("\\s*,\\s*");
+    }
+
+    /**
+     * Convert the input into a List<String>.  Trims any leading/trailing spaces for the entire input value, as well as each
+     * individual item in the list.  Expects items to be comma-delimited.
+     * @param propertyValue
+     * @return
+     */
+    public static List<String> convertPropertyToList(String propertyValue) {
+        return Arrays.stream(convertPropertyToStringArray(propertyValue))
+                .map(String::trim)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get a map of permission property keys and values for a given username and permission key.
+     * @param username The username to check
+     * @param permissionKey The permission key to check
+     * @return Map of permission property keys and values, or an empty map if no user permission is found
+     */
+    public Map<String, String> getPermissionPropertiesForUser(String username, String permissionKey) {
+        AuthUserPermission userPermission = authUserPermissionRepository.findByUsernameAndPermissionKeyWithUserProperties(username, permissionKey);
+        if (userPermission == null || userPermission.getUserProperties() == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> propertiesMap = new HashMap<>();
+        for (AuthUserPermissionProperty property : userPermission.getUserProperties()) {
+            propertiesMap.put(property.getAuthPermissionProperty().getKey(), property.getValue());
+        }
+        return propertiesMap;
     }
 
 }

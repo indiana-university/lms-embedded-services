@@ -113,4 +113,17 @@ public interface AuthUserPermissionRepository extends PagingAndSortingRepository
      * @return A list of AuthUserPermission records associated with the user ID.
      */
     List<AuthUserPermission> findByAuthUserId(Long authUserId);
+
+    /**
+     * Find a user permission by username and permission key, loading the user properties, as well.
+     * @param username The username of the user.
+     * @param permissionKey The key of the permission.
+     * @return The AuthUserPermission object associated with the given username and permission key.
+     */
+    @Query("SELECT aup FROM AuthUserPermission aup " +
+            "LEFT JOIN FETCH aup.userProperties " +
+            "JOIN aup.authUser au " +
+            "JOIN aup.authPermission ap " +
+            "WHERE au.username = :username AND ap.key = :permissionKey")
+    AuthUserPermission findByUsernameAndPermissionKeyWithUserProperties(@Param("username") String username, @Param("permissionKey") String permissionKey);
 }

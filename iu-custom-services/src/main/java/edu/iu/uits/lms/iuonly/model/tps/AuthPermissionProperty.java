@@ -71,8 +71,12 @@ public class AuthPermissionProperty {
     @Column(nullable = false, name = "value_type")
     private ValueType valueType;
 
+    @Column(name = "default_value")
+    private String defaultValue;
+
     private boolean required = false;
     private String description;
+
     private OffsetDateTime created;
     private OffsetDateTime modified;
 

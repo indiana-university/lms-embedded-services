@@ -35,6 +35,7 @@ package edu.iu.uits.lms.iuonly.model.tps;
 
 import jakarta.persistence.Embeddable;
 import lombok.Data;
+
 import java.io.Serializable;
 
 @Embeddable

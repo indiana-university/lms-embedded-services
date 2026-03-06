@@ -72,10 +72,12 @@ public interface AuthUserPermissionRepository extends PagingAndSortingRepository
      * @param permissionId The ID of the permission.
      * @return The AuthUserPermission object associated with the given username and permission ID.
      */
-    @Query("SELECT aup FROM AuthUserPermission aup " +
-            "LEFT JOIN FETCH aup.userProperties " +
-            "JOIN aup.authUser au " +
-            "WHERE au.username = :username AND aup.authPermission.id = :permissionId")
+    @Query("""
+        SELECT aup FROM AuthUserPermission aup
+        LEFT JOIN FETCH aup.userProperties
+        JOIN aup.authUser au
+        WHERE au.username = :username AND aup.authPermission.id = :permissionId
+    """)
     AuthUserPermission findByUsernameAndPermissionIdWithUserProperties(@Param("username") String username, @Param("permissionId") Long permissionId);
 
     /**
@@ -90,10 +92,12 @@ public interface AuthUserPermissionRepository extends PagingAndSortingRepository
      * Fetch all AuthUserPermission records.
      * @return List of AuthUserPermission.
      */
-    @Query("SELECT aup FROM AuthUserPermission aup " +
-            "JOIN FETCH aup.authUser " +
-            "JOIN FETCH aup.authPermission ap " +
-            "JOIN FETCH ap.authTool")
+    @Query("""
+        SELECT aup FROM AuthUserPermission aup
+        JOIN FETCH aup.authUser
+        JOIN FETCH aup.authPermission ap
+        JOIN FETCH ap.authTool
+    """)
     List<AuthUserPermission> findAllWithDetails();
 
     /**
@@ -101,9 +105,11 @@ public interface AuthUserPermissionRepository extends PagingAndSortingRepository
      * @param authUserPermissionId The ID of the AuthUserPermission.
      * @return The AuthUserPermission with user properties loaded.
      */
-    @Query("SELECT aup FROM AuthUserPermission aup " +
-            "LEFT JOIN FETCH aup.userProperties " +
-            "WHERE aup.id = :authUserPermissionId")
+    @Query("""
+        SELECT aup FROM AuthUserPermission aup
+        LEFT JOIN FETCH aup.userProperties
+        WHERE aup.id = :authUserPermissionId
+    """)
     AuthUserPermission findByIdWithUserProperties(@Param("authUserPermissionId") Long authUserPermissionId);
 
     /**
@@ -120,10 +126,12 @@ public interface AuthUserPermissionRepository extends PagingAndSortingRepository
      * @param permissionKey The key of the permission.
      * @return The AuthUserPermission object associated with the given username and permission key.
      */
-    @Query("SELECT aup FROM AuthUserPermission aup " +
-            "LEFT JOIN FETCH aup.userProperties " +
-            "JOIN aup.authUser au " +
-            "JOIN aup.authPermission ap " +
-            "WHERE au.username = :username AND ap.key = :permissionKey")
+    @Query("""
+        SELECT aup FROM AuthUserPermission aup
+        LEFT JOIN FETCH aup.userProperties
+        JOIN aup.authUser au
+        JOIN aup.authPermission ap
+        WHERE au.username = :username AND ap.key = :permissionKey
+    """)
     AuthUserPermission findByUsernameAndPermissionKeyWithUserProperties(@Param("username") String username, @Param("permissionKey") String permissionKey);
 }

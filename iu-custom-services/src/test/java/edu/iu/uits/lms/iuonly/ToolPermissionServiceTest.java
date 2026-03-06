@@ -33,8 +33,19 @@ package edu.iu.uits.lms.iuonly;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.tps.*;
-import edu.iu.uits.lms.iuonly.repository.*;
+import edu.iu.uits.lms.iuonly.model.tps.AuthPermission;
+import edu.iu.uits.lms.iuonly.model.tps.AuthPermissionProperty;
+import edu.iu.uits.lms.iuonly.model.tps.AuthTool;
+import edu.iu.uits.lms.iuonly.model.tps.AuthUser;
+import edu.iu.uits.lms.iuonly.model.tps.AuthUserInformationDto;
+import edu.iu.uits.lms.iuonly.model.tps.AuthUserPermission;
+import edu.iu.uits.lms.iuonly.model.tps.AuthUserPermissionProperty;
+import edu.iu.uits.lms.iuonly.model.tps.AuthUserPermissionPropertyId;
+import edu.iu.uits.lms.iuonly.repository.AuthPermissionRepository;
+import edu.iu.uits.lms.iuonly.repository.AuthToolRepository;
+import edu.iu.uits.lms.iuonly.repository.AuthUserPermissionPropertyRepository;
+import edu.iu.uits.lms.iuonly.repository.AuthUserPermissionRepository;
+import edu.iu.uits.lms.iuonly.repository.AuthUserRepository;
 import edu.iu.uits.lms.iuonly.services.ToolPermissionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

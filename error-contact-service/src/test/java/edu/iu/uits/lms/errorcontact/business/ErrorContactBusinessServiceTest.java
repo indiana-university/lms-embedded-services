@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.business;
+package edu.iu.uits.lms.errorcontact.business;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-error-contact-service
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -34,12 +34,12 @@ package edu.iu.uits.lms.iuonly.business;
  */
 
 import edu.iu.uits.lms.email.service.EmailService;
-import edu.iu.uits.lms.iuonly.config.DerdackConfig;
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactJobProfile;
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactResponse;
-import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
-import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
-import edu.iu.uits.lms.iuonly.services.business.ErrorContactBusinessService;
+import edu.iu.uits.lms.errorcontact.config.DerdackConfig;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactJobProfile;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactResponse;
+import edu.iu.uits.lms.errorcontact.repository.ErrorContactEventRepository;
+import edu.iu.uits.lms.errorcontact.repository.ErrorContactJobProfileRepository;
+import edu.iu.uits.lms.errorcontact.service.business.ErrorContactBusinessService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.model.errorcontact;
+package edu.iu.uits.lms.errorcontact.repository;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-error-contact-service
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,51 +33,15 @@ package edu.iu.uits.lms.iuonly.model.errorcontact;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.ToString;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactJobProfile;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
-import java.util.List;
-
-@JsonIgnoreProperties(ignoreUnknown=true)
-@ToString
-@Data
-public class ErrorContactResponse implements Serializable {
-    @JsonProperty("ExternalID")
-    private String externalId;
-
-    @JsonProperty("StatusCode")
-    private String statusCode;
-
-    @JsonProperty("Status")
-    private String status;
-
-    @JsonProperty("StatusDescription")
-    private String statusDescription;
-
-    @JsonProperty("Timestamp")
-    private String timestamp;
-
-    @JsonProperty("AppliedPolicies")
-    private String appliedPolicies;
-
-    @JsonProperty("Duplicates")
-    private String duplicates;
-
-    @JsonProperty("AlertsDelayed")
-    private String alertsDelayed;
-
-    @JsonProperty("AlertsCreated")
-    private String alertsCreated;
-
-    @JsonProperty("AlertIDs")
-    private List<String> alertIds;
+@Component("ErrorContactJobProfileRepository")
+public interface ErrorContactJobProfileRepository extends PagingAndSortingRepository<ErrorContactJobProfile, String>, ListCrudRepository<ErrorContactJobProfile, String> {
+    ErrorContactJobProfile findByJobCode(@Param("jobCode") String jobCode);
+    void activateAllJobProfiles();
+    void deactivateAllJobProfiles();
 }
-
-
-
-
-
-

@@ -8,23 +8,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>lms-canvas-iu-custom-services</artifactId>
-    <name>lms-canvas-iu-custom-services</name>
+    <artifactId>lms-canvas-error-contact-service</artifactId>
+    <name>lms-canvas-error-contact-service</name>
     <packaging>jar</packaging>
 
-    <description>Shared services for the lms-canvas LTI tools to interact with custom IU things</description>
+    <description>Shared service for the batch jobs that need to notify of failures</description>
 
     <properties>
         <commons-collections4.version>4.5.0</commons-collections4.version>
-        <reflections.version>0.10.2</reflections.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>lms-canvas-services</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-email-service</artifactId>
@@ -41,10 +35,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-rest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
@@ -53,24 +43,8 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents.client5</groupId>
-            <artifactId>httpclient5</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.cache</groupId>
-            <artifactId>cache-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -78,38 +52,14 @@
             <version>${commons-collections4.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-        </dependency>
-        <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-common-configuration</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <scope>test</scope>
-            <version>${reflections.version}</version>
         </dependency>
     </dependencies>
 
@@ -124,7 +74,7 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/denodo.properties</exclude>
+                        <exclude>**/derdack.properties</exclude>
                         <exclude>**/logback-test.xml</exclude>
                     </excludes>
                 </configuration>

@@ -1,0 +1,98 @@
+package edu.iu.uits.lms.iuonly.model.tps;
+
+/*-
+ * #%L
+ * lms-canvas-iu-custom-services
+ * %%
+ * Copyright (C) 2015 - 2026 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Data
+@RequiredArgsConstructor
+@Table(
+        name = "auth_user_permission",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"auth_user_id", "auth_permission_id"})
+)
+public class AuthUserPermission {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "auth_user_permission_id")
+    private Long id;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "auth_user_id")
+    private AuthUser authUser;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "auth_permission_id")
+    private AuthPermission authPermission;
+
+    @OneToMany(mappedBy = "authUserPermission", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @BatchSize(size = 10)
+    private List<AuthUserPermissionProperty> userProperties = new ArrayList<>();
+
+    private boolean active = true;
+    private String notes;
+
+    private OffsetDateTime created;
+    private OffsetDateTime modified;
+
+    @PreUpdate
+    @PrePersist
+    public void updateTimeStamps() {
+        modified = OffsetDateTime.now();
+        if (created == null) {
+            created = OffsetDateTime.now();
+        }
+    }
+}

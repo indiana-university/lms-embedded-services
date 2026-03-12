@@ -48,11 +48,11 @@ import static edu.iu.uits.lms.errorcontact.ErrorContactConstants.ERRORCONTACT_RE
 
 @EnableWebSecurity
 @Configuration
-public class IuCustomRestConfiguration {
+public class ErrorContactRestConfiguration {
 
     @Order(1)
     @Bean
-    public SecurityFilterChain iuCustomRestFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain errorContactRestFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/rest/errorcontact/**")
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/rest/errorcontact/**")
@@ -68,7 +68,7 @@ public class IuCustomRestConfiguration {
     @Profile(ERRORCONTACT_REST_PROFILE + " & swagger")
     @Order(1)
     @Bean
-    public SecurityFilterChain iuCustomApiFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain errorContactApiFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/api/errorcontact/**")
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/api/errorcontact/**").permitAll()

@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.model.errorcontact;
+package edu.iu.uits.lms.errorcontact;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-error-contact-service
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,51 +33,23 @@ package edu.iu.uits.lms.iuonly.model.errorcontact;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.ToString;
+public class ErrorContactConstants {
 
-import java.io.Serializable;
-import java.util.List;
+   /**
+    * Constant used for the profile to enable the error-contact related REST operations
+    */
+   public final static String ERRORCONTACT_REST_PROFILE = "errorcontactrest";
 
-@JsonIgnoreProperties(ignoreUnknown=true)
-@ToString
-@Data
-public class ErrorContactResponse implements Serializable {
-    @JsonProperty("ExternalID")
-    private String externalId;
+   /**
+    * Group code wrapping up the error-contact related REST operations in the generated API specs
+    */
+   public final static String ERRORCONTACT_GROUP_CODE = "errorcontact";
 
-    @JsonProperty("StatusCode")
-    private String statusCode;
+   /**
+    * Group code path wrapping up the error-contact related REST operations in the generated API specs
+    */
+   public final static String ERRORCONTACT_GROUP_CODE_PATH = "/" + ERRORCONTACT_GROUP_CODE;
 
-    @JsonProperty("Status")
-    private String status;
-
-    @JsonProperty("StatusDescription")
-    private String statusDescription;
-
-    @JsonProperty("Timestamp")
-    private String timestamp;
-
-    @JsonProperty("AppliedPolicies")
-    private String appliedPolicies;
-
-    @JsonProperty("Duplicates")
-    private String duplicates;
-
-    @JsonProperty("AlertsDelayed")
-    private String alertsDelayed;
-
-    @JsonProperty("AlertsCreated")
-    private String alertsCreated;
-
-    @JsonProperty("AlertIDs")
-    private List<String> alertIds;
+   private ErrorContactConstants() {
+   }
 }
-
-
-
-
-
-

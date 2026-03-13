@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.repository;
+package edu.iu.uits.lms.errorcontact.repository;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-error-contact-service
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,15 +33,13 @@ package edu.iu.uits.lms.iuonly.repository;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactJobProfile;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactEvent;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
-@Component("ErrorContactJobProfileRepository")
-public interface ErrorContactJobProfileRepository extends PagingAndSortingRepository<ErrorContactJobProfile, String>, ListCrudRepository<ErrorContactJobProfile, String> {
-    ErrorContactJobProfile findByJobCode(@Param("jobCode") String jobCode);
-    void activateAllJobProfiles();
-    void deactivateAllJobProfiles();
+@Component("ErrorContactEventRepository")
+public interface ErrorContactEventRepository extends PagingAndSortingRepository<ErrorContactEvent, Long>, ListCrudRepository<ErrorContactEvent, Long> {
+    int numberOfJobCodesNoOlderThanMinutes(@Param("jobCode") String jobCode, @Param("minutes") int minutes);
 }

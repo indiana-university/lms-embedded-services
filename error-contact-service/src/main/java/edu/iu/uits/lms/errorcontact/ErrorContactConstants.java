@@ -40,6 +40,16 @@ public class ErrorContactConstants {
     */
    public final static String ERRORCONTACT_REST_PROFILE = "errorcontactrest";
 
+   /**
+    * Group code wrapping up the error-contact related REST operations in the generated API specs
+    */
+   public final static String ERRORCONTACT_GROUP_CODE = "errorcontact";
+
+   /**
+    * Group code path wrapping up the error-contact related REST operations in the generated API specs
+    */
+   public final static String ERRORCONTACT_GROUP_CODE_PATH = "/" + ERRORCONTACT_GROUP_CODE;
+
    private ErrorContactConstants() {
    }
 }

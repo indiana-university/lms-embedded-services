@@ -44,6 +44,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import static edu.iu.uits.lms.errorcontact.ErrorContactConstants.ERRORCONTACT_GROUP_CODE;
 import static edu.iu.uits.lms.errorcontact.ErrorContactConstants.ERRORCONTACT_REST_PROFILE;
 
 @Profile(ERRORCONTACT_REST_PROFILE + " & swagger")
@@ -56,9 +57,9 @@ import static edu.iu.uits.lms.errorcontact.ErrorContactConstants.ERRORCONTACT_RE
 public class SwaggerConfig {
 
    @Bean
-   public GroupedOpenApi iuCustomOpenApi() {
+   public GroupedOpenApi errorContactOpenApi() {
       return GroupedOpenApi.builder()
-            .group("errorcontact")
+            .group(ERRORCONTACT_GROUP_CODE)
             .packagesToScan("edu.iu.uits.lms.errorcontact")
             .pathsToMatch("/rest/errorcontact/**")
             .addOpenApiCustomizer(openApi -> openApi.addSecurityItem(new SecurityRequirement().addList("security_auth_errorcontact")))

@@ -36,6 +36,8 @@ package edu.iu.uits.lms.canvas.helpers;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -169,13 +171,11 @@ public class CanvasDateFormatUtil {
      * on the previous day
      */
     public static OffsetDateTime getCalculatedCourseEndDate() {
-        OffsetDateTime adjustedZDT = OffsetDateTime.now(ZoneId.of(DEFAULT_TIME_ZONE))
-                .withHour(23)
-                .withMinute(59)
-                .withSecond(0)
-                .withNano(0)
-                .plusYears(1)
-                .minusDays(1);
+        // Calculate the target date: one year from now minus one day
+        LocalDate targetDate = LocalDate.now(ZoneId.of(DEFAULT_TIME_ZONE)).plusYears(1).minusDays(1);
+        LocalTime targetTime = LocalTime.of(23, 59);
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(targetDate, targetTime, ZoneId.of(DEFAULT_TIME_ZONE));
+        OffsetDateTime adjustedZDT = zonedDateTime.toOffsetDateTime();
         log.debug("Yesterday, one year from now, at 11:59 pm Indy time: " + adjustedZDT);
 
         return adjustedZDT;

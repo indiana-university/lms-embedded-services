@@ -171,13 +171,20 @@ public class CanvasDateFormatUtil {
      * on the previous day
      */
     public static OffsetDateTime getCalculatedCourseEndDate() {
-        // Calculate the target date: one year from now minus one day
-        LocalDate targetDate = LocalDate.now(ZoneId.of(DEFAULT_TIME_ZONE)).plusYears(1).minusDays(1);
+        return getCalculatedCourseEndDate(LocalDate.now(ZoneId.of(DEFAULT_TIME_ZONE)));
+    }
+
+    /**
+     * Calculate the course end date based on a given base date.
+     * @param baseDate The base date to use for calculation.
+     * @return OffsetDateTime for one year from baseDate minus one day, at 11:59 pm in Indy time.
+     */
+    public static OffsetDateTime getCalculatedCourseEndDate(LocalDate baseDate) {
+        LocalDate targetDate = baseDate.plusYears(1).minusDays(1);
         LocalTime targetTime = LocalTime.of(23, 59);
         ZonedDateTime zonedDateTime = ZonedDateTime.of(targetDate, targetTime, ZoneId.of(DEFAULT_TIME_ZONE));
         OffsetDateTime adjustedZDT = zonedDateTime.toOffsetDateTime();
-        log.debug("Yesterday, one year from now, at 11:59 pm Indy time: " + adjustedZDT);
-
+        log.debug("Yesterday, one year from baseDate, at 11:59 pm Indy time: " + adjustedZDT);
         return adjustedZDT;
     }
 

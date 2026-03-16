@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.helpers;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -43,6 +44,7 @@ import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Slf4j
 class CanvasDateFormatUtilTest {
 
     @Test
@@ -50,23 +52,29 @@ class CanvasDateFormatUtilTest {
         // Arrange
         String tz = CanvasDateFormatUtil.DEFAULT_TIME_ZONE;
         ZoneId zoneId = ZoneId.of(tz);
-        // Use the current date as March 13, 2026 (per context)
-        LocalDate now = LocalDate.of(2026, 3, 13);
-        LocalDate expectedDate = now.plusYears(1).minusDays(1);
-        LocalTime expectedTime = LocalTime.of(23, 59);
-        ZonedDateTime expectedZdt = ZonedDateTime.of(expectedDate, expectedTime, zoneId);
-        OffsetDateTime expectedOdt = expectedZdt.toOffsetDateTime();
+        // Check all dates in March since there is a DST change that happens later in 2027 than it does in 2026
+        for (int dayOfMonth = 1; dayOfMonth <= 31; dayOfMonth++) {
+            LocalDate now = LocalDate.of(2026, 3, dayOfMonth);
+            LocalDate expectedDate = now.plusYears(1).minusDays(1);
+            LocalTime expectedTime = LocalTime.of(23, 59);
+            ZonedDateTime expectedZdt = ZonedDateTime.of(expectedDate, expectedTime, zoneId);
+            OffsetDateTime expectedOdt = expectedZdt.toOffsetDateTime();
 
-        // Act
-        OffsetDateTime actual = CanvasDateFormatUtil.getCalculatedCourseEndDate();
+            // Act
+            OffsetDateTime actual = CanvasDateFormatUtil.getCalculatedCourseEndDate(now);
 
-        // Assert
-        assertEquals(expectedOdt.getYear(), actual.getYear(), "Year should match");
-        assertEquals(expectedOdt.getMonth(), actual.getMonth(), "Month should match");
-        assertEquals(expectedOdt.getDayOfMonth(), actual.getDayOfMonth(), "Day should match");
-        assertEquals(expectedOdt.getHour(), actual.getHour(), "Hour should be 23");
-        assertEquals(expectedOdt.getMinute(), actual.getMinute(), "Minute should be 59");
-        assertEquals(expectedOdt.getOffset(), actual.getOffset(), "Offset should match Indy time zone for that date");
+            // Diagnostic output
+            log.debug("Expected: {}", expectedOdt);
+            log.debug("Actual:   {}", actual);
+
+            // Assert
+            assertEquals(expectedOdt.getYear(), actual.getYear(), "Year should match");
+            assertEquals(expectedOdt.getMonth(), actual.getMonth(), "Month should match");
+            assertEquals(expectedOdt.getDayOfMonth(), actual.getDayOfMonth(), "Day should match");
+            assertEquals(expectedOdt.getHour(), actual.getHour(), "Hour should be 23");
+            assertEquals(expectedOdt.getMinute(), actual.getMinute(), "Minute should be 59");
+            assertEquals(expectedOdt.getOffset(), actual.getOffset(), "Offset should match Indy time zone for that date");
+        }
     }
 
     @Test
@@ -81,10 +89,87 @@ class CanvasDateFormatUtilTest {
         OffsetDateTime expectedOdt = expectedZdt.toOffsetDateTime();
 
         // Act
-        OffsetDateTime actual = CanvasDateFormatUtil.getCalculatedCourseEndDate();
+        OffsetDateTime actual = CanvasDateFormatUtil.getCalculatedCourseEndDate(now);
+
+        // Diagnostic output
+        log.debug("Expected Offset: {}", expectedOdt.getOffset());
+        log.debug("Actual Offset:   {}", actual.getOffset());
 
         // Assert
         assertEquals(expectedOdt.getOffset(), actual.getOffset(), "Offset should match DST rules for Indy");
     }
-}
 
+    @Test
+    void testLeapDay() {
+        String tz = CanvasDateFormatUtil.DEFAULT_TIME_ZONE;
+        ZoneId zoneId = ZoneId.of(tz);
+        LocalDate leapDay = LocalDate.of(2024, 2, 29); // Leap year
+        LocalDate expectedDate = leapDay.plusYears(1).minusDays(1); // Feb 28, 2025
+        LocalTime expectedTime = LocalTime.of(23, 59);
+        ZonedDateTime expectedZdt = ZonedDateTime.of(expectedDate, expectedTime, zoneId);
+        OffsetDateTime expectedOdt = expectedZdt.toOffsetDateTime();
+
+        OffsetDateTime actual = CanvasDateFormatUtil.getCalculatedCourseEndDate(leapDay);
+        log.debug("Leap Day - Expected: {}", expectedOdt);
+        log.debug("Leap Day - Actual:   {}", actual);
+        assertEquals(expectedOdt.getYear(), actual.getYear(), "Year should match");
+        assertEquals(expectedOdt.getMonth(), actual.getMonth(), "Month should match");
+        assertEquals(expectedOdt.getDayOfMonth(), actual.getDayOfMonth(), "Day should match");
+        assertEquals(expectedOdt.getHour(), actual.getHour(), "Hour should be 23");
+        assertEquals(expectedOdt.getMinute(), actual.getMinute(), "Minute should be 59");
+        assertEquals(expectedOdt.getOffset(), actual.getOffset(), "Offset should match Indy time zone for that date");
+    }
+
+    @Test
+    void testDSTStart() {
+        String tz = CanvasDateFormatUtil.DEFAULT_TIME_ZONE;
+        ZoneId zoneId = ZoneId.of(tz);
+        LocalDate dstStart = LocalDate.of(2026, 3, 8); // DST starts
+        LocalDate expectedDate = dstStart.plusYears(1).minusDays(1); // Mar 7, 2027
+        LocalTime expectedTime = LocalTime.of(23, 59);
+        ZonedDateTime expectedZdt = ZonedDateTime.of(expectedDate, expectedTime, zoneId);
+        OffsetDateTime expectedOdt = expectedZdt.toOffsetDateTime();
+
+        OffsetDateTime actual = CanvasDateFormatUtil.getCalculatedCourseEndDate(dstStart);
+        log.debug("DST Start - Expected: {}", expectedOdt);
+        log.debug("DST Start - Actual:   {}", actual);
+        assertEquals(expectedOdt.getOffset(), actual.getOffset(), "Offset should match DST start");
+    }
+
+    @Test
+    void testDSTEnd() {
+        String tz = CanvasDateFormatUtil.DEFAULT_TIME_ZONE;
+        ZoneId zoneId = ZoneId.of(tz);
+        LocalDate dstEnd = LocalDate.of(2026, 11, 1); // DST ends
+        LocalDate expectedDate = dstEnd.plusYears(1).minusDays(1); // Oct 31, 2027
+        LocalTime expectedTime = LocalTime.of(23, 59);
+        ZonedDateTime expectedZdt = ZonedDateTime.of(expectedDate, expectedTime, zoneId);
+        OffsetDateTime expectedOdt = expectedZdt.toOffsetDateTime();
+
+        OffsetDateTime actual = CanvasDateFormatUtil.getCalculatedCourseEndDate(dstEnd);
+        log.debug("DST End - Expected: {}", expectedOdt);
+        log.debug("DST End - Actual:   {}", actual);
+        assertEquals(expectedOdt.getOffset(), actual.getOffset(), "Offset should match DST end");
+    }
+
+    @Test
+    void testYearBoundary() {
+        String tz = CanvasDateFormatUtil.DEFAULT_TIME_ZONE;
+        ZoneId zoneId = ZoneId.of(tz);
+        LocalDate yearEnd = LocalDate.of(2026, 12, 31);
+        LocalDate expectedDate = yearEnd.plusYears(1).minusDays(1); // Dec 30, 2027
+        LocalTime expectedTime = LocalTime.of(23, 59);
+        ZonedDateTime expectedZdt = ZonedDateTime.of(expectedDate, expectedTime, zoneId);
+        OffsetDateTime expectedOdt = expectedZdt.toOffsetDateTime();
+
+        OffsetDateTime actual = CanvasDateFormatUtil.getCalculatedCourseEndDate(yearEnd);
+        log.debug("Year Boundary - Expected: {}", expectedOdt);
+        log.debug("Year Boundary - Actual:   {}", actual);
+        assertEquals(expectedOdt.getYear(), actual.getYear(), "Year should match");
+        assertEquals(expectedOdt.getMonth(), actual.getMonth(), "Month should match");
+        assertEquals(expectedOdt.getDayOfMonth(), actual.getDayOfMonth(), "Day should match");
+        assertEquals(expectedOdt.getHour(), actual.getHour(), "Hour should be 23");
+        assertEquals(expectedOdt.getMinute(), actual.getMinute(), "Minute should be 59");
+        assertEquals(expectedOdt.getOffset(), actual.getOffset(), "Offset should match Indy time zone for that date");
+    }
+}

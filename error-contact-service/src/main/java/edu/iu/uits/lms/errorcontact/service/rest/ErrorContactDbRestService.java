@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.services.rest;
+package edu.iu.uits.lms.errorcontact.service.rest;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-error-contact-service
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,10 +33,10 @@ package edu.iu.uits.lms.iuonly.services.rest;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactEvent;
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactJobProfile;
-import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
-import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactEvent;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactJobProfile;
+import edu.iu.uits.lms.errorcontact.repository.ErrorContactEventRepository;
+import edu.iu.uits.lms.errorcontact.repository.ErrorContactJobProfileRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -56,11 +56,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
+import static edu.iu.uits.lms.errorcontact.ErrorContactConstants.ERRORCONTACT_REST_PROFILE;
 
-@Profile(IUCUSTOMREST_PROFILE)
+@Profile(ERRORCONTACT_REST_PROFILE)
 @RestController
-@RequestMapping("/rest/iu/errorcontact")
+@RequestMapping("/rest/errorcontact")
 @Tag(name = "ErrorContactDbRestService", description = "Operations involving the ErrorContactEvent and ErrorContactJobProfile tables")
 @Slf4j
 public class ErrorContactDbRestService {

@@ -138,6 +138,7 @@
         <module>canvas-services</module>
         <module>common-configuration</module>
         <module>email-services</module>
+        <module>error-contact-service</module>
         <module>iu-custom-services</module>
         <module>lti-framework</module>
         <module>variable-replacement-service</module>

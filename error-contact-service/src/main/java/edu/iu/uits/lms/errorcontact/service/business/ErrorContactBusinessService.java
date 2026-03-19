@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.services.business;
+package edu.iu.uits.lms.errorcontact.service.business;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-error-contact-service
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -37,12 +37,12 @@ import edu.iu.uits.lms.email.model.EmailDetails;
 import edu.iu.uits.lms.email.model.Priority;
 import edu.iu.uits.lms.email.service.EmailService;
 import edu.iu.uits.lms.email.service.LmsEmailTooBigException;
-import edu.iu.uits.lms.iuonly.config.DerdackConfig;
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactEvent;
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactJobProfile;
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactResponse;
-import edu.iu.uits.lms.iuonly.repository.ErrorContactEventRepository;
-import edu.iu.uits.lms.iuonly.repository.ErrorContactJobProfileRepository;
+import edu.iu.uits.lms.errorcontact.config.DerdackConfig;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactEvent;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactJobProfile;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactResponse;
+import edu.iu.uits.lms.errorcontact.repository.ErrorContactEventRepository;
+import edu.iu.uits.lms.errorcontact.repository.ErrorContactJobProfileRepository;
 import jakarta.mail.MessagingException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

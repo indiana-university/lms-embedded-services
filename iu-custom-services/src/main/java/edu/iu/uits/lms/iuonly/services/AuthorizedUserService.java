@@ -40,51 +40,34 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class AuthorizedUserService {
 
     @Autowired
-    private AuthorizedUserRepository authorizedUserRepository;
+    private ToolPermissionService toolPermissionService;
 
     /**
-     * Find the AuthorizedUser with the given username
      *
-     * @param username
-     * @return
+     * @param userId
+     * @param permissionKey
+     * @return true if the given user is authorized for the given permission in TPS, false otherwise.
      */
-    public AuthorizedUser findByUsername(String username) {
-        return authorizedUserRepository.findByUsername(username);
+    public boolean isAuthorized(String userId, String permissionKey) {
+        return toolPermissionService.isAuthorized(userId, permissionKey);
     }
 
     /**
-     * Find the active AuthorizedUser with the given username and toolPermission
-     * @param username
-     * @param toolPermission
-     * @return
+     *
+     * @param userId
+     * @param permissionKey
+     * @return a map of permission properties associated with the given user and permissionKey in TPS.
+     * Returns an empty map if the user is not authorized for the given permission or if there are no properties defined for that user and permission.
      */
-    public AuthorizedUser findByActiveUsernameAndToolPermission(String username, String toolPermission) {
-        return authorizedUserRepository.findByActiveUsernameAndToolPermission(username, toolPermission);
-    }
-
-    /**
-     * Find the active AuthorizedUser with the given canvasUserId and toolPermission
-     * @param canvasUserId
-     * @param toolPermission
-     * @return
-     */
-    public AuthorizedUser findByActiveCanvasUserIdAndToolPermission(String canvasUserId, String toolPermission) {
-        return authorizedUserRepository.findByActiveCanvasUserIdAndToolPermission(canvasUserId, toolPermission);
-    }
-
-    /**
-     * Find all the active AuthorizedUser records that have the given toolPermission
-     * @param toolPermission
-     * @return
-     */
-    public List<AuthorizedUser> findActiveUsersByPermission(String toolPermission) {
-        return authorizedUserRepository.findByActiveToolPermission(toolPermission);
+    public Map<String, String> getPermissionPropertiesForUser(String userId, String permissionKey) {
+        return toolPermissionService.getPermissionPropertiesForUser(userId, permissionKey);
     }
 
     /**

@@ -33,8 +33,7 @@ package edu.iu.uits.lms.iuonly.services;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
-import edu.iu.uits.lms.iuonly.repository.AuthorizedUserRepository;
+import edu.iu.uits.lms.iuonly.model.tps.AuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +56,26 @@ public class AuthorizedUserService {
      */
     public boolean isAuthorized(String userId, String permissionKey) {
         return toolPermissionService.isAuthorized(userId, permissionKey);
+    }
+
+    /**
+     *
+     * @param username
+     * @return the AuthUser record associated with the given username. Use this method for general information
+     * about the AuthUser. If you need to check a specific permission for this user, use {@link #isAuthorized(String, String)}
+     */
+    public AuthUser findByUsername(String username) {
+        return toolPermissionService.getAuthUserByUsername(username);
+    }
+
+    /**
+     *
+     * @param permissionKey
+     * @return a list of AuthUser objects representing the active users who are authorized for the given permissionKey in TPS.
+     *
+     */
+    public List<AuthUser> findActiveUsersByPermission(String permissionKey) {
+        return toolPermissionService.getAuthUsersByPermissionKey(permissionKey, false);
     }
 
     /**

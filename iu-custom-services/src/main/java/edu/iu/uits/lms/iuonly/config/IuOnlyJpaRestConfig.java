@@ -34,7 +34,6 @@ package edu.iu.uits.lms.iuonly.config;
  */
 
 import edu.iu.uits.lms.common.swagger.LmsRepositoryDetectionStrategy;
-import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -54,9 +53,6 @@ public class IuOnlyJpaRestConfig implements RepositoryRestConfigurer {
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
         log.debug("configureRepositoryRestConfiguration()");
-        //  This is needed to allow the "ids" to be served up via the
-        //  @RepositoryRestResource annotation (by default, it is suppressed)
-        config.exposeIdsFor(AuthorizedUser.class);
         config.setBasePath("/rest/iu");
 
         RepositoryRestConfigurer.super.configureRepositoryRestConfiguration(config, cors);

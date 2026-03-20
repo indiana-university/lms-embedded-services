@@ -422,4 +422,15 @@ public class ToolPermissionService {
         return propertiesMap;
     }
 
+    /**
+     * Get all AuthUsers associated with a permission key.
+     * When includeInactive is false, both AuthUser.active and AuthUserPermission.active must be true.
+     * @param permissionKey The permission key
+     * @param includeInactive Whether to include inactive users/permissions
+     * @return List of matching users
+     */
+    public List<AuthUser> getAuthUsersByPermissionKey(String permissionKey, boolean includeInactive) {
+        return authUserRepository.findByPermissionKey(permissionKey, includeInactive);
+    }
+
 }

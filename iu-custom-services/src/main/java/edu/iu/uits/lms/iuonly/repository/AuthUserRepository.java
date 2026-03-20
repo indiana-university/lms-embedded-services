@@ -38,6 +38,7 @@ import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -64,5 +65,21 @@ public interface AuthUserRepository extends PagingAndSortingRepository<AuthUser,
      */
     @Query("SELECT au FROM AuthUser au LEFT JOIN AuthUserPermission aup ON au.id = aup.authUser.id WHERE aup.id IS NULL")
     List<AuthUser> findAllWithoutPermissions();
+
+    /**
+     * Find all users associated with a permission key.
+     * When includeInactive is false, both the user and user permission must be active.
+     * @param permissionKey The permission key
+     * @param includeInactive Whether to include inactive users/permissions
+     * @return List of matching users
+     */
+    @Query("""
+        SELECT DISTINCT au FROM AuthUser au
+        JOIN AuthUserPermission aup ON au.id = aup.authUser.id
+        JOIN aup.authPermission ap
+        WHERE ap.key = :permissionKey
+        AND (:includeInactive = true OR (au.active = true AND aup.active = true))
+    """)
+    List<AuthUser> findByPermissionKey(@Param("permissionKey") String permissionKey, @Param("includeInactive") boolean includeInactive);
 
 }

@@ -13,7 +13,7 @@
     <artifactId>lms-embedded-services-parent</artifactId>
     <groupId>edu.iu.uits.lms</groupId>
     <packaging>pom</packaging>
-    <version>6.3.11-SNAPSHOT</version>
+    <version>6.3.12-SNAPSHOT</version>
 
     <description>Collection of services/configurations that can be embedded in Canvas-based LTI tools</description>
     <url>https://github.com/indiana-university/lms-embedded-services</url>
@@ -138,6 +138,7 @@
         <module>canvas-services</module>
         <module>common-configuration</module>
         <module>email-services</module>
+        <module>error-contact-service</module>
         <module>iu-custom-services</module>
         <module>lti-framework</module>
         <module>variable-replacement-service</module>

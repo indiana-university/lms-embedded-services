@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.security;
+package edu.iu.uits.lms.errorcontact.security;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-error-contact-service
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:

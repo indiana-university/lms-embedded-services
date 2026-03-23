@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.services;
+package edu.iu.uits.lms.errorcontact.service;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-error-contact-service
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,9 +33,9 @@ package edu.iu.uits.lms.iuonly.services;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactPostForm;
-import edu.iu.uits.lms.iuonly.model.errorcontact.ErrorContactResponse;
-import edu.iu.uits.lms.iuonly.services.business.ErrorContactBusinessService;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactPostForm;
+import edu.iu.uits.lms.errorcontact.model.ErrorContactResponse;
+import edu.iu.uits.lms.errorcontact.service.business.ErrorContactBusinessService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;

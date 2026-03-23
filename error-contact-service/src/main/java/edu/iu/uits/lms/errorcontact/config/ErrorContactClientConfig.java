@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.iuonly.config;
+package edu.iu.uits.lms.errorcontact.config;
 
 /*-
  * #%L
- * lms-canvas-iu-custom-services
+ * lms-canvas-error-contact-service
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,32 +33,9 @@ package edu.iu.uits.lms.iuonly.config;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.security.DerdackKeyAuthorizationInterceptor;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.context.annotation.ComponentScan;
 
-@Profile("derdack")
-@Configuration
-@ConfigurationProperties(prefix = "derdack")
-@Getter
-@Setter
-public class DerdackConfig {
-    private String baseUrl;
-    private String apiKey;
-    private String team;
-    private String recipientEmail;
+@ComponentScan(basePackages = "edu.iu.uits.lms.errorcontact")
+public class ErrorContactClientConfig {
 
-    @Bean(name = "DerdackRestTemplate")
-    public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-
-        restTemplate.getInterceptors().add(new DerdackKeyAuthorizationInterceptor(apiKey));
-
-        return restTemplate;
-    }
 }

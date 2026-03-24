@@ -405,41 +405,6 @@ public class ToolPermissionService {
     }
 
     /**
-     * Convert the input to a boolean.  Does a case-insensitive compare to "true".  Anything that doesn't match is false.
-     * @param propertyValue
-     * @return
-     */
-    public static boolean convertPropertyToBoolean(String propertyValue) {
-        return Boolean.parseBoolean(propertyValue);
-    }
-
-    /**
-     * Convert the input it a String[].  Trims any leading/trailing spaces for the entire input value, as well as each
-     * individual item in the list.  Expects items to be comma-delimited.
-     * @param propertyValue
-     * @return
-     */
-    public static String[] convertPropertyToStringArray(String propertyValue) {
-        if (propertyValue == null) {
-            return new String[]{};
-        }
-        //Split on the comma and trim all white space
-        return propertyValue.trim().split("\\s*,\\s*");
-    }
-
-    /**
-     * Convert the input into a List<String>.  Trims any leading/trailing spaces for the entire input value, as well as each
-     * individual item in the list.  Expects items to be comma-delimited.
-     * @param propertyValue
-     * @return
-     */
-    public static List<String> convertPropertyToList(String propertyValue) {
-        return Arrays.stream(convertPropertyToStringArray(propertyValue))
-                .map(String::trim)
-                .collect(Collectors.toList());
-    }
-
-    /**
      * Get a map of permission property keys and values for a given username and permission key.
      * @param username The username to check
      * @param permissionKey The permission key to check
@@ -455,6 +420,17 @@ public class ToolPermissionService {
             propertiesMap.put(property.getAuthPermissionProperty().getKey(), property.getValue());
         }
         return propertiesMap;
+    }
+
+    /**
+     * Get all AuthUsers associated with a permission key.
+     * When includeInactive is false, both AuthUser.active and AuthUserPermission.active must be true.
+     * @param permissionKey The permission key
+     * @param includeInactive Whether to include inactive users/permissions
+     * @return List of matching users
+     */
+    public List<AuthUser> getAuthUsersByPermissionKey(String permissionKey, boolean includeInactive) {
+        return authUserRepository.findByPermissionKey(permissionKey, includeInactive);
     }
 
 }

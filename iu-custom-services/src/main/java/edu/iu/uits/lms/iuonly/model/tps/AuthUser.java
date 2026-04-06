@@ -65,7 +65,7 @@ public class AuthUser {
 
     private String email;
 
-    @Column(name = "canvas_user_id")
+    @Column(name = "canvas_user_id", unique = true)
     private String canvasUserId;
 
     private boolean active = true;

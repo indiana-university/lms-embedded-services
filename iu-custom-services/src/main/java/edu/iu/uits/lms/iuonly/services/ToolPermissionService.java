@@ -51,7 +51,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -138,6 +137,15 @@ public class ToolPermissionService {
      */
     public AuthUser getAuthUserByUsername(String username) {
         return authUserRepository.findByUsername(username);
+    }
+
+    /**
+     * Get an AuthUser by canvasUserId
+     * @param canvasUserId
+     * @return
+     */
+    public AuthUser getAuthUserByCanvasUserId(String canvasUserId) {
+        return authUserRepository.findByCanvasUserId(canvasUserId);
     }
 
     /**
@@ -392,6 +400,26 @@ public class ToolPermissionService {
             return false;
         }
         AuthUserPermission userPermission = authUserPermissionRepository.findByUsernameAndPermissionIdWithUserProperties(username, authPermission.getId());
+        return userPermission != null && userPermission.isActive();
+    }
+
+    /**
+     * Check if the user has an active AuthUserPermission for the given canvasUserId and permission key.
+     * AuthUser must also be active.
+     * @param canvasUserId The canvasUserId to check
+     * @param permissionKey The permission key to check
+     * @return true if an active AuthUserPermission exists and AuthUser is active, false otherwise
+     */
+    public boolean isAuthorizedByCanvasUserId(String canvasUserId, String permissionKey) {
+        AuthUser authUser = authUserRepository.findByCanvasUserId(canvasUserId);
+        if (authUser == null || !authUser.isActive()) {
+            return false;
+        }
+        AuthPermission authPermission = authPermissionRepository.findByKey(permissionKey);
+        if (authPermission == null) {
+            return false;
+        }
+        AuthUserPermission userPermission = authUserPermissionRepository.findByUsernameAndPermissionIdWithUserProperties(authUser.getUsername(), authPermission.getId());
         return userPermission != null && userPermission.isActive();
     }
 

@@ -60,12 +60,32 @@ public class AuthorizedUserService {
 
     /**
      *
+     * @param canvasUserId
+     * @param permissionKey
+     * @return true if the given user is authorized for the given permission in TPS, false otherwise.
+     */
+    public boolean isAuthorizedByCanvasUserId(String canvasUserId, String permissionKey) {
+        return toolPermissionService.isAuthorizedByCanvasUserId(canvasUserId, permissionKey);
+    }
+
+    /**
+     *
      * @param username
      * @return the AuthUser record associated with the given username. Use this method for general information
      * about the AuthUser. If you need to check a specific permission for this user, use {@link #isAuthorized(String, String)}
      */
     public AuthUser findByUsername(String username) {
         return toolPermissionService.getAuthUserByUsername(username);
+    }
+
+    /**
+     *
+     * @param canvasUserId
+     * @return the AuthUser record associated with the given canvasUserId. Use this method for general information
+     * about the AuthUser. If you need to check a specific permission for this user, use {@link #isAuthorized(String, String)}
+     */
+    public AuthUser findByCanvasUserId(String canvasUserId) {
+        return toolPermissionService.getAuthUserByCanvasUserId(canvasUserId);
     }
 
     /**

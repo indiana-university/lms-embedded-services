@@ -34,11 +34,11 @@ package edu.iu.uits.lms.iuonly.repository;
  */
 
 import edu.iu.uits.lms.iuonly.model.tps.AuthUser;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Component;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -58,6 +58,20 @@ public interface AuthUserRepository extends PagingAndSortingRepository<AuthUser,
      * @return true if exists, false otherwise
      */
     boolean existsByUsername(String username);
+
+    /**
+     * Find the AuthUser associated with the given canvasUserId
+     * @param canvasUserId
+     * @return
+     */
+    AuthUser findByCanvasUserId(String canvasUserId);
+
+    /**
+     * Check if an AuthUser exists for the given canvasUserId
+     * @param canvasUserId
+     * @return true if exists, false otherwise
+     */
+    boolean existsByCanvasUserId(String canvasUserId);
 
     /**
      * Find all AuthUsers who do not have any associated AuthUserPermission records.

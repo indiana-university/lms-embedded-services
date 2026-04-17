@@ -58,6 +58,22 @@ public interface AuthUserPermissionRepository extends PagingAndSortingRepository
     List<AuthUserPermission> findByAuthPermissionId(Long authPermissionId);
 
     /**
+     * Find all AuthUserPermission records for a given permission ID, eagerly loading user properties.
+     * Use this method when the caller needs to access userProperties without an open Hibernate session.
+     *
+     * @param authPermissionId The ID of the authorization permission.
+     * @return List of AuthUserPermission with userProperties initialized.
+     */
+    @Query("""
+        SELECT DISTINCT aup FROM AuthUserPermission aup
+        LEFT JOIN FETCH aup.userProperties up
+        LEFT JOIN FETCH up.authPermissionProperty
+        JOIN FETCH aup.authUser
+        WHERE aup.authPermission.id = :authPermissionId
+    """)
+    List<AuthUserPermission> findByAuthPermissionIdWithUserProperties(@Param("authPermissionId") Long authPermissionId);
+
+    /**
      * Check if a user has a specific permission by authUserId and permissionId.
      *
      * @param authUserId The ID of the authorized user.

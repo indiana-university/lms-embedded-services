@@ -117,6 +117,16 @@ public class ToolPermissionService {
     }
 
     /**
+     * Get a list of AuthUserPermissions associated with a given permission id, with userProperties eagerly loaded.
+     * Use this when the caller needs to access userProperties outside of a Hibernate session (e.g., in a UI layer).
+     * @param authPermissionId
+     * @return
+     */
+    public List<AuthUserPermission> getUsersWithPermissionAndProperties(Long authPermissionId) {
+        return authUserPermissionRepository.findByAuthPermissionIdWithUserProperties(authPermissionId);
+    }
+
+    /**
      * Get an AuthUserPermission by id, with the option to include the associated user properties
      * @param authUserPermissionId
      * @param includeProperties

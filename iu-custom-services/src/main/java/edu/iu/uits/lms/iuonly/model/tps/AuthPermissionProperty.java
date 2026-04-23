@@ -89,6 +89,12 @@ public class AuthPermissionProperty {
     private boolean required = false;
     private String description;
 
+    /**
+     * true if this property should be displayed in the TPS UI
+     */
+    @Column(name = "ui_display")
+    private boolean uiDisplay = false;
+
     private OffsetDateTime created;
     private OffsetDateTime modified;
 

@@ -48,7 +48,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Slf4j
 public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
@@ -72,12 +71,10 @@ public class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
         log.debug("Headers     : ");
 
         HttpHeaders httpHeaders = request.getHeaders();
-        Set<Map.Entry<String, List<String>>> headers = httpHeaders.entrySet();
-
-        for(Map.Entry<String, List<String>> header : headers) {
+        for (Map.Entry<String, List<String>> header : httpHeaders.headerSet()) {
             String headerName = header.getKey();
 
-            for(String headerValue : header.getValue()) {
+            for (String headerValue : header.getValue()) {
                 if (headerName.toLowerCase().equalsIgnoreCase(AUTHORIZATION_HEADER_NAME)) {
                     headerValue = "*****";
                 }

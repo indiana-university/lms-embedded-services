@@ -33,9 +33,9 @@ package edu.iu.uits.lms.canvas.model;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
 import java.io.Serializable;
 

@@ -33,7 +33,6 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.helpers.ContentMigrationHelper;
 import edu.iu.uits.lms.canvas.model.ContentMigration;
@@ -47,8 +46,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
+import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -96,12 +95,8 @@ public class ContentMigrationService extends SpringBaseService {
          log.error("Error performing content migration for course: " + courseId, rce);
          ObjectMapper mapper = new ObjectMapper();
 
-         try {
-            String status = mapper.readValue(rce.getResponseBodyAsString(), String.class);
-            log.error("Unable to begin a migration: " + status);
-         } catch (IOException e) {
-            log.error("Error parsing error message", e);
-         }
+         String status = mapper.readValue(rce.getResponseBodyAsString(), String.class);
+         log.error("Unable to begin a migration: " + status);
       }
       return contentMigration;
    }
@@ -135,12 +130,8 @@ public class ContentMigrationService extends SpringBaseService {
          log.error("Error performing content migration for course: " + courseId, rce);
          ObjectMapper mapper = new ObjectMapper();
 
-         try {
-            String status = mapper.readValue(rce.getResponseBodyAsString(), String.class);
-            log.error("Unable to begin a migration: " + status);
-         } catch (IOException e) {
-            log.error("Error parsing error message", e);
-         }
+         String status = mapper.readValue(rce.getResponseBodyAsString(), String.class);
+         log.error("Unable to begin a migration: " + status);
       } catch (Exception e) {
          log.error("Error performing content migration for course: " + courseId, e);
       }

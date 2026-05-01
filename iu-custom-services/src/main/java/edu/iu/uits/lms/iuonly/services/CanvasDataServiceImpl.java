@@ -33,8 +33,6 @@ package edu.iu.uits.lms.iuonly.services;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import edu.iu.uits.lms.iuonly.exceptions.CanvasDataServiceException;
 import edu.iu.uits.lms.iuonly.model.CloseExpireCourse;
 import edu.iu.uits.lms.iuonly.model.Enrollment;
@@ -44,6 +42,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.PropertyNamingStrategy;
+import tools.jackson.databind.annotation.JsonNaming;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;

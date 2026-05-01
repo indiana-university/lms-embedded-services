@@ -33,8 +33,8 @@ package edu.iu.uits.lms.common.test;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.oauth2.jwt.Jwt;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.time.Instant;

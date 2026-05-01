@@ -37,13 +37,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.health.DataSourceHealthContributorAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.metrics.DataSourcePoolMetricsAutoConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -57,7 +56,7 @@ import static org.springframework.test.context.NestedTestConfiguration.Enclosing
 
 @AutoConfigureMockMvc
 @EnableAutoConfiguration(exclude = {HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-      MailHealthContributorAutoConfiguration.class, DataSourceHealthContributorAutoConfiguration.class, DataSourcePoolMetricsAutoConfiguration.class})
+        DataSourceHealthContributorAutoConfiguration.class, DataSourcePoolMetricsAutoConfiguration.class})
 @NestedTestConfiguration(INHERIT)
 @Slf4j
 public abstract class SwaggerBase {

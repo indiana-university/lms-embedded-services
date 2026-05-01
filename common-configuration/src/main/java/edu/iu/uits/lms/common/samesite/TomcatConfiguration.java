@@ -34,7 +34,7 @@ package edu.iu.uits.lms.common.samesite;
  */
 
 import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 

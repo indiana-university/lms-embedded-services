@@ -33,7 +33,6 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.BlueprintAssociatedCourse;
 import edu.iu.uits.lms.canvas.model.BlueprintCourseUpdateStatus;
@@ -55,8 +54,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
+import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -134,11 +133,7 @@ public class BlueprintService extends SpringBaseService {
             log.error("uh oh", rce);
             ObjectMapper mapper = new ObjectMapper();
 
-            try {
-                status = mapper.readValue(rce.getResponseBodyAsString(), BlueprintUpdateStatus.class);
-            } catch (IOException e) {
-                log.error("uh oh", e);
-            }
+            status = mapper.readValue(rce.getResponseBodyAsString(), BlueprintUpdateStatus.class);
         }
         return status;
     }
@@ -188,11 +183,7 @@ public class BlueprintService extends SpringBaseService {
             log.error("uh oh", hsce);
             ObjectMapper mapper = new ObjectMapper();
 
-            try {
-                bcus = mapper.readValue(hsce.getResponseBodyAsString(), BlueprintCourseUpdateStatus.class);
-            } catch (IOException e) {
-                log.error("uh oh", e);
-            }
+            bcus = mapper.readValue(hsce.getResponseBodyAsString(), BlueprintCourseUpdateStatus.class);
         }
         return bcus;
     }
@@ -234,13 +225,9 @@ public class BlueprintService extends SpringBaseService {
             log.error("uh oh", rce);
             ObjectMapper mapper = new ObjectMapper();
 
-            try {
-                status = mapper.readValue(rce.getResponseBodyAsString(), BlueprintMigrationStatus.class);
-                log.debug("status: {}", status);
-                log.error("Unable to begin a migration: " + status.getMessage(), rce);
-            } catch (IOException e) {
-                log.error("uh oh", e);
-            }
+            status = mapper.readValue(rce.getResponseBodyAsString(), BlueprintMigrationStatus.class);
+            log.debug("status: {}", status);
+            log.error("Unable to begin a migration: " + status.getMessage(), rce);
         }
         return status;
     }

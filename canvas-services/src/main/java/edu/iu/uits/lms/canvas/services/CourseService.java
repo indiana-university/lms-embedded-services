@@ -1261,7 +1261,7 @@ public class CourseService extends SpringBaseService {
 
     private static class ClientErrorHandler extends DefaultResponseErrorHandler {
         @Override
-        public void handleError(ClientHttpResponse response) throws IOException
+        public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException
         {
             log.info("Handling error!!!");
         }

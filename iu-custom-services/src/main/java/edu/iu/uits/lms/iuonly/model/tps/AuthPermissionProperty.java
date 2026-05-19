@@ -95,6 +95,12 @@ public class AuthPermissionProperty {
     @Column(name = "ui_display")
     private boolean uiDisplay = false;
 
+    /**
+     * The label to use for this property in the TPS UI (if ui_display is true)
+     */
+    @Column(name="ui_name")
+    private String uiName;
+
     private OffsetDateTime created;
     private OffsetDateTime modified;
 

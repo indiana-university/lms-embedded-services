@@ -61,7 +61,8 @@ public class AuthPermissionProperty {
     public enum ValueType {
         STRING,
         INTEGER,
-        BOOLEAN
+        BOOLEAN,
+        COMMA_DELIMITED
     }
 
     @Id
@@ -106,6 +107,10 @@ public class AuthPermissionProperty {
 
     public boolean isBooleanType() {
         return ValueType.BOOLEAN.equals(this.valueType);
+    }
+
+    public boolean isCommaDelimitedType() {
+        return ValueType.COMMA_DELIMITED.equals(this.valueType);
     }
 
     @PreUpdate

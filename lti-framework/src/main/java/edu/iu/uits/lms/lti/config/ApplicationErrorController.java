@@ -72,6 +72,8 @@ public class ApplicationErrorController {
 
         model.addAttribute("message", "An unexpected error has occurred.");
         model.addAttribute("error", stringWriter.toString());
+        model.addAttribute("errorContactLink", serverConfig != null ? serverConfig.getErrorContactLink() : null);
+        model.addAttribute("errorContactName", serverConfig != null ? serverConfig.getErrorContactName() : null);
 
         return "error";
     }

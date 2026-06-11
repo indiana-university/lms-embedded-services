@@ -84,6 +84,9 @@ public class LTIConstants {
     public static final String CLAIMS_FAMILY_NAME_KEY = "family_name";
     public static final String CLAIMS_GIVEN_NAME_KEY = "given_name";
 
+    public static final String CLAIMS_ISSUER_KEY = "iss";
+    public static final String CLAIMS_AUDIENCE_KEY = "aud";
+
     public static final String CLAIMS_FULL_NAME_KEY = "name";
     public static final String CLAIMS_EMAIL_KEY = "email";
 

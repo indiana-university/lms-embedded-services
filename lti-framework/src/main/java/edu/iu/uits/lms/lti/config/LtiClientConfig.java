@@ -67,6 +67,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import uk.ac.ox.ctl.lti13.KeyPairService;
 import uk.ac.ox.ctl.lti13.SingleKeyPairService;
 import uk.ac.ox.ctl.lti13.TokenRetriever;
+import uk.ac.ox.ctl.lti13.ags.DeepLinkService;
+import uk.ac.ox.ctl.lti13.ags.LineItemService;
+import uk.ac.ox.ctl.lti13.ags.ResultService;
+import uk.ac.ox.ctl.lti13.ags.ScoreService;
 import uk.ac.ox.ctl.lti13.nrps.NamesRoleService;
 
 import javax.sql.DataSource;
@@ -128,6 +132,42 @@ public class LtiClientConfig implements ImportAware {
       KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
       TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
       return new NamesRoleService(clientRegistrationRepository(properties), tokenRetriever);
+   }
+
+   @Bean
+   public LineItemService lineItemService(OAuth2ClientProperties properties) throws JOSEException {
+      RSAKey jks = lti13Service.getJKS();
+      KeyPair keyPair = jks.toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
+      TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+      return new LineItemService(clientRegistrationRepository(properties), tokenRetriever);
+   }
+
+   @Bean
+   public ScoreService scoreService(OAuth2ClientProperties properties) throws JOSEException {
+      RSAKey jks = lti13Service.getJKS();
+      KeyPair keyPair = jks.toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
+      TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+      return new ScoreService(clientRegistrationRepository(properties), tokenRetriever);
+   }
+
+   @Bean
+   public ResultService resultService(OAuth2ClientProperties properties) throws JOSEException {
+      RSAKey jks = lti13Service.getJKS();
+      KeyPair keyPair = jks.toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
+      TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+      return new ResultService(clientRegistrationRepository(properties), tokenRetriever);
+   }
+
+   @Bean
+   public DeepLinkService deepLinkService(OAuth2ClientProperties properties) throws JOSEException {
+      RSAKey jks = lti13Service.getJKS();
+      KeyPair keyPair = jks.toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
+//      TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+      return new DeepLinkService(clientRegistrationRepository(properties), keyPairService, env, ltiAuthorizationService);
    }
 
    @Bean

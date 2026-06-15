@@ -43,7 +43,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Created by chmaurer on 6/14/17.
@@ -58,7 +61,7 @@ public class CanvasEnvironmentConfiguration {
     @Bean(name = "CanvasRestTemplate")
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-
+        configureJackson(restTemplate);
         restTemplate.getInterceptors().add(new CanvasTokenAuthorizationInterceptor(canvasConfiguration.getToken()));
 //        restTemplate.getInterceptors().add(new LoggingRequestInterceptor());
 //        restTemplate.setErrorHandler(new CanvasErrorHandler());
@@ -68,7 +71,7 @@ public class CanvasEnvironmentConfiguration {
     @Bean(name = "restTemplateNoBuffer")
     public RestTemplate restTemplateNoBuffer() {
         RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
-
+        configureJackson(restTemplate);
         restTemplate.getInterceptors().add(new CanvasTokenAuthorizationInterceptor(canvasConfiguration.getToken()));
         return restTemplate;
     }
@@ -84,9 +87,20 @@ public class CanvasEnvironmentConfiguration {
     public RestTemplate restTemplateHttpComponent() {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)));
-
+        configureJackson(restTemplate);
         restTemplate.getInterceptors().add(new CanvasTokenAuthorizationInterceptor(canvasConfiguration.getToken()));
         return restTemplate;
+    }
+
+    private void configureJackson(RestTemplate restTemplate) {
+        restTemplate.getMessageConverters().replaceAll(converter -> {
+            if (converter instanceof JacksonJsonHttpMessageConverter existing) {
+                JsonMapper.Builder builder = existing.getMapper().rebuild();
+                builder.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
+                return new JacksonJsonHttpMessageConverter(builder);
+            }
+            return converter;
+        });
     }
 
 }

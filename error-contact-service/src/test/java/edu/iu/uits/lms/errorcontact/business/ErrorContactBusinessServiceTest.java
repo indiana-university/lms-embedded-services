@@ -47,7 +47,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -111,7 +110,7 @@ public class ErrorContactBusinessServiceTest {
         ErrorContactResponse errorContactResponseFromDerdack = new ErrorContactResponse();
         errorContactResponseFromDerdack.setStatus("TEST PAGED");
 
-        ResponseEntity<Object> responseEntity = new ResponseEntity<Object>((Object) errorContactResponseFromDerdack, null, HttpStatus.OK);
+        ResponseEntity<Object> responseEntity = ResponseEntity.ok(errorContactResponseFromDerdack);
 
         Mockito.when(restTemplate.postForEntity(anyString(), any(), any())).thenReturn(responseEntity);
 
@@ -145,7 +144,7 @@ public class ErrorContactBusinessServiceTest {
         ErrorContactResponse errorContactResponseFromDerdack = new ErrorContactResponse();
         errorContactResponseFromDerdack.setStatus("TEST PAGED");
 
-        ResponseEntity<Object> responseEntity = new ResponseEntity<Object>((Object) errorContactResponseFromDerdack, null, HttpStatus.OK);
+        ResponseEntity<Object> responseEntity = ResponseEntity.ok(errorContactResponseFromDerdack);
 
         Mockito.when(restTemplate.postForEntity(anyString(), any(), any())).thenReturn(responseEntity);
 

@@ -34,17 +34,19 @@ package edu.iu.uits.lms.iuonly.config;
  */
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Scanner;
 
 @Slf4j
 public class IuOnlyErrorHandler extends DefaultResponseErrorHandler {
 
     @Override
-    public void handleError(ClientHttpResponse response) throws IOException {
+    public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
         //conversion logic for decoding conversion
         Scanner scanner = new Scanner(response.getBody());
         scanner.useDelimiter("\\Z");

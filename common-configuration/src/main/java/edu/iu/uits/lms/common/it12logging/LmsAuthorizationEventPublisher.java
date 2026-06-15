@@ -38,8 +38,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Role;
-import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationEventPublisher;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.authorization.event.AuthorizationEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -60,7 +60,7 @@ public class LmsAuthorizationEventPublisher implements AuthorizationEventPublish
 
     @Override
     public <T> void publishAuthorizationEvent(Supplier<Authentication> authentication,
-                                              T object, AuthorizationDecision decision) {
-        applicationEventPublisher.publishEvent(new AuthorizationEvent(authentication, object, decision));
+                                              T object, AuthorizationResult result) {
+        applicationEventPublisher.publishEvent(new AuthorizationEvent(authentication, object, result));
     }
 }

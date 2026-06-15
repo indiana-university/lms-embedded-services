@@ -43,8 +43,8 @@ import edu.iu.uits.lms.iuonly.model.ToggledHomepageTemplates;
 import edu.iu.uits.lms.iuonly.model.coursetemplating.CourseTemplatesWrapper;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

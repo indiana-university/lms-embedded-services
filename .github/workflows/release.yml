@@ -8,8 +8,7 @@
 #    - LMS_MAVEN_SETTINGS (Base64 encoded settings.xml file)
 #    - LMS_MAVEN_SECURITY (Base64 encoded settings-security.xml file)
 #    - LMS_GPG_PASSPHRASE (GPG passphrase)
-#    - LMS_GPG_SIGNING_KEY (Base64 encoded GPG signing key to be imported)
-#    - LMS_GPG_SECRET_KEY (Base64 encoded GPG secret key to be imported)
+#    - LMS_GPG_PRIVATE_KEY (GPG private key to be imported)
 #    - LMS_GIT_CONFIG (Base64 encoded .gitconfig file)
 
 name: Maven Release
@@ -18,7 +17,7 @@ on:
   workflow_dispatch:
 jobs:
   release:
-    uses: iu-uits-lt/lms-githubaction-library/.github/workflows/release.yml@v1
+    uses: indiana-university/lms-githubaction-library/.github/workflows/release.yml@v1
     with:
       java_version: 25
       full_maven_release: true
@@ -26,6 +25,5 @@ jobs:
       LMS_MAVEN_SETTINGS: ${{ secrets.LMS_MAVEN_SETTINGS }}
       LMS_MAVEN_SECURITY: ${{ secrets.LMS_MAVEN_SECURITY }}
       LMS_GPG_PASSPHRASE: ${{ secrets.LMS_GPG_PASSPHRASE }}
-      LMS_GPG_SIGNING_KEY: ${{ secrets.LMS_GPG_SIGNING_KEY }}
-      LMS_GPG_SECRET_KEY: ${{ secrets.LMS_GPG_SECRET_KEY }}
+      LMS_GPG_PRIVATE_KEY: ${{ secrets.LMS_GPG_PRIVATE_KEY }}
       LMS_GIT_CONFIG: ${{ secrets.LMS_GIT_CONFIG }}

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.0.7</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -13,7 +13,7 @@
     <artifactId>lms-embedded-services-parent</artifactId>
     <groupId>edu.iu.uits.lms</groupId>
     <packaging>pom</packaging>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>7.0.4-SNAPSHOT</version>
 
     <description>Collection of services/configurations that can be embedded in Canvas-based LTI tools</description>
     <url>https://github.com/indiana-university/lms-embedded-services</url>
@@ -55,8 +55,9 @@
 
     <properties>
         <commons-codec.version>1.22.0</commons-codec.version>
+        <hibernate-jpa-schemagen.version>7.2.2</hibernate-jpa-schemagen.version>
         <httpclient.version>5.6.1</httpclient.version>
-        <spring-cloud-starter-parent.version>2025.1.1</spring-cloud-starter-parent.version>
+        <spring-cloud-starter-parent.version>2025.1.2</spring-cloud-starter-parent.version>
         <springdoc-openapi-ui.version>3.0.3</springdoc-openapi-ui.version>
 
         <java.version>25</java.version>
@@ -148,23 +149,23 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>de.jpdigital</groupId>
-                    <artifactId>hibernate65-ddl-maven-plugin</artifactId>
-                    <version>${hibernate6-ddl-maven-plugin.version}</version>
+                    <groupId>org.dellroad</groupId>
+                    <artifactId>hibernate-jpa-schemagen-maven-plugin</artifactId>
+                    <version>${hibernate-jpa-schemagen.version}</version>
                     <executions>
                         <execution>
+                            <id>gen-ddl-postgresql</id>
                             <goals>
-                                <goal>gen-ddl</goal>
+                                <goal>export-jpa-schema</goal>
                             </goals>
-                            <phase>process-classes</phase>
+                            <configuration>
+                                <jpaUnit>postgresql</jpaUnit>
+                                <outputFile>${project.build.directory}/generated-resources/postgresql.sql</outputFile>
+                                <verifyFile>NONE</verifyFile>
+                                <removePersistenceXml>true</removePersistenceXml>
+                            </configuration>
                         </execution>
                     </executions>
-                    <configuration>
-                        <dialects>
-                            <param>h2</param>
-                            <param>postgresql</param>
-                        </dialects>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -272,6 +273,8 @@
                                     <arg>--pinentry-mode</arg>
                                     <arg>loopback</arg>
                                 </gpgArguments>
+                                <!-- gpg.keyname should be provided by an accompanying settings.xml file -->
+                                <keyname>${gpg.keyname}</keyname>
                             </configuration>
                         </execution>
                     </executions>

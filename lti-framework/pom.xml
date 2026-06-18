@@ -2,7 +2,7 @@
     <parent>
         <artifactId>lms-embedded-services-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>7.0.0-SNAPSHOT</version>
+        <version>7.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -16,7 +16,6 @@
     <properties>
         <bcprov-jdk18on.version>1.84</bcprov-jdk18on.version>
         <commons-io.version>2.22.0</commons-io.version>
-        <hibernate6-ddl-maven-plugin.version>1.0.2</hibernate6-ddl-maven-plugin.version>
         <reflections.version>0.10.2</reflections.version>
         <guava.version>33.6.0-jre</guava.version>
     </properties>
@@ -108,13 +107,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>de.jpdigital</groupId>
-                <artifactId>hibernate65-ddl-maven-plugin</artifactId>
-                <configuration>
-                    <packages>
-                        <param>edu.iu.uits.lms.lti</param>
-                    </packages>
-                </configuration>
+                <groupId>org.dellroad</groupId>
+                <artifactId>hibernate-jpa-schemagen-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

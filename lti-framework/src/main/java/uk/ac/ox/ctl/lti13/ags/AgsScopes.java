@@ -1,25 +1,25 @@
-package edu.iu.uits.lms.lti.service;
+package uk.ac.ox.ctl.lti13.ags;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,24 +33,14 @@ package edu.iu.uits.lms.lti.service;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
-import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public class AgsScopes {
 
-import java.util.List;
+    public static final String LTI_AGS_CLAIM = "https://purl.imsglobal.org/spec/lti-ags/claim/endpoint";
 
-@Service
-public class LtiAuthorizationService {
+    public static final String LTI_AGS_SCORE_SCOPE = "https://purl.imsglobal.org/spec/lti-ags/scope/score";
 
-    @Autowired
-    private LtiAuthorizationRepository ltiAuthorizationRepository = null;
+    public static final String LTI_AGS_LINEITEM_SCOPE = "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem";
 
-    public List<LmsLtiAuthz> findByRegistrationsPrefixesEnvActive(List<String> registrationIds, String registrationPrefix, String env) {
-        return ltiAuthorizationRepository.findByRegistrationsPrefixEnvActive(registrationIds, registrationPrefix, env);
-    }
+    public static final String LTI_AGS_RESULT_READONLY_SCOPE = "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly";
 
-    public LmsLtiAuthz findByClientId(String clientId, String env) {
-        return ltiAuthorizationRepository.findByClientIdAndEnv(clientId, env);
-    }
 }

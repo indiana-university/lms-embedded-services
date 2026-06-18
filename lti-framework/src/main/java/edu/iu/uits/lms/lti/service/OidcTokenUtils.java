@@ -47,10 +47,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_AUDIENCE_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_EMAIL_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FAMILY_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_FULL_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_GIVEN_NAME_KEY;
+import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_ISSUER_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_PLATFORM_GUID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_ACCOUNT_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY;
@@ -59,6 +61,7 @@ import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_SIS_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_INSTRUCTURE_MEMBERSHIP_ROLES_KEY;
+import static uk.ac.ox.ctl.lti13.lti.Claims.LTI_DEPLOYMENT_ID;
 
 @Slf4j
 public class OidcTokenUtils {
@@ -267,6 +270,42 @@ public class OidcTokenUtils {
       }
       log.debug("Final list: {}", list);
       return list.toArray(String[]::new);
+   }
+
+   public String getDeepLinkSettingsValue(String key) {
+      Map jsonObj = (Map) attrMap.get(Claims.DEEP_LINKING_SETTINGS);
+      if (jsonObj != null) {
+         return (String)jsonObj.get(key);
+      }
+      return null;
+   }
+
+   public String getNestedValue(String topKey, String nestedKey) {
+      Map jsonObj = (Map) attrMap.get(topKey);
+      if (jsonObj != null) {
+         return (String) jsonObj.get(nestedKey);
+      }
+      return null;
+   }
+
+   public String getDeploymentId() {
+      String name = (String) attrMap.get(LTI_DEPLOYMENT_ID);
+      return name;
+   }
+
+   public String getIssuer() {
+      String name = (String) attrMap.get(CLAIMS_ISSUER_KEY);
+      return name;
+   }
+
+   public String getClientId() {
+      Object audClaim = attrMap.get(CLAIMS_AUDIENCE_KEY);
+
+      String clientId = (audClaim instanceof List)
+              ? ((List<?>) audClaim).getFirst().toString()
+              : (String) audClaim;
+
+      return clientId;
    }
 
    /**

@@ -73,6 +73,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
@@ -840,7 +841,7 @@ public class CourseService extends SpringBaseService {
     }
 
     /**
-     * Get the roster for a course, as seen by asUser.
+     * Get the roster for a course, as seen by asUser. Uses the default admin RestTemplate.
      * @see <a href="https://canvas.instructure.com/doc/api/file.masquerading.html">Canvas API Docs on Masquerading</a>
      *
      * @param courseId
@@ -849,6 +850,22 @@ public class CourseService extends SpringBaseService {
      * @return
      */
     public List<User> getRosterForCourseAsUser(String courseId, String asUser, List<String> enrollmentStates) {
+        return getRosterForCourseAsUser(courseId, asUser, enrollmentStates, restTemplate);
+    }
+
+    /**
+     * Same as getRosterForCourseAsUser(String, String, List), but using the given RestTemplate
+     * (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @see <a href="https://canvas.instructure.com/doc/api/file.masquerading.html">Canvas API Docs on Masquerading</a>
+     *
+     * @param courseId
+     * @param asUser
+     * @param enrollmentStates
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public List<User> getRosterForCourseAsUser(String courseId, String asUser, List<String> enrollmentStates, RestTemplate restTemplateToUse) {
         URI uri = COURSE_USERS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -867,7 +884,7 @@ public class CourseService extends SpringBaseService {
             }
         }
 
-        return doGet(builder.build().toUri(), User[].class);
+        return doGet(builder.build().toUri(), User[].class, restTemplateToUse);
     }
 
     /**

@@ -54,6 +54,7 @@ import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_GIVEN_NAME_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CLAIMS_PLATFORM_GUID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_ACCOUNT_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY;
+import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_EXTERNAL_TOOL_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_ID_KEY;
 import static edu.iu.uits.lms.lti.LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY;
@@ -103,6 +104,14 @@ public class OidcTokenUtils {
     */
    public String getUserLoginId() {
       return getCustomValue(CUSTOM_CANVAS_USER_LOGIN_ID_KEY);
+   }
+
+   /**
+    * Get the Canvas external tool ID (the tool's id within the launching context) out of the custom claims
+    * @return Canvas external tool ID
+    */
+   public String getExternalToolId() {
+      return getCustomValue(CUSTOM_CANVAS_EXTERNAL_TOOL_ID_KEY);
    }
 
    /**

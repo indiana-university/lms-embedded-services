@@ -101,11 +101,13 @@ public class LTIConstants {
     public static final String CUSTOM_CANVAS_USER_SIS_ID_KEY = "canvas_user_sis_id";
     public static final String CUSTOM_CANVAS_MEMBERSHIP_ROLES_KEY = "canvas_membership_roles";
     public static final String CUSTOM_INSTRUCTURE_MEMBERSHIP_ROLES_KEY = "instructure_membership_roles";
+    public static final String CUSTOM_CANVAS_EXTERNAL_TOOL_ID_KEY = "canvas_external_tool_id";
 
     public static final String CUSTOM_CANVAS_COURSE_ID_VAL = "$Canvas.course.id";
     public static final String CUSTOM_CANVAS_USER_ID_VAL = "$Canvas.user.id";
     public static final String CUSTOM_CANVAS_USER_LOGIN_ID_VAL = "$Canvas.user.loginId";
     public static final String CUSTOM_CANVAS_USER_SIS_ID_VAL = "$Canvas.user.sisSourceId";
+    public static final String CUSTOM_CANVAS_EXTERNAL_TOOL_ID_VAL = "$Canvas.externalTool.id";
 
     public static final String WELL_KNOWN_PATH = "/.well-known";
     public static final String WELL_KNOWN_ALL = WELL_KNOWN_PATH + "/**";

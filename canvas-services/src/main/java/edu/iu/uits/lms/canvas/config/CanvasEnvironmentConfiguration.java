@@ -33,21 +33,17 @@ package edu.iu.uits.lms.canvas.config;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.security.CanvasOAuth2TokenInterceptor;
 import edu.iu.uits.lms.canvas.security.CanvasTokenAuthorizationInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
@@ -97,24 +93,11 @@ public class CanvasEnvironmentConfiguration {
     }
 
     /**
-     * Creates a RestTemplate bean that authorizes Canvas API calls as the currently logged-in LTI
-     * user (via Canvas OAuth2 delegated access) instead of the shared admin token. Only created
-     * when the host tool has opted in with {@code canvas.oauth2.enabled=true} (set via
-     * {@code @EnableCanvasOAuth2Client}) - every other tool's behavior is unaffected.
-     *
-     * @return a RestTemplate instance carrying a CanvasOAuth2TokenInterceptor
+     * Shared Jackson customization (used by this class's own RestTemplate beans and by
+     * {@code CanvasOAuth2ClientConfig.canvasRestTemplateAsUser()} in canvas-oauth2-client, which
+     * can't duplicate a private copy across modules).
      */
-    @Bean(name = "CanvasRestTemplateAsUser")
-    @ConditionalOnProperty(prefix = "canvas.oauth2", name = "enabled", havingValue = "true")
-    public RestTemplate canvasRestTemplateAsUser(OAuth2AuthorizedClientManager authorizedClientManager,
-                                                  @Value("${canvas.oauth2.registrationId:lms_canvas_oauth2}") String registrationId) {
-        RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-        configureJackson(restTemplate);
-        restTemplate.getInterceptors().add(new CanvasOAuth2TokenInterceptor(authorizedClientManager, registrationId));
-        return restTemplate;
-    }
-
-    private void configureJackson(RestTemplate restTemplate) {
+    public static void configureJackson(RestTemplate restTemplate) {
         restTemplate.getMessageConverters().replaceAll(converter -> {
             if (converter instanceof JacksonJsonHttpMessageConverter existing) {
                 JsonMapper.Builder builder = existing.getMapper().rebuild();

@@ -33,12 +33,15 @@ package edu.iu.uits.lms.canvasoauth2.config;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.config.CanvasEnvironmentConfiguration;
+import edu.iu.uits.lms.canvas.security.CanvasOAuth2TokenInterceptor;
 import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import edu.iu.uits.lms.canvasoauth2.repository.CanvasOAuth2AuthzRepository;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
@@ -49,6 +52,8 @@ import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -59,6 +64,7 @@ import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedCli
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.ac.ox.ctl.oauth2.client.web.method.annotation.OAuth2AuthorizedClientArgumentResolver;
@@ -170,8 +176,8 @@ public class CanvasOAuth2ClientConfig implements ImportAware {
 
    /**
     * Provides the {@link OAuth2AuthorizedClientManager} used by {@code CanvasOAuth2TokenInterceptor}
-    * (via {@code canvasRestTemplateAsUser()} in canvas-services) to resolve/refresh the current LTI
-    * user's Canvas OAuth2 access token.
+    * (via {@link #canvasRestTemplateAsUser}, below) to resolve/refresh the current LTI user's
+    * Canvas OAuth2 access token.
     * <p>
     * {@link DefaultOAuth2AuthorizedClientManager} is used - not
     * {@code AuthorizedClientServiceOAuth2AuthorizedClientManager} - for two reasons: (1) it's the
@@ -213,6 +219,29 @@ public class CanvasOAuth2ClientConfig implements ImportAware {
             new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, canvasOAuth2AuthorizedClientRepository);
       authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
       return authorizedClientManager;
+   }
+
+   /**
+    * Creates a RestTemplate bean that authorizes Canvas API calls as the currently logged-in LTI
+    * user (via Canvas OAuth2 delegated access) instead of the shared admin token. Only created
+    * when the host tool has opted in with {@code canvas.oauth2.enabled=true}.
+    * <p>
+    * Lives here (not in canvas-services, which can't depend back on this module) so it can use the
+    * {@link #canvasOAuth2Registration()} bean's per-tool registration id - the same id the host
+    * tool's {@code application.yml} declares under {@code spring.security.oauth2.client.registration.*}
+    * - rather than a hardcoded/stale default.
+    *
+    * @return a RestTemplate instance carrying a CanvasOAuth2TokenInterceptor
+    */
+   @Bean(name = "CanvasRestTemplateAsUser")
+   @ConditionalOnProperty(prefix = "canvas.oauth2", name = "enabled", havingValue = "true")
+   public RestTemplate canvasRestTemplateAsUser(OAuth2AuthorizedClientManager authorizedClientManager,
+                                                 CanvasOAuth2Registration canvasOAuth2Registration) {
+      RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
+      CanvasEnvironmentConfiguration.configureJackson(restTemplate);
+      restTemplate.getInterceptors().add(
+            new CanvasOAuth2TokenInterceptor(authorizedClientManager, canvasOAuth2Registration.getRegistrationId()));
+      return restTemplate;
    }
 
 }

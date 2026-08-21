@@ -27,6 +27,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>edu.iu.uits.lms</groupId>
+            <artifactId>lms-canvas-services</artifactId>
+        </dependency>
+        <dependency>
             <!-- lti-framework's test-jar TestUtils extends this - it's an optional dependency
                  of lti-framework's main jar, so it must be pulled in explicitly here. -->
             <groupId>edu.iu.uits.lms</groupId>

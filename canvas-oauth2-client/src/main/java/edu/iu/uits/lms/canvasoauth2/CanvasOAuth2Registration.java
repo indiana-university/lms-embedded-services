@@ -33,11 +33,29 @@ package edu.iu.uits.lms.canvasoauth2;
  * #L%
  */
 
-public final class CanvasOAuth2Constants {
+/**
+ * This tool's own Canvas OAuth2 registration id - {@code "lms_canvas_oauth2_" + registrationIdSuffix},
+ * where {@code registrationIdSuffix} comes from {@code @EnableCanvasOAuth2Client}'s required
+ * {@code registrationIdSuffix} attribute (read via {@code CanvasOAuth2ClientConfig}'s
+ * {@code ImportAware} wiring, not a Spring property). Each adopting tool gets its own registration id
+ * (and its own Canvas Developer Key) rather than sharing one across the whole tool suite; see
+ * docs/superpowers/specs/2026-08-20-canvas-oauth2-per-tool-registration-design.md and
+ * docs/superpowers/specs/2026-08-21-canvas-oauth2-explicit-registration-suffix-design.md.
+ * <p>
+ * The tool's own {@code application.yml} still has to spell out the same literal by hand as the
+ * registration-id key under {@code spring.security.oauth2.client.registration.*} - Spring's
+ * config-binding map keys aren't placeholder-resolvable, so the annotation attribute's value can't
+ * be read back out to build that YAML key automatically.
+ */
+public class CanvasOAuth2Registration {
 
-    /** Registration id for the single shared Canvas OAuth2 Developer Key used by every tool. */
-    public static final String REGISTRATION_ID = "lms_canvas_oauth2";
+    private final String registrationId;
 
-    private CanvasOAuth2Constants() {
+    public CanvasOAuth2Registration(String registrationIdSuffix) {
+        this.registrationId = "lms_canvas_oauth2_" + registrationIdSuffix;
+    }
+
+    public String getRegistrationId() {
+        return registrationId;
     }
 }

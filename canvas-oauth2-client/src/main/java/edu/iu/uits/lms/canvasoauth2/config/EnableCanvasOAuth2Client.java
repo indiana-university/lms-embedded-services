@@ -46,12 +46,34 @@ import java.lang.annotation.Target;
 /**
  * Add this annotation to a {@code @Configuration} class (alongside {@code @EnableLtiClient}, which
  * this depends on for its {@code ClientRegistrationRepository} bean) to expose per-user Canvas
- * OAuth2 delegated access: the shared {@code LMS_CANVAS_OAUTH2_AUTHZ}-backed token storage and the
- * {@code @RegisteredOAuth2AuthorizedClient} controller-argument resolver.
+ * OAuth2 delegated access: the shared {@code LMS_CANVAS_OAUTH2_AUTHZ}-backed token storage, the
+ * {@code @RegisteredOAuth2AuthorizedClient} controller-argument resolver, and the generic
+ * consent/callback UI ({@code OAuth2CallbackController}, {@code OAuth2ConsentControllerAdvice}).
  * <p>
- * Requires {@code canvas.oauth2.encryption-password} and {@code canvas.oauth2.encryption-salt} to
- * be set (they have no defaults); without them, the {@code CanvasOAuth2AuthorizedClientRepository}
- * bean fails to construct at startup.
+ * Required setup for each adopting tool:
+ * <ul>
+ *     <li>{@code canvas.oauth2.encryption-password} and {@code canvas.oauth2.encryption-salt} must
+ *     be set (they have no defaults); without them, the
+ *     {@code CanvasOAuth2AuthorizedClientRepository} bean fails to construct at startup.</li>
+ *     <li>{@link #registrationIdSuffix()} is required (no default) - the tool's own
+ *     {@code application.yml} registration block under
+ *     {@code spring.security.oauth2.client.registration.*} (and the matching
+ *     {@code spring.security.oauth2.client.provider.*} block) must use
+ *     {@code "lms_canvas_oauth2_" + registrationIdSuffix()} as its map key by hand - Spring's
+ *     config-binding map keys aren't placeholder-resolvable, so the annotation attribute's value
+ *     can't be read back out to build that YAML key automatically. For example,
+ *     {@code @EnableCanvasOAuth2Client(registrationIdSuffix = "mytool")} pairs with an
+ *     {@code application.yml} registration key of {@code lms_canvas_oauth2_mytool}.</li>
+ *     <li>The tool's own {@code templates/layout.html} must define a
+ *     {@code layout:fragment="content"} fragment - the generic consent/connected pages
+ *     ({@code connectCanvas.html}, {@code canvasConnected.html}) decorate against
+ *     {@code layout:decorate="~{layout}"} and populate that fragment, the same convention every
+ *     tool in this repo's {@code templates/layout.html} already follows. A tool whose layout uses a
+ *     different fragment name would get a silently blank content area, not an error.</li>
+ * </ul>
+ * Optional: a tool can override the default consent-page wording by defining a
+ * {@code @Bean @Qualifier("canvasOAuth2ConsentTextOverrides") Map<String, String>} - see
+ * {@code CanvasOAuth2ConsentText}. No message-bundle/{@code MessageSource} setup is required.
  *
  * @since 7.0.4
  */
@@ -62,4 +84,12 @@ import java.lang.annotation.Target;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CanvasOAuth2ClientProperties.class)
 public @interface EnableCanvasOAuth2Client {
+
+    /**
+     * This tool's Canvas OAuth2 registration id suffix - the full registration id is
+     * {@code "lms_canvas_oauth2_" + registrationIdSuffix}. Required (no default): a tool that
+     * omits this fails to compile, rather than failing at runtime the way an unset
+     * {@code spring.application.name} placeholder would have under the prior design.
+     */
+    String registrationIdSuffix();
 }

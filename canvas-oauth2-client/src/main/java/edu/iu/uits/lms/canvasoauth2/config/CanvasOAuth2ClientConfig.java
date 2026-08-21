@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvasoauth2.config;
  * #L%
  */
 
+import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import edu.iu.uits.lms.canvasoauth2.repository.CanvasOAuth2AuthzRepository;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,10 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.ImportAware;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -73,16 +78,57 @@ import java.util.Map;
  * that {@code CanvasOAuth2TokenInterceptor} (in canvas-services) relies on to resolve/refresh that
  * same user's Canvas OAuth2 access token for outbound Canvas API calls.
  * <p>
- * LTI-style client-registration/OAuth2 wiring (ImportAware, toolKeys, etc.) is added by a future
- * {@code @EnableCanvasOAuth2Client} annotation (a later task), not here.
+ * Implements {@link ImportAware} to read {@code @EnableCanvasOAuth2Client}'s required
+ * {@code registrationIdSuffix} attribute, mirroring {@code LtiClientConfig}'s
+ * {@code toolKeys}/{@code toolKeyPrefix} wiring exactly - see {@link #setImportMetadata}.
+ * <p>
+ * The {@code excludeFilters} below matter: {@code @EnableCanvasOAuth2Client} is itself
+ * meta-annotated {@code @Configuration}, so ANY class anywhere under {@code edu.iu.uits.lms.canvasoauth2}
+ * that carries it - including nested test-only fixtures used purely for reflection-based unit tests,
+ * such as {@code CanvasOAuth2ClientConfigTest.DummyEnableCanvasOAuth2ClientHost} - is itself a
+ * component-scan-discoverable "lite" configuration class. Since classpath component scanning sees
+ * both {@code target/classes} and {@code target/test-classes}, an unfiltered scan here would let this
+ * config's own {@code @ComponentScan} re-discover such a fixture during any OTHER test that boots a
+ * real Spring context importing this class (e.g. {@code CanvasOAuth2AuthzRepositoryTest}), causing
+ * Spring to process the fixture's {@code @EnableCanvasOAuth2Client} metadata too and potentially
+ * deliver the WRONG importing class's {@code registrationIdSuffix} to {@link #setImportMetadata}.
+ * A test class's compiled nested class always has "$" in its binary/fully-qualified name (e.g.
+ * {@code CanvasOAuth2ClientConfigTest$DummyEnableCanvasOAuth2ClientHost}), and no class under this
+ * scanned package ({@code edu.iu.uits.lms.canvasoauth2}) is ever nested, so excluding any class
+ * whose name contains "$" reliably filters out test fixtures (present and future) without a
+ * main-depends-on-test-class compile-time reference, which Maven's classpath separation wouldn't
+ * allow anyway (main is compiled before, and without visibility into, test sources).
+ * <p>
+ * WARNING: this exclusion relies entirely on that invariant holding. If a future main-source class
+ * under this package ever genuinely needs to be a nested {@code @Configuration}/{@code @Component}
+ * (rather than top-level), this filter will SILENTLY exclude it too - no compile error, no obvious
+ * test failure, just a bean that quietly never gets registered. Should that happen, the fix is to
+ * either keep the class top-level, or narrow this regex (e.g. restrict it to a pattern that only
+ * matches known test-fixture naming, or otherwise exclude only test-sourced classes) - not to remove
+ * the exclusion outright, since that would reintroduce the cross-test contamination described above.
  */
-@ComponentScan(basePackages = "edu.iu.uits.lms.canvasoauth2")
+@ComponentScan(basePackages = "edu.iu.uits.lms.canvasoauth2",
+      excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*\\$.*"))
 @EnableTransactionManagement
 @EnableJpaRepositories(entityManagerFactoryRef = "canvasOAuth2EntityMgrFactory",
       transactionManagerRef = "canvasOAuth2TransactionMgr",
       basePackageClasses = CanvasOAuth2AuthzRepository.class)
 @Slf4j
-public class CanvasOAuth2ClientConfig {
+public class CanvasOAuth2ClientConfig implements ImportAware {
+
+   private String registrationIdSuffix;
+
+   @Override
+   public void setImportMetadata(AnnotationMetadata annotationMetadata) {
+      AnnotationAttributes attributes = AnnotationAttributes.fromMap(
+            annotationMetadata.getAnnotationAttributes(EnableCanvasOAuth2Client.class.getName()));
+      registrationIdSuffix = attributes.getString("registrationIdSuffix");
+   }
+
+   @Bean
+   public CanvasOAuth2Registration canvasOAuth2Registration() {
+      return new CanvasOAuth2Registration(registrationIdSuffix);
+   }
 
    @ConditionalOnMissingBean
    @Bean(name = "canvasOAuth2DataSource")

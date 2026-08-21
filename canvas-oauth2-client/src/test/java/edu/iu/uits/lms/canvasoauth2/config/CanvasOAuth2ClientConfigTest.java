@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvasoauth2.config;
  * #L%
  */
 
+import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
@@ -56,20 +58,18 @@ import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenti
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
- * Plain Mockito unit test for {@link CanvasOAuth2ClientConfig#canvasOAuth2AuthorizedClientManager}.
- * No Spring context is loaded - this exercises only the one property the bean's whole design
- * rests on: when no {@link org.springframework.security.oauth2.client.OAuth2AuthorizedClient} is
- * already persisted for the current principal, {@code authorize()} must throw
- * {@link ClientAuthorizationRequiredException} rather than silently returning {@code null} or
- * attempting some kind of redirect - since this manager is only ever invoked directly from
- * {@code CanvasOAuth2TokenInterceptor}, a plain {@code ClientHttpRequestInterceptor}, with no
- * {@code OAuth2AuthorizationRequestRedirectFilter} in the call path to catch a redirect attempt.
+ * Plain Mockito unit test for {@link CanvasOAuth2ClientConfig}. No Spring context is loaded.
+ * Covers two independent aspects of the config: the behavior of
+ * {@link CanvasOAuth2ClientConfig#canvasOAuth2AuthorizedClientManager}, and the
+ * {@code ImportAware} wiring that reads {@link EnableCanvasOAuth2Client}'s
+ * {@code registrationIdSuffix} attribute when building the {@link CanvasOAuth2Registration} bean.
  */
 @ExtendWith(MockitoExtension.class)
 class CanvasOAuth2ClientConfigTest {
@@ -102,6 +102,15 @@ class CanvasOAuth2ClientConfigTest {
         principal = TestUtils.buildToken("username", TestUtils.defaultAuthority(), new HashMap<>(), customMap);
     }
 
+    /**
+     * Exercises the one property the manager bean's whole design rests on: when no
+     * {@link org.springframework.security.oauth2.client.OAuth2AuthorizedClient} is already persisted
+     * for the current principal, {@code authorize()} must throw {@link ClientAuthorizationRequiredException}
+     * rather than silently returning {@code null} or attempting some kind of redirect - since this manager
+     * is only ever invoked directly from {@code CanvasOAuth2TokenInterceptor}, a plain
+     * {@code ClientHttpRequestInterceptor}, with no {@code OAuth2AuthorizationRequestRedirectFilter} in the
+     * call path to catch a redirect attempt.
+     */
     @Test
     void authorizeThrowsClientAuthorizationRequiredExceptionWhenNoAuthorizedClientExists() {
         OAuth2AuthorizedClientManager manager = new CanvasOAuth2ClientConfig()
@@ -118,5 +127,32 @@ class CanvasOAuth2ClientConfigTest {
               .thenReturn(null);
 
         assertThrows(ClientAuthorizationRequiredException.class, () -> manager.authorize(request));
+    }
+
+    /**
+     * Verifies that {@link CanvasOAuth2ClientConfig#setImportMetadata} correctly reads the
+     * {@code registrationIdSuffix} attribute off {@link EnableCanvasOAuth2Client} and that the
+     * resulting {@link CanvasOAuth2Registration} bean is constructed with it applied.
+     */
+    @Test
+    void setImportMetadataPopulatesRegistrationIdSuffixOntoCanvasOAuth2RegistrationBean() {
+        CanvasOAuth2ClientConfig config = new CanvasOAuth2ClientConfig();
+
+        config.setImportMetadata(AnnotationMetadata.introspect(DummyEnableCanvasOAuth2ClientHost.class));
+
+        CanvasOAuth2Registration registration = config.canvasOAuth2Registration();
+        assertEquals("lms_canvas_oauth2_dummy", registration.getRegistrationId());
+    }
+
+    /**
+     * Deliberately uses a suffix ("dummy") distinct from the one
+     * {@code CanvasOAuth2AuthzRepositoryTest.TestConfig} uses ("test"). If
+     * {@code CanvasOAuth2ClientConfig}'s {@code @ComponentScan} ever regressed and re-discovered this
+     * purely-for-reflection fixture as a real importing class during some OTHER test's Spring context
+     * boot, the mismatched literal would surface as a wrong-value assertion failure there instead of a
+     * silent coincidental pass.
+     */
+    @EnableCanvasOAuth2Client(registrationIdSuffix = "dummy")
+    private static class DummyEnableCanvasOAuth2ClientHost {
     }
 }

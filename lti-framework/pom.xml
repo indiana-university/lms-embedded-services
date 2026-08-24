@@ -2,7 +2,7 @@
     <parent>
         <artifactId>lms-embedded-services-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>7.0.4-SNAPSHOT</version>
+        <version>7.0.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -14,10 +14,10 @@
     <description>Shared services for the lms-canvas LTI tools around the LTI tool launch</description>
 
     <properties>
-        <bcprov-jdk18on.version>1.84</bcprov-jdk18on.version>
+        <bcprov-jdk18on.version>1.85.2</bcprov-jdk18on.version>
         <commons-io.version>2.22.0</commons-io.version>
         <reflections.version>0.10.2</reflections.version>
-        <guava.version>33.6.0-jre</guava.version>
+        <guava.version>33.7.1-jre</guava.version>
     </properties>
 
     <dependencies>

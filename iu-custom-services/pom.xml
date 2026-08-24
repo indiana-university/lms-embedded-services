@@ -3,7 +3,7 @@
     <parent>
         <artifactId>lms-embedded-services-parent</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>7.0.4-SNAPSHOT</version>
+        <version>7.0.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -15,7 +15,7 @@
     <description>Shared services for the lms-canvas LTI tools to interact with custom IU things</description>
 
     <properties>
-        <commons-collections4.version>4.5.0</commons-collections4.version>
+        <commons-collections4.version>4.6.0</commons-collections4.version>
         <reflections.version>0.10.2</reflections.version>
     </properties>
 

@@ -34,6 +34,7 @@ package edu.iu.uits.lms.canvasoauth2.controller;
  */
 
 import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
+import edu.iu.uits.lms.canvasoauth2.security.CanvasOAuth2AuthorizedClientRepository;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -54,22 +55,34 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link OAuth2ConsentControllerAdvice}. Instantiated directly (no Spring context)
- * with its two collaborators set via reflection, same style as {@link OAuth2CallbackControllerTest}.
+ * with its collaborators set via reflection, same style as {@link OAuth2CallbackControllerTest}.
  */
 class OAuth2ConsentControllerAdviceTest {
 
     private static final String REGISTRATION_ID = "lms_canvas_oauth2_viewem";
 
     private OAuth2ConsentControllerAdvice advice;
+    private CanvasOAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository;
 
     @BeforeEach
     void setUp() throws Exception {
         advice = new OAuth2ConsentControllerAdvice();
-        ReflectionTestUtils.setField(advice, "canvasOAuth2Registration", new CanvasOAuth2Registration("viewem"));
+        ReflectionTestUtils.setField(advice, "canvasOAuth2Registration",
+                new CanvasOAuth2Registration("viewem", "/app/jsrivet"));
         ReflectionTestUtils.setField(advice, "canvasOAuth2ConsentText", new CanvasOAuth2ConsentText(null));
+
+        // Defaults to "resolvable" so every existing test below - which exercises concerns unrelated
+        // to Canvas-user-id resolution (course/tool id memory, launch path capture) - is unaffected by
+        // the fail-fast check. Tests specifically covering that check override this stub themselves.
+        canvasOAuth2AuthorizedClientRepository = mock(CanvasOAuth2AuthorizedClientRepository.class);
+        when(canvasOAuth2AuthorizedClientRepository.hasResolvableCanvasUserId(any())).thenReturn(true);
+        ReflectionTestUtils.setField(advice, "canvasOAuth2AuthorizedClientRepository", canvasOAuth2AuthorizedClientRepository);
     }
 
     @AfterEach
@@ -90,6 +103,7 @@ class OAuth2ConsentControllerAdviceTest {
 
         assertEquals("connectCanvas", mav.getViewName());
         assertEquals("/oauth2/authorization/some-registration-id", mav.getModel().get("authorizationUri"));
+        assertEquals("/app/jsrivet", mav.getModel().get("rivetCssPathPrefix"));
         assertEquals("course-123", request.getSession().getAttribute(OAuth2ConsentControllerAdvice.PENDING_COURSE_ID_SESSION_KEY));
         // TestUtils.buildToken's 3-arg overload doesn't populate canvas_external_tool_id - this proves
         // the older/simpler registration shape still works and doesn't leave a stale tool id behind.
@@ -183,5 +197,35 @@ class OAuth2ConsentControllerAdviceTest {
         assertNull(request.getSession().getAttribute(OAuth2ConsentControllerAdvice.PENDING_TOOL_ID_SESSION_KEY));
         // The launch path is captured from the request itself, independent of principal type.
         assertEquals("/app/launch", request.getSession().getAttribute(OAuth2ConsentControllerAdvice.PENDING_LAUNCH_PATH_SESSION_KEY));
+    }
+
+    @Test
+    void handleClientAuthorizationRequired_noResolvableCanvasUserId_returnsMissingUserIdViewWithoutRedirectingToCanvas() {
+        // This is the actual reported bug scenario: an LTI launch (e.g. missing the
+        // custom_canvas_user_id custom claim) that CanvasOAuth2AuthorizedClientRepository can never
+        // resolve a Canvas user id from. Sending it through the Canvas authorize round-trip is
+        // pointless - saveAuthorizedClient would just no-op - so this must fail fast instead.
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", "course-123", LTIConstants.INSTRUCTOR_AUTHORITY);
+        SecurityContextHolder.getContext().setAuthentication(token);
+        when(canvasOAuth2AuthorizedClientRepository.hasResolvableCanvasUserId(token)).thenReturn(false);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/app/launch");
+        ClientAuthorizationRequiredException exception = new ClientAuthorizationRequiredException("some-registration-id");
+
+        ModelAndView mav = advice.handleClientAuthorizationRequired(request, exception);
+
+        assertEquals("canvasUserIdMissing", mav.getViewName());
+        assertEquals(canvasOAuth2ConsentTextDefault(CanvasOAuth2ConsentText.MISSING_CANVAS_USER_ID_HEADING), mav.getModel().get("heading"));
+        assertEquals(canvasOAuth2ConsentTextDefault(CanvasOAuth2ConsentText.MISSING_CANVAS_USER_ID_INSTRUCTIONS), mav.getModel().get("instructions"));
+        assertEquals("/app/jsrivet", mav.getModel().get("rivetCssPathPrefix"));
+        // Nothing about the launch is remembered - there's no point sending this user to Canvas at all.
+        assertNull(request.getSession().getAttribute(OAuth2ConsentControllerAdvice.PENDING_COURSE_ID_SESSION_KEY));
+        assertNull(request.getSession().getAttribute(OAuth2ConsentControllerAdvice.PENDING_TOOL_ID_SESSION_KEY));
+        assertNull(request.getSession().getAttribute(OAuth2ConsentControllerAdvice.PENDING_LAUNCH_PATH_SESSION_KEY));
+    }
+
+    private String canvasOAuth2ConsentTextDefault(String key) {
+        return new CanvasOAuth2ConsentText(null).get(key);
     }
 }

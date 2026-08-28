@@ -69,7 +69,8 @@ import static org.mockito.Mockito.when;
  * Covers two independent aspects of the config: the behavior of
  * {@link CanvasOAuth2ClientConfig#canvasOAuth2AuthorizedClientManager}, and the
  * {@code ImportAware} wiring that reads {@link EnableCanvasOAuth2Client}'s
- * {@code registrationIdSuffix} attribute when building the {@link CanvasOAuth2Registration} bean.
+ * {@code registrationIdSuffix} and {@code rivetCssPathPrefix} attributes when building the
+ * {@link CanvasOAuth2Registration} bean.
  */
 @ExtendWith(MockitoExtension.class)
 class CanvasOAuth2ClientConfigTest {
@@ -142,6 +143,7 @@ class CanvasOAuth2ClientConfigTest {
 
         CanvasOAuth2Registration registration = config.canvasOAuth2Registration();
         assertEquals("lms_canvas_oauth2_dummy", registration.getRegistrationId());
+        assertEquals("/jsrivet", registration.getRivetCssPathPrefix());
     }
 
     /**
@@ -152,7 +154,7 @@ class CanvasOAuth2ClientConfigTest {
      * boot, the mismatched literal would surface as a wrong-value assertion failure there instead of a
      * silent coincidental pass.
      */
-    @EnableCanvasOAuth2Client(registrationIdSuffix = "dummy")
+    @EnableCanvasOAuth2Client(registrationIdSuffix = "dummy", rivetCssPathPrefix = "/jsrivet")
     private static class DummyEnableCanvasOAuth2ClientHost {
     }
 }

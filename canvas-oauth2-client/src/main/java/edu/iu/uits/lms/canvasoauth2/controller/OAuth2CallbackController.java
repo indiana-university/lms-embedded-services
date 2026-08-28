@@ -120,6 +120,7 @@ public class OAuth2CallbackController {
         mav.addObject("heading", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CANVAS_CONNECTED_HEADING));
         mav.addObject("instructions", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CANVAS_CONNECTED_INSTRUCTIONS));
         mav.addObject("returnButtonText", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CANVAS_CONNECTED_RETURN_BUTTON));
+        mav.addObject("rivetCssPathPrefix", canvasOAuth2Registration.getRivetCssPathPrefix());
         return mav;
     }
 

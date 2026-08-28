@@ -79,7 +79,7 @@ class CanvasOAuth2AuthzRepositoryTest {
      * choice in {@code CanvasOAuth2RegistrationTest} (viewem).
      */
     @Configuration
-    @EnableCanvasOAuth2Client(registrationIdSuffix = "test")
+    @EnableCanvasOAuth2Client(registrationIdSuffix = "test", rivetCssPathPrefix = "/jsrivet")
     static class TestConfig {
         @Bean
         public CanvasOAuth2ClientProperties canvasOAuth2ClientProperties() {

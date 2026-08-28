@@ -34,6 +34,7 @@ package edu.iu.uits.lms.canvasoauth2.controller;
  */
 
 import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
+import edu.iu.uits.lms.canvasoauth2.security.CanvasOAuth2AuthorizedClientRepository;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -65,9 +66,24 @@ public class OAuth2ConsentControllerAdvice {
     private CanvasOAuth2Registration canvasOAuth2Registration = null;
     @Autowired
     private CanvasOAuth2ConsentText canvasOAuth2ConsentText = null;
+    @Autowired
+    private CanvasOAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository = null;
 
     @ExceptionHandler(ClientAuthorizationRequiredException.class)
     public ModelAndView handleClientAuthorizationRequired(HttpServletRequest request, ClientAuthorizationRequiredException exception) {
+        Authentication principal = SecurityContextHolder.getContext().getAuthentication();
+        if (!canvasOAuth2AuthorizedClientRepository.hasResolvableCanvasUserId(principal)) {
+            // Sending this user to Canvas would be pointless: saveAuthorizedClient can't identify
+            // who to save the resulting token for, so the round-trip would just loop back here again
+            // with no indication why. Fail fast instead - the detailed root-cause log already comes
+            // from CanvasOAuth2AuthorizedClientRepository's own resolution attempt below.
+            log.warn("Canvas OAuth2 consent required for registration {}, but no Canvas user id could be " +
+                            "resolved from this launch - not redirecting to Canvas since that round-trip " +
+                            "cannot succeed",
+                    exception.getClientRegistrationId());
+            return buildMissingCanvasUserIdView();
+        }
+
         log.info("Canvas OAuth2 consent required for registration {}", exception.getClientRegistrationId());
         rememberPendingLaunchClaims(request);
         rememberPendingLaunchPath(request);
@@ -123,7 +139,17 @@ public class OAuth2ConsentControllerAdvice {
         mav.addObject("heading", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CONNECT_CANVAS_HEADING));
         mav.addObject("instructions", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CONNECT_CANVAS_INSTRUCTIONS));
         mav.addObject("connectButtonText", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CONNECT_CANVAS_CONNECT_BUTTON));
+        mav.addObject("rivetCssPathPrefix", canvasOAuth2Registration.getRivetCssPathPrefix());
         mav.setViewName("connectCanvas");
+        return mav;
+    }
+
+    ModelAndView buildMissingCanvasUserIdView() {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("heading", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.MISSING_CANVAS_USER_ID_HEADING));
+        mav.addObject("instructions", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.MISSING_CANVAS_USER_ID_INSTRUCTIONS));
+        mav.addObject("rivetCssPathPrefix", canvasOAuth2Registration.getRivetCssPathPrefix());
+        mav.setViewName("canvasUserIdMissing");
         return mav;
     }
 }

@@ -64,12 +64,14 @@ import java.lang.annotation.Target;
  *     can't be read back out to build that YAML key automatically. For example,
  *     {@code @EnableCanvasOAuth2Client(registrationIdSuffix = "mytool")} pairs with an
  *     {@code application.yml} registration key of {@code lms_canvas_oauth2_mytool}.</li>
- *     <li>The tool's own {@code templates/layout.html} must define a
- *     {@code layout:fragment="content"} fragment - the generic consent/connected pages
- *     ({@code connectCanvas.html}, {@code canvasConnected.html}) decorate against
- *     {@code layout:decorate="~{layout}"} and populate that fragment, the same convention every
- *     tool in this repo's {@code templates/layout.html} already follows. A tool whose layout uses a
- *     different fragment name would get a silently blank content area, not an error.</li>
+ *     <li>{@link #rivetCssPathPrefix()} is required (no default) - the generic consent/connected/error
+ *     pages ({@code connectCanvas.html}, {@code canvasConnected.html}, {@code canvasUserIdMissing.html})
+ *     are standalone documents styled entirely with real Rivet classes (e.g. {@code rvt-button},
+ *     {@code rvt-card--raised}), and they build the stylesheet URL by appending
+ *     {@code /rivet-core/rivet.min.css} to this prefix. Every tool maps the {@code lms-canvas-rivet}
+ *     webjar to a different prefix (e.g. {@code /app/jsrivet} vs. {@code /jsrivet}), so there's no
+ *     single default that would work everywhere; pass whatever prefix this tool serves
+ *     {@code rivet-core/rivet.min.css} under, with no trailing slash.</li>
  * </ul>
  * Optional: a tool can override the default consent-page wording by defining a
  * {@code @Bean @Qualifier("canvasOAuth2ConsentTextOverrides") Map<String, String>} - see
@@ -92,4 +94,14 @@ public @interface EnableCanvasOAuth2Client {
      * {@code spring.application.name} placeholder would have under the prior design.
      */
     String registrationIdSuffix();
+
+    /**
+     * The URL prefix this tool serves its {@code lms-canvas-rivet} webjar resources under - e.g.
+     * {@code "/app/jsrivet"} for a tool mapped at {@code /app/jsrivet/**}, or {@code "/jsrivet"} for
+     * one mapped at {@code /jsrivet/**}. No trailing slash. The consent/connected/error pages append
+     * {@code /rivet-core/rivet.min.css} to this to build their stylesheet {@code <link>}. Required
+     * (no default): those pages have no styling of their own without it - an omitted value fails to
+     * compile rather than silently rendering unstyled at runtime.
+     */
+    String rivetCssPathPrefix();
 }

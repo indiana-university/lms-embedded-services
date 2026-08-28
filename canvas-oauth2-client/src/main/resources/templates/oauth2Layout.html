@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<!--
+  #%L
+  LMS Canvas OAuth2 Client
+  %%
+  Copyright (C) 2015 - 2026 Indiana University
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  3. Neither the name of the Indiana University nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+
+<!--
+  Shared layout for the Canvas OAuth2 consent/connected/error pages (connectCanvas.html,
+  canvasConnected.html, canvasUserIdMissing.html). Owned entirely by this module - unlike a host
+  tool's own templates/layout.html (which these pages deliberately never decorated against), this
+  file ships with lms-canvas-oauth2-client itself, and thymeleaf-layout-dialect is a real
+  dependency of this module (see pom.xml), so both the layout and the ability to process it are
+  guaranteed present regardless of what the host tool otherwise brings.
+
+  No <title> here: thymeleaf-layout-dialect merges each content page's own <head> elements
+  (title, any extra <meta> tags - see canvasConnected.html's refresh meta) into this layout's
+  <head> automatically, so each page just declares what's actually its own.
+
+  Styling is real Rivet, not an approximation: rivet-core/rivet.min.css is linked here (built from
+  the prefix supplied via @EnableCanvasOAuth2Client's required rivetCssPathPrefix attribute - see
+  CanvasOAuth2Registration) and this markup uses Rivet's own classes (rvt-card, rvt-card--raised,
+  rvt-button, etc.) directly, so it looks correct and stays current with Rivet automatically - no
+  hand-copied CSS values to keep in sync.
+-->
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" th:href="@{|${rivetCssPathPrefix}/rivet-core/rivet.min.css|}" />
+</head>
+<body>
+<div class="rvt-container-sm rvt-p-top-xl">
+    <div class="rvt-card rvt-card--raised">
+        <!-- rvt-p-top-xl (not vertical centering) keeps the card away from the top edge without
+             centering it in the viewport - this page sits in a flow with Canvas's own authorize
+             page (top-aligned) before/after it, so centering here felt jarring by comparison. -->
+        <div class="rvt-card__body" layout:fragment="content">Page content goes here</div>
+    </div>
+</div>
+</body>
+</html>

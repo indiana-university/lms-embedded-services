@@ -37,19 +37,16 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{oauth2Layout}">
 <head>
-    <title>Connect Canvas Account</title>
+    <title>Unable to Connect Canvas Account</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h1 class="rvt-ts-26 rvt-text-bold rvt-m-bottom-md" th:text="${heading}">Connect your Canvas account to continue</h1>
+    <h1 class="rvt-ts-26 rvt-text-bold rvt-m-bottom-md" th:text="${heading}">Unable to connect your Canvas account</h1>
     <p class="rvt-m-bottom-md" th:text="${instructions}">
-        This tool needs your permission to access Canvas on your behalf before it can continue.
-        This only needs to happen once - after you connect, every launch will use your own Canvas
-        permissions instead of asking again.
+        This tool's Canvas integration isn't fully configured for this course yet, so it can't
+        identify your Canvas account. Please contact your Canvas administrator and let them know
+        this tool's LTI configuration is missing the custom_canvas_user_id parameter.
     </p>
-    <a th:href="${authorizationUri}" target="_top" class="rvt-button" th:text="${connectButtonText}">
-        Connect your Canvas account
-    </a>
 </div>
 </body>
 </html>

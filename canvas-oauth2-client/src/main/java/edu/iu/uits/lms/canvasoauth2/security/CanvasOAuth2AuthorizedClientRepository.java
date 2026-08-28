@@ -159,15 +159,41 @@ public class CanvasOAuth2AuthorizedClientRepository implements OAuth2AuthorizedC
         }
     }
 
+    /**
+     * Whether a Canvas user id can be resolved from the given principal at all - i.e. whether
+     * {@link #loadAuthorizedClient}/{@link #saveAuthorizedClient} have any hope of succeeding for it.
+     * Exposed so a caller can check this BEFORE sending a user through the full Canvas authorize
+     * round-trip: without a resolvable Canvas user id, that round-trip is guaranteed to end in
+     * {@code saveAuthorizedClient} silently no-op'ing (nothing to key the saved token by), leaving the
+     * user looping back through "connect your Canvas account" with no indication why. See
+     * {@code OAuth2ConsentControllerAdvice#handleClientAuthorizationRequired}, which uses this to fail
+     * fast with a clear message instead.
+     * @param principal the current authentication
+     * @return true if a Canvas user id can be resolved from this principal
+     */
+    public boolean hasResolvableCanvasUserId(Authentication principal) {
+        return resolveCanvasUserId(principal) != null;
+    }
+
     private String resolveCanvasUserId(Authentication principal) {
         if (principal instanceof OidcAuthenticationToken oidcAuthenticationToken) {
             try {
                 return new OidcTokenUtils(oidcAuthenticationToken).getUserId();
             } catch (NullPointerException e) {
                 // OidcTokenUtils.getUserId() throws NPE (rather than returning null) when the
-                // "custom" claims map is entirely absent from the token - treat that the same
-                // as "no Canvas user id resolvable" instead of letting it propagate as a 500.
-                log.debug("Unable to resolve a Canvas user id from principal {} - no custom claims present", principal);
+                // "custom" claims map is entirely absent from the token. This is not a transient or
+                // expected condition - it almost always means this tool's LTI registration/Developer
+                // Key is missing custom_canvas_user_id=$Canvas.user.id in its custom fields. Left
+                // undiagnosed, it silently breaks the Canvas OAuth2 consent flow: saveAuthorizedClient
+                // no-ops instead of persisting the token, so the user is sent back through "connect
+                // your Canvas account" on every launch with no indication why. Logged at ERROR (not
+                // DEBUG) so this misconfiguration is impossible to miss instead of requiring someone
+                // to first notice - and understand the significance of - saveAuthorizedClient's own
+                // generic "cannot save" warning.
+                log.error("Canvas OAuth2: unable to resolve a Canvas user id - the LTI launch has no " +
+                        "'custom' claims at all. This almost always means this tool's LTI registration " +
+                        "is missing custom_canvas_user_id=$Canvas.user.id in its custom fields; add it " +
+                        "in the Canvas Developer Key / external tool configuration.");
                 return null;
             }
         }

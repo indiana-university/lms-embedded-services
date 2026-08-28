@@ -46,16 +46,36 @@ package edu.iu.uits.lms.canvasoauth2;
  * registration-id key under {@code spring.security.oauth2.client.registration.*} - Spring's
  * config-binding map keys aren't placeholder-resolvable, so the annotation attribute's value can't
  * be read back out to build that YAML key automatically.
+ * <p>
+ * Also carries {@code rivetCssPathPrefix} - {@code @EnableCanvasOAuth2Client}'s other required
+ * attribute - so {@code OAuth2ConsentControllerAdvice} and {@code OAuth2CallbackController} have a
+ * single bean to pull both per-tool values from when building the consent/connected/error page
+ * models.
  */
 public class CanvasOAuth2Registration {
 
     private final String registrationId;
+    private final String rivetCssPathPrefix;
 
+    /**
+     * Convenience constructor for callers that only care about the registration id (most existing
+     * tests). {@code rivetCssPathPrefix} is left {@code null} - fine as long as nothing built from
+     * this instance renders one of the consent/connected/error pages.
+     */
     public CanvasOAuth2Registration(String registrationIdSuffix) {
+        this(registrationIdSuffix, null);
+    }
+
+    public CanvasOAuth2Registration(String registrationIdSuffix, String rivetCssPathPrefix) {
         this.registrationId = "lms_canvas_oauth2_" + registrationIdSuffix;
+        this.rivetCssPathPrefix = rivetCssPathPrefix;
     }
 
     public String getRegistrationId() {
         return registrationId;
+    }
+
+    public String getRivetCssPathPrefix() {
+        return rivetCssPathPrefix;
     }
 }

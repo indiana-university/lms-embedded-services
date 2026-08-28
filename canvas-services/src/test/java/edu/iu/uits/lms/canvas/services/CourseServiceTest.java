@@ -34,14 +34,18 @@ package edu.iu.uits.lms.canvas.services;
  */
 
 import edu.iu.uits.lms.canvas.config.CanvasConfiguration;
+import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.model.Favorite;
 import edu.iu.uits.lms.canvas.model.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -52,6 +56,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,9 +65,9 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests focused on the RestTemplate-parameterized overloads of {@link CourseService#getRosterForCourseAsUser}
- * (and, transitively, {@link SpringBaseService#doGet(URI, Class, RestTemplate)}), to guard against a regression
- * where a caller-supplied RestTemplate (e.g. a stand-in for CanvasRestTemplateAsUser) is silently dropped in
- * favor of the shared admin RestTemplate, especially across pagination.
+ * and {@link CourseService#getCoursesForUser} (and, transitively, {@link SpringBaseService#doGet(URI, Class, RestTemplate)}),
+ * to guard against a regression where a caller-supplied RestTemplate (e.g. a stand-in for CanvasRestTemplateAsUser)
+ * is silently dropped in favor of the shared admin RestTemplate, especially across pagination.
  */
 @SpringBootTest(classes = {CourseService.class})
 public class CourseServiceTest {
@@ -94,6 +99,18 @@ public class CourseServiceTest {
         User user = new User();
         user.setId(id);
         return user;
+    }
+
+    private Course createCourse(String id) {
+        Course course = new Course();
+        course.setId(id);
+        return course;
+    }
+
+    private Favorite createFavorite(String contextId) {
+        Favorite favorite = new Favorite();
+        favorite.setContextId(contextId);
+        return favorite;
     }
 
     @Test
@@ -172,6 +189,116 @@ public class CourseServiceTest {
         // RestTemplate - if the recursive call in doGet silently fell back to the admin RestTemplate,
         // this would only see 1 invocation here (and the admin mock would see the second one instead).
         verify(asUserRestTemplate, times(2)).getForEntity(any(URI.class), eq(User[].class));
+        verifyNoInteractions(restTemplate);
+        verifyNoInteractions(restTemplateNoBuffer);
+        verifyNoInteractions(restTemplateHttpComponent);
+    }
+
+    @Test
+    void testGetCoursesForUser_withSuppliedRestTemplate_usesSuppliedNotAdminAndOmitsAsUserId() {
+        RestTemplate asUserRestTemplate = mock(RestTemplate.class);
+
+        ResponseEntity<Course[]> response = new ResponseEntity<>(new Course[]{createCourse("77")}, new HttpHeaders(), HttpStatus.OK);
+        when(asUserRestTemplate.getForEntity(any(URI.class), eq(Course[].class))).thenReturn(response);
+
+        List<Course> result = courseService.getCoursesForUser(false, true, false, List.of("available"), asUserRestTemplate);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("77", result.get(0).getId());
+
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(asUserRestTemplate).getForEntity(uriCaptor.capture(), eq(Course[].class));
+        String query = uriCaptor.getValue().getQuery();
+        Assertions.assertFalse(query.contains("as_user_id"),
+                "per-user overload must never masquerade via as_user_id");
+        Assertions.assertTrue(query.contains("exclude_blueprint_courses=false"), query);
+        Assertions.assertTrue(query.contains("include[]=favorites"), query);
+        Assertions.assertTrue(query.contains("include[]=term"), query);
+        Assertions.assertTrue(query.contains("state[]=available"), query);
+
+        verifyNoInteractions(restTemplate);
+        verifyNoInteractions(restTemplateNoBuffer);
+        verifyNoInteractions(restTemplateHttpComponent);
+    }
+
+    @Test
+    void testAddCourseToFavorites_adminOverload_usesAdminRestTemplateAndIncludesAsUserId() {
+        ResponseEntity<Favorite> response = new ResponseEntity<>(createFavorite("55"), new HttpHeaders(), HttpStatus.OK);
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.POST), isNull(), eq(Favorite.class)))
+                .thenReturn(response);
+
+        Favorite result = courseService.addCourseToFavorites("jdoe", "55");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("55", result.getContextId());
+
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(restTemplate).exchange(uriCaptor.capture(), eq(HttpMethod.POST), isNull(), eq(Favorite.class));
+        Assertions.assertEquals("as_user_id=sis_login_id:jdoe", uriCaptor.getValue().getQuery(),
+                "admin-token overload must masquerade via as_user_id");
+
+        verifyNoInteractions(restTemplateNoBuffer);
+        verifyNoInteractions(restTemplateHttpComponent);
+    }
+
+    @Test
+    void testAddCourseToFavorites_withSuppliedRestTemplate_usesSuppliedNotAdminAndOmitsAsUserId() {
+        RestTemplate asUserRestTemplate = mock(RestTemplate.class);
+        ResponseEntity<Favorite> response = new ResponseEntity<>(createFavorite("55"), new HttpHeaders(), HttpStatus.OK);
+        when(asUserRestTemplate.exchange(any(URI.class), eq(HttpMethod.POST), isNull(), eq(Favorite.class)))
+                .thenReturn(response);
+
+        Favorite result = courseService.addCourseToFavorites("55", asUserRestTemplate);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("55", result.getContextId());
+
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(asUserRestTemplate).exchange(uriCaptor.capture(), eq(HttpMethod.POST), isNull(), eq(Favorite.class));
+        Assertions.assertNull(uriCaptor.getValue().getQuery(), "per-user overload must never masquerade via as_user_id");
+
+        verifyNoInteractions(restTemplate);
+        verifyNoInteractions(restTemplateNoBuffer);
+        verifyNoInteractions(restTemplateHttpComponent);
+    }
+
+    @Test
+    void testRemoveCourseAsFavorite_adminOverload_usesAdminRestTemplateAndIncludesAsUserId() {
+        ResponseEntity<Favorite> response = new ResponseEntity<>(createFavorite("55"), new HttpHeaders(), HttpStatus.OK);
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.DELETE), isNull(), eq(Favorite.class)))
+                .thenReturn(response);
+
+        Favorite result = courseService.removeCourseAsFavorite("jdoe", "55");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("55", result.getContextId());
+
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(restTemplate).exchange(uriCaptor.capture(), eq(HttpMethod.DELETE), isNull(), eq(Favorite.class));
+        Assertions.assertEquals("as_user_id=sis_login_id:jdoe", uriCaptor.getValue().getQuery(),
+                "admin-token overload must masquerade via as_user_id");
+
+        verifyNoInteractions(restTemplateNoBuffer);
+        verifyNoInteractions(restTemplateHttpComponent);
+    }
+
+    @Test
+    void testRemoveCourseAsFavorite_withSuppliedRestTemplate_usesSuppliedNotAdminAndOmitsAsUserId() {
+        RestTemplate asUserRestTemplate = mock(RestTemplate.class);
+        ResponseEntity<Favorite> response = new ResponseEntity<>(createFavorite("55"), new HttpHeaders(), HttpStatus.OK);
+        when(asUserRestTemplate.exchange(any(URI.class), eq(HttpMethod.DELETE), isNull(), eq(Favorite.class)))
+                .thenReturn(response);
+
+        Favorite result = courseService.removeCourseAsFavorite("55", asUserRestTemplate);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("55", result.getContextId());
+
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(asUserRestTemplate).exchange(uriCaptor.capture(), eq(HttpMethod.DELETE), isNull(), eq(Favorite.class));
+        Assertions.assertNull(uriCaptor.getValue().getQuery(), "per-user overload must never masquerade via as_user_id");
+
         verifyNoInteractions(restTemplate);
         verifyNoInteractions(restTemplateNoBuffer);
         verifyNoInteractions(restTemplateHttpComponent);

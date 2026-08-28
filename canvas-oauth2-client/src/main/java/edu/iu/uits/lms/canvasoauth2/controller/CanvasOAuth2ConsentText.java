@@ -67,6 +67,8 @@ public class CanvasOAuth2ConsentText {
     public static final String CANVAS_CONNECTED_HEADING = "canvasConnected.heading";
     public static final String CANVAS_CONNECTED_INSTRUCTIONS = "canvasConnected.instructions";
     public static final String CANVAS_CONNECTED_RETURN_BUTTON = "canvasConnected.returnButton";
+    public static final String MISSING_CANVAS_USER_ID_HEADING = "missingCanvasUserId.heading";
+    public static final String MISSING_CANVAS_USER_ID_INSTRUCTIONS = "missingCanvasUserId.instructions";
 
     private static final Map<String, String> DEFAULTS = Map.of(
             CONNECT_CANVAS_HEADING, "Connect your Canvas account to continue",
@@ -77,7 +79,12 @@ public class CanvasOAuth2ConsentText {
             CANVAS_CONNECTED_HEADING, "You're connected!",
             CANVAS_CONNECTED_INSTRUCTIONS, "Your Canvas account is now connected. Returning you to your "
                     + "course in a moment...",
-            CANVAS_CONNECTED_RETURN_BUTTON, "Return to your course now"
+            CANVAS_CONNECTED_RETURN_BUTTON, "Return to your course now",
+            MISSING_CANVAS_USER_ID_HEADING, "Unable to connect your Canvas account",
+            MISSING_CANVAS_USER_ID_INSTRUCTIONS, "This tool's Canvas integration isn't fully configured for "
+                    + "this course yet, so it can't identify your Canvas account. Please contact your Canvas "
+                    + "administrator and let them know this tool's LTI configuration is missing the "
+                    + "custom_canvas_user_id parameter."
     );
 
     private final Map<String, String> text;

@@ -237,6 +237,29 @@ public class CourseService extends SpringBaseService {
      */
     public List<Course> getCoursesForUser(String iuNetworkId, boolean includeSections, boolean includeTerm, boolean excludeBlueprint,
                                           List<String> states) {
+        return getCoursesForUser("sis_login_id:" + iuNetworkId, includeSections, includeTerm, excludeBlueprint, states, restTemplate);
+    }
+
+    /**
+     * Same as getCoursesForUser(String, boolean, boolean, boolean, List), but using the given
+     * RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas
+     * OAuth2 token instead of the shared admin token) and without as_user_id masquerade - a per-user
+     * OAuth2 token has no "become_user" privilege, so this overload always fetches the token owner's
+     * own courses directly rather than accepting a login to masquerade as.
+     * @param includeSections set to true if you want to return sections under the course
+     * @param includeTerm set to true if you want to return the course's term info
+     * @param excludeBlueprint set to true if you don't want to include blueprint courses in this list
+     * @param states Workflow states used to filter results
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public List<Course> getCoursesForUser(boolean includeSections, boolean includeTerm, boolean excludeBlueprint,
+                                          List<String> states, RestTemplate restTemplateToUse) {
+        return getCoursesForUser(null, includeSections, includeTerm, excludeBlueprint, states, restTemplateToUse);
+    }
+
+    private List<Course> getCoursesForUser(String asUserId, boolean includeSections, boolean includeTerm,
+                                            boolean excludeBlueprint, List<String> states, RestTemplate restTemplateToUse) {
         //courses?as_user_id=sis_login_id:username&
         // state[]=unpublished, available&
         // enrollment_state[]=active,invited_or_pending,completed
@@ -244,7 +267,10 @@ public class CourseService extends SpringBaseService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
-        builder.queryParam("as_user_id", "sis_login_id:" + iuNetworkId);
+        if (asUserId != null) {
+            builder.queryParam("as_user_id", asUserId);
+        }
+
         builder.queryParam("exclude_blueprint_courses", excludeBlueprint);
         builder.queryParam("include[]", "favorites");
 
@@ -264,7 +290,7 @@ public class CourseService extends SpringBaseService {
 
         builder.queryParam("per_page", "100");
 
-        return doGet(builder.build().toUri(), Course[].class);
+        return doGet(builder.build().toUri(), Course[].class, restTemplateToUse);
     }
 
     /**
@@ -361,13 +387,32 @@ public class CourseService extends SpringBaseService {
      * @return
      */
     public Favorite addCourseToFavorites(String asUserLogin, String courseId) {
+        return addCourseToFavorites("sis_login_id:" + asUserLogin, courseId, restTemplate);
+    }
+
+    /**
+     * Same as addCourseToFavorites(String, String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token instead
+     * of the shared admin token) - and without as_user_id masquerade, since /users/self/favorites/courses
+     * already targets the token owner directly.
+     * @param courseId Course id to add
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public Favorite addCourseToFavorites(String courseId, RestTemplate restTemplateToUse) {
+        return addCourseToFavorites(null, courseId, restTemplateToUse);
+    }
+
+    private Favorite addCourseToFavorites(String asUserId, String courseId, RestTemplate restTemplateToUse) {
         URI uri = FAVORITES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + asUserLogin);
+        if (asUserId != null) {
+            builder.queryParam("as_user_id", asUserId);
+        }
 
         try {
-            ResponseEntity<Favorite> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, null, Favorite.class);
+            ResponseEntity<Favorite> response = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.POST, null, Favorite.class);
             log.debug("{}", response);
 
             if (response.getStatusCode() != HttpStatus.OK) {
@@ -390,13 +435,32 @@ public class CourseService extends SpringBaseService {
      * @return
      */
     public Favorite removeCourseAsFavorite(String asUserLogin, String courseId) {
+        return removeCourseAsFavorite("sis_login_id:" + asUserLogin, courseId, restTemplate);
+    }
+
+    /**
+     * Same as removeCourseAsFavorite(String, String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token instead
+     * of the shared admin token) - and without as_user_id masquerade, since /users/self/favorites/courses
+     * already targets the token owner directly.
+     * @param courseId Course id to remove
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public Favorite removeCourseAsFavorite(String courseId, RestTemplate restTemplateToUse) {
+        return removeCourseAsFavorite(null, courseId, restTemplateToUse);
+    }
+
+    private Favorite removeCourseAsFavorite(String asUserId, String courseId, RestTemplate restTemplateToUse) {
         URI uri = FAVORITES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + asUserLogin);
+        if (asUserId != null) {
+            builder.queryParam("as_user_id", asUserId);
+        }
 
         try {
-            ResponseEntity<Favorite> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, Favorite.class);
+            ResponseEntity<Favorite> response = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.DELETE, null, Favorite.class);
             log.debug("{}", response);
 
             if (response.getStatusCode() != HttpStatus.OK) {

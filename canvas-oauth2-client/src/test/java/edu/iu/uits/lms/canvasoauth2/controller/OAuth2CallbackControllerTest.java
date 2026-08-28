@@ -62,14 +62,16 @@ class OAuth2CallbackControllerTest {
         canvasConfiguration.setBaseUrl("https://canvas.test");
 
         OAuth2ConsentControllerAdvice advice = new OAuth2ConsentControllerAdvice();
-        ReflectionTestUtils.setField(advice, "canvasOAuth2Registration", new CanvasOAuth2Registration("viewem"));
+        ReflectionTestUtils.setField(advice, "canvasOAuth2Registration",
+                new CanvasOAuth2Registration("viewem", "/app/jsrivet"));
         ReflectionTestUtils.setField(advice, "canvasOAuth2ConsentText", new CanvasOAuth2ConsentText(null));
 
         controller = new OAuth2CallbackController();
         ReflectionTestUtils.setField(controller, "canvasConfiguration", canvasConfiguration);
         ReflectionTestUtils.setField(controller, "oAuth2ConsentControllerAdvice", advice);
         ReflectionTestUtils.setField(controller, "canvasOAuth2ConsentText", new CanvasOAuth2ConsentText(null));
-        ReflectionTestUtils.setField(controller, "canvasOAuth2Registration", new CanvasOAuth2Registration("viewem"));
+        ReflectionTestUtils.setField(controller, "canvasOAuth2Registration",
+                new CanvasOAuth2Registration("viewem", "/app/jsrivet"));
     }
 
     @Test
@@ -80,6 +82,7 @@ class OAuth2CallbackControllerTest {
 
         assertEquals("canvasConnected", mav.getViewName());
         assertEquals("https://canvas.test", mav.getModel().get("returnUrl"));
+        assertEquals("/app/jsrivet", mav.getModel().get("rivetCssPathPrefix"));
     }
 
     @Test

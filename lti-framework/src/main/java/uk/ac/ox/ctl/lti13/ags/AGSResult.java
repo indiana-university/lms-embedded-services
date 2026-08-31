@@ -1,25 +1,25 @@
-package edu.iu.uits.lms.lti.service;
+package uk.ac.ox.ctl.lti13.ags;
 
 /*-
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,24 +33,14 @@ package edu.iu.uits.lms.lti.service;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.model.LmsLtiAuthz;
-import edu.iu.uits.lms.lti.repository.LtiAuthorizationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import lombok.Data;
 
-import java.util.List;
-
-@Service
-public class LtiAuthorizationService {
-
-    @Autowired
-    private LtiAuthorizationRepository ltiAuthorizationRepository = null;
-
-    public List<LmsLtiAuthz> findByRegistrationsPrefixesEnvActive(List<String> registrationIds, String registrationPrefix, String env) {
-        return ltiAuthorizationRepository.findByRegistrationsPrefixEnvActive(registrationIds, registrationPrefix, env);
-    }
-
-    public LmsLtiAuthz findByClientId(String clientId, String env) {
-        return ltiAuthorizationRepository.findByClientIdAndEnv(clientId, env);
-    }
+@Data
+public class AGSResult {
+    private String id;
+    private String userId;
+    private Integer resultScore;
+    private Integer resultMaximum;
+    private String comment;
+    private String scoreOf;
 }

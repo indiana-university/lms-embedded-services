@@ -62,4 +62,10 @@ public interface LtiAuthorizationRepository extends PagingAndSortingRepository<L
     List<LmsLtiAuthz> findByRegistrationsPrefixEnvActive(@Param("registrationIds") List<String> registrationIds,
                                                          @Param("registrationPrefix") String registrationPrefix,
                                                          @Param("env") String env);
+
+    @Query("""
+            FROM LmsLtiAuthz where clientId = :clientId
+            AND env = :env and active = true
+            """)
+    LmsLtiAuthz findByClientIdAndEnv(@Param("clientId") String clientId, @Param("env") String env);
 }

@@ -47,7 +47,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @Slf4j
@@ -65,6 +70,35 @@ public class EmailService {
 
    @Autowired
    private EmailServiceConfig emailServiceConfig;
+
+   /**
+    * {@link EmailServiceAttachment#getUrl()} is fetched directly via {@link URLDataSource}, so a
+    * caller-supplied URL of an unexpected scheme (or a {@code file:} URL outside our own temp
+    * directory) could otherwise be used to attach arbitrary local files or reach arbitrary hosts.
+    * The only current caller attaches a {@code file:} URL to a CSV it just wrote to a temp
+    * directory, so that's allowed alongside {@code http(s)} for any future remote attachment use.
+    *
+    * @param url the attachment URL to check
+    * @return true if the URL is safe to fetch via {@link URLDataSource}
+    */
+   boolean isAllowedAttachmentUrl(URL url) {
+      String protocol = url.getProtocol().toLowerCase(Locale.ROOT);
+      if (protocol.equals("http") || protocol.equals("https")) {
+         return true;
+      }
+
+      if (protocol.equals("file")) {
+         try {
+            Path attachmentPath = Paths.get(url.toURI()).toAbsolutePath().normalize();
+            Path tempDir = Paths.get(System.getProperty("java.io.tmpdir")).toAbsolutePath().normalize();
+            return attachmentPath.startsWith(tempDir);
+         } catch (URISyntaxException | IllegalArgumentException e) {
+            return false;
+         }
+      }
+
+      return false;
+   }
 
    public String getStandardHeader() {
       return "[LMS " + emailServiceConfig.getEnv().toUpperCase() + " Notifications]";
@@ -141,7 +175,13 @@ public class EmailService {
       if (emailServiceAttachmentList != null) {
          for (EmailServiceAttachment emailServiceAttachment : emailServiceAttachmentList) {
             if (emailServiceAttachment.getFilename() != null && emailServiceAttachment.getUrl() != null) {
-               URLDataSource attachmentDataSource = new URLDataSource(emailServiceAttachment.getUrl());
+               URL attachmentUrl = emailServiceAttachment.getUrl();
+               if (!isAllowedAttachmentUrl(attachmentUrl)) {
+                  log.warn("Refusing to attach '{}' - disallowed attachment URL: {}",
+                          emailServiceAttachment.getFilename(), attachmentUrl);
+                  continue;
+               }
+               URLDataSource attachmentDataSource = new URLDataSource(attachmentUrl);
                helper.addAttachment(emailServiceAttachment.getFilename(), attachmentDataSource);
             }
          }

@@ -38,6 +38,9 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
 @ConfigurationProperties(prefix = "canvas")
 @Getter
@@ -50,4 +53,11 @@ public class CanvasConfiguration {
     private String token;
     private String accountId;
     private String env;
+
+    /**
+     * Additional hostnames (beyond {@link #host}) that are trusted as targets for the file-upload
+     * follow-up requests (the {@code upload_url} and {@code Location} redirect Canvas returns),
+     * e.g. a storage provider's domain that Canvas uploads are proxied through.
+     */
+    private List<String> trustedUploadHosts = new ArrayList<>();
 }

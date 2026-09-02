@@ -49,16 +49,17 @@ package uk.ac.ox.ctl.oauth2.core.http.converter;
  */
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
-import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.SmartHttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
@@ -96,14 +97,14 @@ public class OAuth2AccessTokenResponseHttpMessageConverter
 
   private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-  private static final ParameterizedTypeReference<Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
-      new ParameterizedTypeReference<Map<String, Object>>() {};
+  private static final ResolvableType PARAMETERIZED_RESPONSE_TYPE =
+      ResolvableType.forType(new ParameterizedTypeReference<Map<String, Object>>() {});
   protected Converter<Map<String, Object>, OAuth2AccessTokenResponse> tokenResponseConverter =
       new OAuth2AccessTokenResponseConverter();
   protected Converter<OAuth2AccessTokenResponse, Map<String, String>>
       tokenResponseParametersConverter = new OAuth2AccessTokenResponseParametersConverter();
-  private GenericHttpMessageConverter<Object> jsonMessageConverter =
-      new MappingJackson2HttpMessageConverter();
+  private final SmartHttpMessageConverter<Object> jsonMessageConverter =
+      new JacksonJsonHttpMessageConverter();
 
   public OAuth2AccessTokenResponseHttpMessageConverter() {
     super(DEFAULT_CHARSET, MediaType.APPLICATION_JSON, new MediaType("application", "*+json"));
@@ -124,7 +125,7 @@ public class OAuth2AccessTokenResponseHttpMessageConverter
       Map<String, Object> tokenResponseParameters =
           (Map<String, Object>)
               this.jsonMessageConverter.read(
-                  PARAMETERIZED_RESPONSE_TYPE.getType(), null, inputMessage);
+                  PARAMETERIZED_RESPONSE_TYPE, inputMessage, Collections.emptyMap());
       return this.tokenResponseConverter.convert(tokenResponseParameters);
     } catch (Exception ex) {
       throw new HttpMessageNotReadableException(
@@ -144,9 +145,10 @@ public class OAuth2AccessTokenResponseHttpMessageConverter
           this.tokenResponseParametersConverter.convert(tokenResponse);
       this.jsonMessageConverter.write(
           tokenResponseParameters,
-          PARAMETERIZED_RESPONSE_TYPE.getType(),
+          PARAMETERIZED_RESPONSE_TYPE,
           MediaType.APPLICATION_JSON,
-          outputMessage);
+          outputMessage,
+          Collections.emptyMap());
     } catch (Exception ex) {
       throw new HttpMessageNotWritableException(
           "An error occurred writing the OAuth 2.0 Access Token Response: " + ex.getMessage(), ex);

@@ -43,16 +43,6 @@
             <artifactId>spring-boot-starter-security-oauth2-client</artifactId>
         </dependency>
         <dependency>
-            <!-- OAuth2AccessTokenResponseHttpMessageConverter (vendored under uk.ac.ox.ctl.oauth2.core.http.converter)
-                 wraps Spring's MappingJackson2HttpMessageConverter, which still requires the classic
-                 com.fasterxml.jackson.core:jackson-databind API even under Spring Boot 4's Jackson 3
-                 default. Declared explicitly (rather than relying on it arriving transitively, as it
-                 happens to via some consuming tools' other dependencies) so this module's own classes
-                 work regardless of what else a host tool happens to pull in. -->
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
             <scope>provided</scope>

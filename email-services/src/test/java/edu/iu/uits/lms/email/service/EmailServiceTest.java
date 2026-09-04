@@ -95,9 +95,28 @@ class EmailServiceTest {
     // --- isAllowedAttachmentUrl() unit coverage --------------------------------------------
 
     @Test
-    void httpAndHttpsUrlsAreAllowed() throws Exception {
-        assertTrue(emailService.isAllowedAttachmentUrl(new URI("http://example.edu/report.csv").toURL()));
-        assertTrue(emailService.isAllowedAttachmentUrl(new URI("https://example.edu/report.csv").toURL()));
+    void publiclyRoutableHttpAndHttpsUrlsAreAllowed() throws Exception {
+        // Literal IPs so this doesn't depend on real DNS resolution in CI.
+        assertTrue(emailService.isAllowedAttachmentUrl(new URI("http://8.8.8.8/report.csv").toURL()));
+        assertTrue(emailService.isAllowedAttachmentUrl(new URI("https://8.8.8.8/report.csv").toURL()));
+    }
+
+    @Test
+    void loopbackUrlIsRejected() throws Exception {
+        assertFalse(emailService.isAllowedAttachmentUrl(new URI("http://127.0.0.1/admin").toURL()));
+    }
+
+    @Test
+    void linkLocalUrlIsRejected() throws Exception {
+        // 169.254.169.254 is also the cloud-provider metadata endpoint (AWS/GCP/Azure) - the classic
+        // SSRF target this check exists to block.
+        assertFalse(emailService.isAllowedAttachmentUrl(new URI("http://169.254.169.254/latest/meta-data/").toURL()));
+    }
+
+    @Test
+    void privateRfc1918UrlIsRejected() throws Exception {
+        assertFalse(emailService.isAllowedAttachmentUrl(new URI("http://10.0.0.5/internal").toURL()));
+        assertFalse(emailService.isAllowedAttachmentUrl(new URI("http://192.168.1.1/internal").toURL()));
     }
 
     @Test

@@ -47,8 +47,11 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -75,8 +78,12 @@ public class EmailService {
     * {@link EmailServiceAttachment#getUrl()} is fetched directly via {@link URLDataSource}, so a
     * caller-supplied URL of an unexpected scheme (or a {@code file:} URL outside our own temp
     * directory) could otherwise be used to attach arbitrary local files or reach arbitrary hosts.
-    * The only current caller attaches a {@code file:} URL to a CSV it just wrote to a temp
-    * directory, so that's allowed alongside {@code http(s)} for any future remote attachment use.
+    * {@code EmailRestController#sendEmail} accepts an {@link EmailDetails} request body directly
+    * from any REST caller holding the {@code send} scope, so the attachment URL is genuinely
+    * attacker-influenceable, not just internally generated - an {@code http(s)} URL must also be
+    * checked to make sure it doesn't resolve to a private/loopback/link-local address (which would
+    * let a caller reach internal-only services or a cloud metadata endpoint). The one internal
+    * caller (a {@code file:} URL to a CSV it just wrote to a temp directory) is unaffected.
     *
     * @param url the attachment URL to check
     * @return true if the URL is safe to fetch via {@link URLDataSource}
@@ -84,20 +91,45 @@ public class EmailService {
    boolean isAllowedAttachmentUrl(URL url) {
       String protocol = url.getProtocol().toLowerCase(Locale.ROOT);
       if (protocol.equals("http") || protocol.equals("https")) {
-         return true;
+         return isPubliclyRoutable(url.getHost());
       }
 
       if (protocol.equals("file")) {
          try {
-            Path attachmentPath = Paths.get(url.toURI()).toAbsolutePath().normalize();
-            Path tempDir = Paths.get(System.getProperty("java.io.tmpdir")).toAbsolutePath().normalize();
+            // toRealPath() (rather than toAbsolutePath().normalize()) resolves symlinks on both
+            // sides of the comparison, so a symlinked temp dir (e.g. macOS's /tmp -> /private/tmp)
+            // can't cause a legitimate attachment to be rejected due to alias mismatch.
+            Path attachmentPath = Paths.get(url.toURI()).toRealPath();
+            Path tempDir = Paths.get(System.getProperty("java.io.tmpdir")).toRealPath();
             return attachmentPath.startsWith(tempDir);
-         } catch (URISyntaxException | IllegalArgumentException e) {
+         } catch (URISyntaxException | IllegalArgumentException | IOException e) {
             return false;
          }
       }
 
       return false;
+   }
+
+   /**
+    * Resolves every address the given host name resolves to and rejects loopback, link-local
+    * (this also covers the {@code 169.254.169.254} cloud-metadata address), site-local/private,
+    * wildcard, and multicast addresses. This doesn't defend against DNS rebinding (a host that
+    * resolves to a public address at check time but a private one at connect time) - {@link
+    * URLDataSource}/{@link java.net.URL#openConnection()} re-resolve the host themselves, so there's
+    * no practical way to pin the checked address here without replacing that connection mechanism.
+    */
+   private boolean isPubliclyRoutable(String host) {
+      try {
+         for (InetAddress address : InetAddress.getAllByName(host)) {
+            if (address.isLoopbackAddress() || address.isLinkLocalAddress() || address.isSiteLocalAddress()
+                    || address.isAnyLocalAddress() || address.isMulticastAddress()) {
+               return false;
+            }
+         }
+         return true;
+      } catch (UnknownHostException e) {
+         return false;
+      }
    }
 
    public String getStandardHeader() {

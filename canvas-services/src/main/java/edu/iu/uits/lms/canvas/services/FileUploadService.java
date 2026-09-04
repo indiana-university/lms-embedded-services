@@ -33,6 +33,7 @@ package edu.iu.uits.lms.canvas.services;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.config.CanvasConfiguration;
 import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.CanvasFile;
 import edu.iu.uits.lms.canvas.model.CanvasFileUploadResponse;
@@ -93,11 +94,12 @@ public class FileUploadService extends SpringBaseService {
 
         if (multipartFile != null) {
             try {
-                file = new File(multipartFile.getOriginalFilename());
-                file.createNewFile();
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(multipartFile.getBytes());
-                fos.close();
+                // Write to a JVM-managed temp file rather than a File built from the client-supplied
+                // original filename, which is untrusted and could contain path traversal sequences.
+                file = File.createTempFile("canvas-file-upload-", null);
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    fos.write(multipartFile.getBytes());
+                }
             } catch (IOException e) {
                 log.error("Error: ", e);
                 file = null;
@@ -177,6 +179,35 @@ public class FileUploadService extends SpringBaseService {
     }
 
     /**
+     * The upload/verification URLs Canvas hands back in {@link CanvasFileUploadResponse#getUploadUrl()}
+     * and the {@code Location} redirect header are attacker-influenceable (they originate from a
+     * remote HTTP response, not our own configuration), but {@link #restTemplate} and
+     * {@link #restTemplateNoBuffer} unconditionally attach the Canvas API bearer token to every
+     * request they make. Restrict those follow-up requests to hosts we actually trust so a
+     * malicious/compromised response can't exfiltrate the token to an arbitrary host (SSRF).
+     *
+     * @param uriString the upload or verification URL returned by Canvas
+     * @throws SecurityException if the URL's host isn't the configured Canvas host or one of
+     * {@link CanvasConfiguration#getTrustedUploadHosts()}
+     */
+    private void validateTrustedHost(String uriString) {
+        String host;
+        try {
+            host = URI.create(uriString).getHost();
+        } catch (IllegalArgumentException e) {
+            throw new SecurityException("Malformed upload/verification URL returned by Canvas: " + uriString, e);
+        }
+
+        boolean trusted = host != null
+                && (host.equalsIgnoreCase(canvasConfiguration.getHost())
+                        || canvasConfiguration.getTrustedUploadHosts().stream().anyMatch(host::equalsIgnoreCase));
+
+        if (!trusted) {
+            throw new SecurityException("Refusing to send Canvas file upload request to untrusted host: " + host);
+        }
+    }
+
+    /**
      *
      * @param fileUploadResponse
      * @param file
@@ -197,6 +228,7 @@ public class FileUploadService extends SpringBaseService {
 
         CanvasFile canvasFile = null;
         String uri = fileUploadResponse.getUploadUrl();
+        validateTrustedHost(uri);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -253,6 +285,7 @@ public class FileUploadService extends SpringBaseService {
 
     private CanvasFile verifyUpload(String location) {
         CanvasFile canvasFile = null;
+        validateTrustedHost(location);
 
         try {
             HttpEntity<CanvasFile> fileUploadResponseEntity = this.restTemplate.getForEntity(location, CanvasFile.class);

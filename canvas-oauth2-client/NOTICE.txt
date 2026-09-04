@@ -1,0 +1,8 @@
+Portions of this library are derived from the following work:
+https://github.com/oxctl/canvas-spring-oauth2
+
+At the time the code was pulled in, the version was at commit 44f99dd63d1deea84cf6f9ab7eeb0d4cfc13dbed. The commit pinned is newer than the last tagged release (canvas-spring-oauth2-0.6).
+
+The code was kept in its original package structure (uk.ac.ox.ctl.oauth2) to help differentiate it from the existing code in this project.
+
+Original licensing was Apache 2.0 (https://github.com/oxctl/canvas-spring-oauth2/blob/44f99dd63d1deea84cf6f9ab7eeb0d4cfc13dbed/LICENSE.txt)

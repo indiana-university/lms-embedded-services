@@ -47,6 +47,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 
@@ -99,6 +100,19 @@ class CanvasOAuth2AuthzRepositoryTest {
         @Bean
         public CanvasConfiguration canvasConfiguration() {
             return new CanvasConfiguration();
+        }
+
+        /**
+         * {@code CanvasOAuth2ClientConfig}'s {@code @ComponentScan} also now discovers
+         * {@code CanvasRestTemplateAsUserConfig}, whose fallback {@code CanvasRestTemplateAsUser}
+         * bean (active whenever {@code canvas.oauth2.enabled} isn't {@code true} - the default here,
+         * since this test never sets it) requires a {@code CanvasRestTemplate} bean to alias. This
+         * JPA-layer test doesn't exercise that RestTemplate at all - a plain no-arg instance is
+         * enough, purely to satisfy the dependency and let the context boot.
+         */
+        @Bean(name = "CanvasRestTemplate")
+        public RestTemplate canvasRestTemplate() {
+            return new RestTemplate();
         }
     }
 

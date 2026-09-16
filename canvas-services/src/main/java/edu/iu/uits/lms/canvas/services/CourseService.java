@@ -243,9 +243,16 @@ public class CourseService extends SpringBaseService {
     /**
      * Same as getCoursesForUser(String, boolean, boolean, boolean, List), but using the given
      * RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas
-     * OAuth2 token instead of the shared admin token) and without as_user_id masquerade - a per-user
-     * OAuth2 token has no "become_user" privilege, so this overload always fetches the token owner's
-     * own courses directly rather than accepting a login to masquerade as.
+     * OAuth2 token instead of the shared admin token).
+     * <p>
+     * Pass {@code null} for {@code asUserId} when {@code restTemplateToUse} is backed by a per-user
+     * Canvas OAuth2 token (e.g. CanvasRestTemplateAsUser with canvas.oauth2.enabled=true) - that token
+     * is already scoped to its owner and has no "become_user" privilege, so Canvas may reject an
+     * as_user_id masquerade attempt on it. Pass a real Canvas user id only when restTemplateToUse is
+     * an admin-token RestTemplate (e.g. the CanvasRestTemplateAsUser dark-launch fallback), which has
+     * no notion of "current user" and needs as_user_id to know whose courses to return.
+     * @param asUserId Canvas User ID to masquerade as, or null to make the call as restTemplateToUse's
+     *                 own authenticated identity with no masquerade
      * @param includeSections set to true if you want to return sections under the course
      * @param includeTerm set to true if you want to return the course's term info
      * @param excludeBlueprint set to true if you don't want to include blueprint courses in this list
@@ -253,12 +260,7 @@ public class CourseService extends SpringBaseService {
      * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
      * @return
      */
-    public List<Course> getCoursesForUser(boolean includeSections, boolean includeTerm, boolean excludeBlueprint,
-                                          List<String> states, RestTemplate restTemplateToUse) {
-        return getCoursesForUser(null, includeSections, includeTerm, excludeBlueprint, states, restTemplateToUse);
-    }
-
-    private List<Course> getCoursesForUser(String asUserId, boolean includeSections, boolean includeTerm,
+    public List<Course> getCoursesForUser(String asUserId, boolean includeSections, boolean includeTerm,
                                             boolean excludeBlueprint, List<String> states, RestTemplate restTemplateToUse) {
         //courses?as_user_id=sis_login_id:username&
         // state[]=unpublished, available&

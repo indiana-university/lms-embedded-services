@@ -201,7 +201,7 @@ public class CourseServiceTest {
         ResponseEntity<Course[]> response = new ResponseEntity<>(new Course[]{createCourse("77")}, new HttpHeaders(), HttpStatus.OK);
         when(asUserRestTemplate.getForEntity(any(URI.class), eq(Course[].class))).thenReturn(response);
 
-        List<Course> result = courseService.getCoursesForUser(false, true, false, List.of("available"), asUserRestTemplate);
+        List<Course> result = courseService.getCoursesForUser(null, false, true, false, List.of("available"), asUserRestTemplate);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(1, result.size());

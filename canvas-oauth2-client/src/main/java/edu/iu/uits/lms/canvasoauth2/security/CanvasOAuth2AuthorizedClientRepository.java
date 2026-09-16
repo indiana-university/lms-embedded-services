@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -66,11 +67,13 @@ public class CanvasOAuth2AuthorizedClientRepository implements OAuth2AuthorizedC
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final String env;
     private final TextEncryptor textEncryptor;
+    private final boolean oauth2Enabled;
 
     public CanvasOAuth2AuthorizedClientRepository(CanvasOAuth2AuthzRepository canvasOAuth2AuthzRepository,
                                                    ClientRegistrationRepository clientRegistrationRepository,
                                                    @Value("${canvas.env}") String env,
-                                                   CanvasOAuth2ClientProperties canvasOAuth2ClientProperties) {
+                                                   CanvasOAuth2ClientProperties canvasOAuth2ClientProperties,
+                                                   @Value("${canvas.oauth2.enabled:false}") boolean oauth2Enabled) {
         this.canvasOAuth2AuthzRepository = canvasOAuth2AuthzRepository;
         this.clientRegistrationRepository = clientRegistrationRepository;
         this.env = env;
@@ -78,6 +81,7 @@ public class CanvasOAuth2AuthorizedClientRepository implements OAuth2AuthorizedC
         // Spring's own javadoc recommends against CBC mode for security-sensitive data.
         this.textEncryptor = Encryptors.delux(canvasOAuth2ClientProperties.getEncryptionPassword(),
               canvasOAuth2ClientProperties.getEncryptionSalt());
+        this.oauth2Enabled = oauth2Enabled;
     }
 
     @Override
@@ -173,6 +177,27 @@ public class CanvasOAuth2AuthorizedClientRepository implements OAuth2AuthorizedC
      */
     public boolean hasResolvableCanvasUserId(Authentication principal) {
         return resolveCanvasUserId(principal) != null;
+    }
+
+    /**
+     * Dark-launch gate for the Canvas OAuth2 consent flow: when {@code canvas.oauth2.enabled} is
+     * off, skips the authorized-client check entirely so no user is ever sent through Canvas's
+     * consent screen - the caller's per-user Canvas API calls are expected to fall back to the
+     * shared admin token instead (see {@code CanvasRestTemplateAsUserConfig}). When on, behaves
+     * exactly like the pre-dark-launch consent check: throws {@link ClientAuthorizationRequiredException}
+     * if no authorized client is on file yet, which {@code OAuth2ConsentControllerAdvice} catches
+     * and turns into the "connect your Canvas account" breakout page.
+     * @param clientRegistrationId the Canvas OAuth2 registration id to check
+     * @param principal the current authentication
+     * @param request the current request
+     */
+    public void ensureAuthorized(String clientRegistrationId, Authentication principal, HttpServletRequest request) {
+        if (!oauth2Enabled) {
+            return;
+        }
+        if (loadAuthorizedClient(clientRegistrationId, principal, request) == null) {
+            throw new ClientAuthorizationRequiredException(clientRegistrationId);
+        }
     }
 
     private String resolveCanvasUserId(Authentication principal) {

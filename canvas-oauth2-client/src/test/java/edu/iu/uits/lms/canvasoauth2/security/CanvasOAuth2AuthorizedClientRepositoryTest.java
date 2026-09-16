@@ -50,6 +50,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -69,6 +70,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -105,12 +107,7 @@ class CanvasOAuth2AuthorizedClientRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        CanvasOAuth2ClientProperties properties = new CanvasOAuth2ClientProperties();
-        properties.setEncryptionPassword(ENCRYPTION_PASSWORD);
-        properties.setEncryptionSalt(ENCRYPTION_SALT);
-
-        repository = new CanvasOAuth2AuthorizedClientRepository(canvasOAuth2AuthzRepository,
-              clientRegistrationRepository, ENV, properties);
+        repository = buildRepository(true);
 
         // Independent encryptor built the same way the repository builds its own, so tests can
         // verify a genuine encrypt/decrypt round trip rather than asserting against plaintext.
@@ -132,6 +129,14 @@ class CanvasOAuth2AuthorizedClientRepositoryTest {
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
+    }
+
+    private CanvasOAuth2AuthorizedClientRepository buildRepository(boolean oauth2Enabled) {
+        CanvasOAuth2ClientProperties properties = new CanvasOAuth2ClientProperties();
+        properties.setEncryptionPassword(ENCRYPTION_PASSWORD);
+        properties.setEncryptionSalt(ENCRYPTION_SALT);
+        return new CanvasOAuth2AuthorizedClientRepository(canvasOAuth2AuthzRepository,
+              clientRegistrationRepository, ENV, properties, oauth2Enabled);
     }
 
     @Test
@@ -346,5 +351,43 @@ class CanvasOAuth2AuthorizedClientRepositoryTest {
         repository.removeAuthorizedClient(REGISTRATION_ID, principal, request, response);
 
         verify(canvasOAuth2AuthzRepository, never()).delete(any());
+    }
+
+    @Test
+    void ensureAuthorizedNoOpsWhenOauth2Disabled() {
+        CanvasOAuth2AuthorizedClientRepository disabledRepository = buildRepository(false);
+
+        disabledRepository.ensureAuthorized(REGISTRATION_ID, principal, request);
+
+        verifyNoInteractions(canvasOAuth2AuthzRepository, clientRegistrationRepository);
+    }
+
+    @Test
+    void ensureAuthorizedThrowsWhenOauth2EnabledAndNoAuthorizedClientExists() {
+        when(canvasOAuth2AuthzRepository.findByRegistrationEnvUser(REGISTRATION_ID, ENV, CANVAS_USER_ID))
+              .thenReturn(null);
+
+        assertThrows(ClientAuthorizationRequiredException.class,
+              () -> repository.ensureAuthorized(REGISTRATION_ID, principal, request));
+    }
+
+    @Test
+    void ensureAuthorizedPassesSilentlyWhenOauth2EnabledAndAuthorizedClientExists() {
+        CanvasOAuth2Authz authz = new CanvasOAuth2Authz();
+        authz.setRegistrationId(REGISTRATION_ID);
+        authz.setEnv(ENV);
+        authz.setCanvasUserId(CANVAS_USER_ID);
+        authz.setTokenType("bearer");
+        authz.setScopes("url:GET|/api/v1/courses");
+        authz.setCreated(new Date());
+        authz.setExpiresAt(Date.from(Instant.now().plusSeconds(3600)));
+        authz.setAccessToken(referenceEncryptor.encrypt("real-access-token"));
+
+        when(canvasOAuth2AuthzRepository.findByRegistrationEnvUser(REGISTRATION_ID, ENV, CANVAS_USER_ID))
+              .thenReturn(authz);
+        when(clientRegistrationRepository.findByRegistrationId(REGISTRATION_ID)).thenReturn(clientRegistration);
+
+        repository.ensureAuthorized(REGISTRATION_ID, principal, request);
+        // No exception - the assertion is that this line above didn't throw.
     }
 }

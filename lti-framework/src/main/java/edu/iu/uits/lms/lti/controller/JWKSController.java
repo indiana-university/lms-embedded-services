@@ -50,15 +50,10 @@ public class JWKSController {
     @Autowired
     private Lti13Service lti13Service;
 
-    @GetMapping(JWKS_CONFIG_URI)
+    @GetMapping({JWKS_CONFIG_URI, JWKS_PUB_CONFIG_URI})
     public Map<String, Object> keys() {
         RSAKey jks = lti13Service.getJKS();
-        return jks.toJSONObject();
-    }
-
-    @GetMapping(JWKS_PUB_CONFIG_URI)
-    public Map<String, Object> pubjwk() {
-        RSAKey jks = lti13Service.getJKS();
+        // getJKS() carries the private key (it's used for signing); only ever publish the public half
         return jks.toPublicJWK().toJSONObject();
     }
 

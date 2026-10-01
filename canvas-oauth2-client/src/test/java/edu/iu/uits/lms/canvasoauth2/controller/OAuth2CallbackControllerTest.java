@@ -69,60 +69,54 @@ class OAuth2CallbackControllerTest {
         controller = new OAuth2CallbackController();
         ReflectionTestUtils.setField(controller, "canvasConfiguration", canvasConfiguration);
         ReflectionTestUtils.setField(controller, "oAuth2ConsentControllerAdvice", advice);
-        ReflectionTestUtils.setField(controller, "canvasOAuth2ConsentText", new CanvasOAuth2ConsentText(null));
         ReflectionTestUtils.setField(controller, "canvasOAuth2Registration",
                 new CanvasOAuth2Registration("viewem", "/app/jsrivet"));
     }
 
     @Test
-    void connected_noErrorNoPendingCourse_rendersCanvasConnectedWithBareBaseUrl() {
+    void connected_noErrorNoPendingCourse_redirectsStraightToBareBaseUrl() {
         MockHttpServletRequest request = new MockHttpServletRequest();
 
         ModelAndView mav = controller.connected(REGISTRATION_ID, request, null);
 
-        assertEquals("canvasConnected", mav.getViewName());
-        assertEquals("https://canvas.test", mav.getModel().get("returnUrl"));
-        assertEquals("/app/jsrivet", mav.getModel().get("rivetCssPathPrefix"));
+        assertEquals("redirect:https://canvas.test", mav.getViewName());
     }
 
     @Test
-    void connected_noErrorWithPendingCourseOnly_rendersCanvasConnectedWithCourseUrl_andClearsSessionAttribute() {
+    void connected_noErrorWithPendingCourseOnly_redirectsStraightToCourseUrl_andClearsSessionAttribute() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.getSession(true).setAttribute(OAuth2ConsentControllerAdvice.PENDING_COURSE_ID_SESSION_KEY, "1234");
 
         ModelAndView mav = controller.connected(REGISTRATION_ID, request, null);
 
-        assertEquals("canvasConnected", mav.getViewName());
         // No pending tool id (e.g. an LTI registration that hasn't been updated to request
         // $Canvas.externalTool.id yet) - falls back to the course page, same as before this tool-id
         // relaunch feature existed.
-        assertEquals("https://canvas.test/courses/1234", mav.getModel().get("returnUrl"));
+        assertEquals("redirect:https://canvas.test/courses/1234", mav.getViewName());
         assertNull(request.getSession(false).getAttribute(OAuth2ConsentControllerAdvice.PENDING_COURSE_ID_SESSION_KEY));
     }
 
     @Test
-    void connected_noErrorWithPendingCourseAndToolId_rendersCanvasConnectedWithExternalToolRelaunchUrl_andClearsBothSessionAttributes() {
+    void connected_noErrorWithPendingCourseAndToolId_redirectsStraightToExternalToolRelaunchUrl_andClearsBothSessionAttributes() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.getSession(true).setAttribute(OAuth2ConsentControllerAdvice.PENDING_COURSE_ID_SESSION_KEY, "1234");
         request.getSession(true).setAttribute(OAuth2ConsentControllerAdvice.PENDING_TOOL_ID_SESSION_KEY, "789");
 
         ModelAndView mav = controller.connected(REGISTRATION_ID, request, null);
 
-        assertEquals("canvasConnected", mav.getViewName());
-        assertEquals("https://canvas.test/courses/1234/external_tools/789", mav.getModel().get("returnUrl"));
+        assertEquals("redirect:https://canvas.test/courses/1234/external_tools/789", mav.getViewName());
         assertNull(request.getSession(false).getAttribute(OAuth2ConsentControllerAdvice.PENDING_COURSE_ID_SESSION_KEY));
         assertNull(request.getSession(false).getAttribute(OAuth2ConsentControllerAdvice.PENDING_TOOL_ID_SESSION_KEY));
     }
 
     @Test
-    void connected_noErrorWithPendingLaunchPath_rendersCanvasConnectedWithLaunchPath_andClearsSessionAttribute() {
+    void connected_noErrorWithPendingLaunchPath_redirectsStraightToLaunchPath_andClearsSessionAttribute() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.getSession(true).setAttribute(OAuth2ConsentControllerAdvice.PENDING_LAUNCH_PATH_SESSION_KEY, "/app/launch");
 
         ModelAndView mav = controller.connected(REGISTRATION_ID, request, null);
 
-        assertEquals("canvasConnected", mav.getViewName());
-        assertEquals("/app/launch", mav.getModel().get("returnUrl"));
+        assertEquals("redirect:/app/launch", mav.getViewName());
         assertNull(request.getSession(false).getAttribute(OAuth2ConsentControllerAdvice.PENDING_LAUNCH_PATH_SESSION_KEY));
     }
 
@@ -137,7 +131,7 @@ class OAuth2CallbackControllerTest {
 
         ModelAndView mav = controller.connected(REGISTRATION_ID, request, null);
 
-        assertEquals("/app/launch", mav.getModel().get("returnUrl"));
+        assertEquals("redirect:/app/launch", mav.getViewName());
     }
 
     @Test
@@ -199,6 +193,6 @@ class OAuth2CallbackControllerTest {
 
         ModelAndView mav = controller.connected(REGISTRATION_ID, request, "  ");
 
-        assertEquals("canvasConnected", mav.getViewName());
+        assertEquals("redirect:https://canvas.test", mav.getViewName());
     }
 }

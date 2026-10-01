@@ -64,9 +64,6 @@ public class CanvasOAuth2ConsentText {
     public static final String CONNECT_CANVAS_HEADING = "connectCanvas.heading";
     public static final String CONNECT_CANVAS_INSTRUCTIONS = "connectCanvas.instructions";
     public static final String CONNECT_CANVAS_CONNECT_BUTTON = "connectCanvas.connectButton";
-    public static final String CANVAS_CONNECTED_HEADING = "canvasConnected.heading";
-    public static final String CANVAS_CONNECTED_INSTRUCTIONS = "canvasConnected.instructions";
-    public static final String CANVAS_CONNECTED_RETURN_BUTTON = "canvasConnected.returnButton";
     public static final String MISSING_CANVAS_USER_ID_HEADING = "missingCanvasUserId.heading";
     public static final String MISSING_CANVAS_USER_ID_INSTRUCTIONS = "missingCanvasUserId.instructions";
 
@@ -76,10 +73,6 @@ public class CanvasOAuth2ConsentText {
                     + "before it can continue. This only needs to happen once - after you connect, every "
                     + "launch will use your own Canvas permissions instead of asking again.",
             CONNECT_CANVAS_CONNECT_BUTTON, "Connect your Canvas account",
-            CANVAS_CONNECTED_HEADING, "You're connected!",
-            CANVAS_CONNECTED_INSTRUCTIONS, "Your Canvas account is now connected. Returning you to your "
-                    + "course in a moment...",
-            CANVAS_CONNECTED_RETURN_BUTTON, "Return to your course now",
             MISSING_CANVAS_USER_ID_HEADING, "Unable to connect your Canvas account",
             MISSING_CANVAS_USER_ID_INSTRUCTIONS, "This tool's Canvas integration isn't fully configured for "
                     + "this course yet, so it can't identify your Canvas account. Please contact your Canvas "

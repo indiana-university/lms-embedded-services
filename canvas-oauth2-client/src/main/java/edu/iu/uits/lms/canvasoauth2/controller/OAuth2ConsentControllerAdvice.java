@@ -35,6 +35,7 @@ package edu.iu.uits.lms.canvasoauth2.controller;
 
 import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import edu.iu.uits.lms.canvasoauth2.security.CanvasOAuth2AuthorizedClientRepository;
+import edu.iu.uits.lms.common.server.BrandingControllerAdvice;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +69,26 @@ public class OAuth2ConsentControllerAdvice {
     private CanvasOAuth2ConsentText canvasOAuth2ConsentText = null;
     @Autowired
     private CanvasOAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository = null;
+    /**
+     * Not required: a host tool is always expected to have this (it's auto-configured whenever
+     * lms-canvas-common-configuration is on the classpath, which every tool that adopts
+     * {@code @EnableCanvasOAuth2Client} already has at compile scope), but staying optional keeps a
+     * narrow test slice that doesn't wire it up from failing context startup over a feature that's
+     * cosmetic, not functional.
+     * <p>
+     * Needed because the connect/missing-user-id interstitials below are rendered from genuine
+     * {@code @ExceptionHandler} methods, not a normal {@code @RequestMapping} handler invocation -
+     * {@code ExceptionHandlerExceptionResolver} builds a fresh {@code ModelAndViewContainer} for an
+     * {@code @ExceptionHandler} method rather than reusing the one {@code RequestMappingHandlerAdapter}
+     * populated (via {@code ModelFactory}) for the original request, so {@code @ModelAttribute} advice
+     * methods like {@code BrandingControllerAdvice}'s own never run for this path. Fetching the same
+     * {@link edu.iu.uits.lms.common.server.BrandingProperties} it would have contributed and adding it
+     * to the model by hand, under the identical "BrandingProperties" key, is what lets the shared
+     * {@code commonFragments/layouts::footer} fragment's logo/branding block show up here the same way
+     * it does on every other, normally-dispatched page.
+     */
+    @Autowired(required = false)
+    private BrandingControllerAdvice brandingControllerAdvice = null;
 
     @ExceptionHandler(ClientAuthorizationRequiredException.class)
     public ModelAndView handleClientAuthorizationRequired(HttpServletRequest request, ClientAuthorizationRequiredException exception) {
@@ -140,6 +161,10 @@ public class OAuth2ConsentControllerAdvice {
         mav.addObject("instructions", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CONNECT_CANVAS_INSTRUCTIONS));
         mav.addObject("connectButtonText", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CONNECT_CANVAS_CONNECT_BUTTON));
         mav.addObject("rivetCssPathPrefix", canvasOAuth2Registration.getRivetCssPathPrefix());
+        // This is an exception flow, not a normal request, so BrandingControllerAdvice's
+        // @ModelAttribute never runs - without this, "BrandingProperties" stays null and the
+        // footer's th:if="${BrandingProperties?.footerBrandingEnabled}" silently skips the IU logo.
+        addBrandingProperties(mav);
         mav.setViewName("connectCanvas");
         return mav;
     }
@@ -149,7 +174,18 @@ public class OAuth2ConsentControllerAdvice {
         mav.addObject("heading", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.MISSING_CANVAS_USER_ID_HEADING));
         mav.addObject("instructions", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.MISSING_CANVAS_USER_ID_INSTRUCTIONS));
         mav.addObject("rivetCssPathPrefix", canvasOAuth2Registration.getRivetCssPathPrefix());
+        addBrandingProperties(mav);
         mav.setViewName("canvasUserIdMissing");
         return mav;
+    }
+
+    /**
+     * See {@link #brandingControllerAdvice}'s javadoc for why this has to be done explicitly here
+     * instead of happening for free the way it does for a normally-dispatched page.
+     */
+    private void addBrandingProperties(ModelAndView mav) {
+        if (brandingControllerAdvice != null) {
+            mav.addObject("BrandingProperties", brandingControllerAdvice.getBrandingProperties());
+        }
     }
 }

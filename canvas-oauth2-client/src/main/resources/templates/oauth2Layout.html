@@ -33,16 +33,16 @@
   -->
 
 <!--
-  Shared layout for the Canvas OAuth2 consent/connected/error pages (connectCanvas.html,
-  canvasConnected.html, canvasUserIdMissing.html). Owned entirely by this module - unlike a host
+  Shared layout for the Canvas OAuth2 consent/error pages (connectCanvas.html,
+  canvasUserIdMissing.html). Owned entirely by this module - unlike a host
   tool's own templates/layout.html (which these pages deliberately never decorated against), this
   file ships with lms-canvas-oauth2-client itself, and thymeleaf-layout-dialect is a real
   dependency of this module (see pom.xml), so both the layout and the ability to process it are
   guaranteed present regardless of what the host tool otherwise brings.
 
   No <title> here: thymeleaf-layout-dialect merges each content page's own <head> elements
-  (title, any extra <meta> tags - see canvasConnected.html's refresh meta) into this layout's
-  <head> automatically, so each page just declares what's actually its own.
+  (just a <title> today) into this layout's <head> automatically, so each page just declares
+  what's actually its own.
 
   Styling is real Rivet, not an approximation: rivet-core/rivet.min.css is linked here (built from
   the prefix supplied via @EnableCanvasOAuth2Client's required rivetCssPathPrefix attribute - see
@@ -59,7 +59,7 @@
     <link rel="stylesheet" type="text/css" th:href="@{|${rivetCssPathPrefix}/rivet-core/rivet.min.css|}" />
 </head>
 <body>
-<div class="rvt-container-sm rvt-p-top-xl">
+<div class="rvt-container-sm rvt-p-top-xl rvt-m-bottom-xxl">
     <div class="rvt-card rvt-card--raised">
         <!-- rvt-p-top-xl (not vertical centering) keeps the card away from the top edge without
              centering it in the viewport - this page sits in a flow with Canvas's own authorize
@@ -67,5 +67,15 @@
         <div class="rvt-card__body" layout:fragment="content">Page content goes here</div>
     </div>
 </div>
+
+<!-- Same server-info footer every other tool's own layout.html renders (see e.g. viewem's
+     layout.html), via the same shared commonFragments/layouts::footer fragment and ${@serverInfo}
+     bean - every tool that adopts @EnableCanvasOAuth2Client already defines that bean itself (see
+     each WebApplication.java), so no extra wiring is needed here. One shared layout for this
+     module's two pages (this one and canvasUserIdMissing.html) is enough - no need for a whole
+     second layout.html of our own just to carry this footer. -->
+<th:block th:with="siElements=${@serverInfo.elements}">
+    <div th:replace="~{commonFragments/layouts :: footer(${hideFooter}, ${siElements})}"></div>
+</th:block>
 </body>
 </html>

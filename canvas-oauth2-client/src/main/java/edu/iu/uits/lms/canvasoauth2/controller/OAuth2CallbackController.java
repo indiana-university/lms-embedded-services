@@ -79,8 +79,6 @@ public class OAuth2CallbackController {
     @Autowired
     private OAuth2ConsentControllerAdvice oAuth2ConsentControllerAdvice = null;
     @Autowired
-    private CanvasOAuth2ConsentText canvasOAuth2ConsentText = null;
-    @Autowired
     private CanvasOAuth2Registration canvasOAuth2Registration = null;
 
     @GetMapping("/login/oauth2/code/{registrationId}")
@@ -115,13 +113,12 @@ public class OAuth2CallbackController {
 
         log.info("Canvas OAuth2 account connected; returning user to {}", returnUrl);
 
-        ModelAndView mav = new ModelAndView("canvasConnected");
-        mav.addObject("returnUrl", returnUrl);
-        mav.addObject("heading", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CANVAS_CONNECTED_HEADING));
-        mav.addObject("instructions", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CANVAS_CONNECTED_INSTRUCTIONS));
-        mav.addObject("returnButtonText", canvasOAuth2ConsentText.get(CanvasOAuth2ConsentText.CANVAS_CONNECTED_RETURN_BUTTON));
-        mav.addObject("rivetCssPathPrefix", canvasOAuth2Registration.getRivetCssPathPrefix());
-        return mav;
+        // No intermediate "you're connected" confirmation page - Canvas's own Authorize button
+        // already put the browser in the top-level browsing context (the "Connect your Canvas
+        // account" link on connectCanvas.html that started this trip is itself target="_top", and
+        // Canvas's own consent screen runs top-level too), so a plain redirect here lands the user
+        // directly on returnUrl with no iframe-escape trick needed at this point in the flow.
+        return new ModelAndView("redirect:" + returnUrl);
     }
 
     /**

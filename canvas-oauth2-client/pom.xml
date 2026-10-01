@@ -31,12 +31,15 @@
             <artifactId>lms-canvas-services</artifactId>
         </dependency>
         <dependency>
-            <!-- lti-framework's test-jar TestUtils extends this - it's an optional dependency
-                 of lti-framework's main jar, so it must be pulled in explicitly here. -->
+            <!-- Compile scope (not just test): OAuth2ConsentControllerAdvice autowires
+                 BrandingControllerAdvice directly so the "connect your Canvas account" interstitial can
+                 populate the same "BrandingProperties" model attribute BrandingControllerAdvice's own
+                 @ModelAttribute method would otherwise add - see that field's javadoc for why this can't
+                 be left to happen automatically. Also still satisfies lti-framework's test-jar TestUtils,
+                 which extends a class from here (an optional dependency of lti-framework's main jar). -->
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-common-configuration</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

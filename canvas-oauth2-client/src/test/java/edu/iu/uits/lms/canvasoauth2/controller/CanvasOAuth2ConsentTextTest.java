@@ -48,8 +48,6 @@ class CanvasOAuth2ConsentTextTest {
 
         assertEquals("Connect your Canvas account to continue", text.get(CanvasOAuth2ConsentText.CONNECT_CANVAS_HEADING));
         assertEquals("Connect your Canvas account", text.get(CanvasOAuth2ConsentText.CONNECT_CANVAS_CONNECT_BUTTON));
-        assertEquals("You're connected!", text.get(CanvasOAuth2ConsentText.CANVAS_CONNECTED_HEADING));
-        assertEquals("Return to your course now", text.get(CanvasOAuth2ConsentText.CANVAS_CONNECTED_RETURN_BUTTON));
     }
 
     @Test

@@ -64,9 +64,9 @@ import java.lang.annotation.Target;
  *     can't be read back out to build that YAML key automatically. For example,
  *     {@code @EnableCanvasOAuth2Client(registrationIdSuffix = "mytool")} pairs with an
  *     {@code application.yml} registration key of {@code lms_canvas_oauth2_mytool}.</li>
- *     <li>{@link #rivetCssPathPrefix()} is required (no default) - the generic consent/connected/error
- *     pages ({@code connectCanvas.html}, {@code canvasConnected.html}, {@code canvasUserIdMissing.html})
- *     are standalone documents styled entirely with real Rivet classes (e.g. {@code rvt-button},
+ *     <li>{@link #rivetCssPathPrefix()} is required (no default) - the generic consent/error
+ *     pages ({@code connectCanvas.html}, {@code canvasUserIdMissing.html}) are standalone documents
+ *     styled entirely with real Rivet classes (e.g. {@code rvt-button},
  *     {@code rvt-card--raised}), and they build the stylesheet URL by appending
  *     {@code /rivet-core/rivet.min.css} to this prefix. Every tool maps the {@code lms-canvas-rivet}
  *     webjar to a different prefix (e.g. {@code /app/jsrivet} vs. {@code /jsrivet}), so there's no

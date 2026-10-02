@@ -84,4 +84,29 @@ public class OidcTokenUtilsTest {
       roles = tokenUtils.getCustomInstructureMembershipRolesRaw();
       Assertions.assertArrayEquals(new String[]{"foobar"}, roles);
    }
+
+   @Test
+   void testGetExternalToolId() {
+      Map<String, Object> attrMap = new HashMap<>();
+      Map<String, Object> customMap = new HashMap<>();
+      customMap.put(LTIConstants.CUSTOM_CANVAS_EXTERNAL_TOOL_ID_KEY, "12345");
+      attrMap.put(Claims.CUSTOM, customMap);
+
+      OidcTokenUtils tokenUtils = new OidcTokenUtils(attrMap);
+      Assertions.assertEquals("12345", tokenUtils.getExternalToolId());
+   }
+
+   @Test
+   void testGetExternalToolId_missingFromCustomClaims() {
+      // Older/other LTI registrations that don't declare canvas_external_tool_id as a custom_fields
+      // substitution variable will have a custom claims map present (for their other fields) but
+      // simply lack this specific key - getExternalToolId() must return null, not throw.
+      Map<String, Object> attrMap = new HashMap<>();
+      Map<String, Object> customMap = new HashMap<>();
+      customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "course-1");
+      attrMap.put(Claims.CUSTOM, customMap);
+
+      OidcTokenUtils tokenUtils = new OidcTokenUtils(attrMap);
+      Assertions.assertNull(tokenUtils.getExternalToolId());
+   }
 }

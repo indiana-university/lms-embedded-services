@@ -73,6 +73,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
@@ -137,6 +138,18 @@ public class CourseService extends SpringBaseService {
     }
 
     /**
+     * Same as getCourse(String), but using the given RestTemplate (e.g. CanvasRestTemplateAsUser,
+     * to authorize the call as the caller's own Canvas OAuth2 token instead of the shared admin
+     * token).
+     * @param courseId the ID of the course to retrieve
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return the Course object, or null if not found
+     */
+    public Course getCourse(String courseId, RestTemplate restTemplateToUse) {
+        return getCourse(courseId, new String[]{}, restTemplateToUse);
+    }
+
+    /**
      * Retrieve a course by its ID with optional includes.
      *
      * @param courseId the ID of the course to retrieve
@@ -144,6 +157,19 @@ public class CourseService extends SpringBaseService {
      * @return the Course object, or null if not found
      */
     public Course getCourse(String courseId, String[] includes) {
+        return getCourse(courseId, includes, restTemplate);
+    }
+
+    /**
+     * Same as getCourse(String, String[]), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @param courseId the ID of the course to retrieve
+     * @param includes optional parameters to include in the response
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return the Course object, or null if not found
+     */
+    public Course getCourse(String courseId, String[] includes, RestTemplate restTemplateToUse) {
         URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -153,7 +179,7 @@ public class CourseService extends SpringBaseService {
         }
 
         try {
-            HttpEntity<Course> courseResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), Course.class);
+            HttpEntity<Course> courseResponseEntity = restTemplateToUse.getForEntity(builder.build().toUri(), Course.class);
 
             if (courseResponseEntity != null) {
                 return courseResponseEntity.getBody();
@@ -184,17 +210,47 @@ public class CourseService extends SpringBaseService {
      */
     public List<Course> getCoursesTaughtBy(String IUNetworkId, boolean excludeBlueprint,
                                            boolean includeSections, boolean includeTerm) {
+        return getCoursesTaughtBy(IUNetworkId, excludeBlueprint, includeSections, includeTerm, restTemplate);
+    }
 
+    /**
+     * Same as getCoursesTaughtBy(String, boolean, boolean, boolean), but using the given
+     * RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own
+     * Canvas OAuth2 token instead of the shared admin token). Pass the caller's own IUNetworkId
+     * when using a per-user OAuth2 RestTemplate - this call does not use as_user_id masquerading,
+     * so it always fetches the courses taught by whichever login id is given, resolved with
+     * whatever identity restTemplateToUse authorizes as.
+     * @param IUNetworkId IU Network Id
+     * @param excludeBlueprint set to true if you don't want to include blueprint courses in this list
+     * @param includeSections Flag indicating whether or not to return sections under the course
+     * @param includeTerm Flag indicating whether or not to return terms under the course
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return List of Courses
+     */
+    public List<Course> getCoursesTaughtBy(String IUNetworkId, boolean excludeBlueprint,
+                                           boolean includeSections, boolean includeTerm, RestTemplate restTemplateToUse) {
 
         List<String> workflowStates = Arrays.asList("available", "unpublished", "completed");
 
-//        List<Course.WORKFLOW_STATE> workflowStates = Arrays.asList(Course.WORKFLOW_STATE.AVAILABLE,
-//                Course.WORKFLOW_STATE.UNPUBLISHED, Course.WORKFLOW_STATE.COMPLETED);
-        return getCoursesForUserByEnrollmentType(IUNetworkId, "teacher", excludeBlueprint, includeSections, includeTerm, workflowStates);
+        return getCoursesForUserByEnrollmentType(IUNetworkId, "teacher", excludeBlueprint, includeSections, includeTerm,
+                workflowStates, restTemplateToUse);
     }
 
     public List<Course> getCoursesForUserByEnrollmentType(String iuNetworkId, String enrollmentType, boolean excludeBlueprint,
                                                           boolean includeSections, boolean includeTerm, List<String> states) {
+        return getCoursesForUserByEnrollmentType(iuNetworkId, enrollmentType, excludeBlueprint, includeSections, includeTerm,
+                states, restTemplate);
+    }
+
+    /**
+     * Same as getCoursesForUserByEnrollmentType(String, String, boolean, boolean, boolean, List), but
+     * using the given RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the
+     * caller's own Canvas OAuth2 token instead of the shared admin token).
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     */
+    public List<Course> getCoursesForUserByEnrollmentType(String iuNetworkId, String enrollmentType, boolean excludeBlueprint,
+                                                          boolean includeSections, boolean includeTerm, List<String> states,
+                                                          RestTemplate restTemplateToUse) {
         // {url}/api/v1/users/sis_login_id:{networkId}/courses?
         // exclude_blueprint_courses=false&state[]=available&state[]=unpublished&state[]=completed&enrollment_type=teacher&per_page=100
         String bonusPath = "sis_login_id:" + iuNetworkId + "/courses";
@@ -222,7 +278,7 @@ public class CourseService extends SpringBaseService {
 
         builder.queryParam("per_page", "100");
 
-        return doGet(builder.build().toUri(), Course[].class);
+        return doGet(builder.build().toUri(), Course[].class, restTemplateToUse);
     }
 
     /**
@@ -236,6 +292,31 @@ public class CourseService extends SpringBaseService {
      */
     public List<Course> getCoursesForUser(String iuNetworkId, boolean includeSections, boolean includeTerm, boolean excludeBlueprint,
                                           List<String> states) {
+        return getCoursesForUser("sis_login_id:" + iuNetworkId, includeSections, includeTerm, excludeBlueprint, states, restTemplate);
+    }
+
+    /**
+     * Same as getCoursesForUser(String, boolean, boolean, boolean, List), but using the given
+     * RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas
+     * OAuth2 token instead of the shared admin token).
+     * <p>
+     * Pass {@code null} for {@code asUserId} when {@code restTemplateToUse} is backed by a per-user
+     * Canvas OAuth2 token (e.g. CanvasRestTemplateAsUser with canvas.oauth2.enabled=true) - that token
+     * is already scoped to its owner and has no "become_user" privilege, so Canvas may reject an
+     * as_user_id masquerade attempt on it. Pass a real Canvas user id only when restTemplateToUse is
+     * an admin-token RestTemplate (e.g. the CanvasRestTemplateAsUser dark-launch fallback), which has
+     * no notion of "current user" and needs as_user_id to know whose courses to return.
+     * @param asUserId Canvas User ID to masquerade as, or null to make the call as restTemplateToUse's
+     *                 own authenticated identity with no masquerade
+     * @param includeSections set to true if you want to return sections under the course
+     * @param includeTerm set to true if you want to return the course's term info
+     * @param excludeBlueprint set to true if you don't want to include blueprint courses in this list
+     * @param states Workflow states used to filter results
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public List<Course> getCoursesForUser(String asUserId, boolean includeSections, boolean includeTerm,
+                                            boolean excludeBlueprint, List<String> states, RestTemplate restTemplateToUse) {
         //courses?as_user_id=sis_login_id:username&
         // state[]=unpublished, available&
         // enrollment_state[]=active,invited_or_pending,completed
@@ -243,7 +324,10 @@ public class CourseService extends SpringBaseService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
 
-        builder.queryParam("as_user_id", "sis_login_id:" + iuNetworkId);
+        if (asUserId != null) {
+            builder.queryParam("as_user_id", asUserId);
+        }
+
         builder.queryParam("exclude_blueprint_courses", excludeBlueprint);
         builder.queryParam("include[]", "favorites");
 
@@ -263,7 +347,7 @@ public class CourseService extends SpringBaseService {
 
         builder.queryParam("per_page", "100");
 
-        return doGet(builder.build().toUri(), Course[].class);
+        return doGet(builder.build().toUri(), Course[].class, restTemplateToUse);
     }
 
     /**
@@ -360,13 +444,32 @@ public class CourseService extends SpringBaseService {
      * @return
      */
     public Favorite addCourseToFavorites(String asUserLogin, String courseId) {
+        return addCourseToFavorites("sis_login_id:" + asUserLogin, courseId, restTemplate);
+    }
+
+    /**
+     * Same as addCourseToFavorites(String, String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token instead
+     * of the shared admin token) - and without as_user_id masquerade, since /users/self/favorites/courses
+     * already targets the token owner directly.
+     * @param courseId Course id to add
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public Favorite addCourseToFavorites(String courseId, RestTemplate restTemplateToUse) {
+        return addCourseToFavorites(null, courseId, restTemplateToUse);
+    }
+
+    private Favorite addCourseToFavorites(String asUserId, String courseId, RestTemplate restTemplateToUse) {
         URI uri = FAVORITES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + asUserLogin);
+        if (asUserId != null) {
+            builder.queryParam("as_user_id", asUserId);
+        }
 
         try {
-            ResponseEntity<Favorite> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, null, Favorite.class);
+            ResponseEntity<Favorite> response = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.POST, null, Favorite.class);
             log.debug("{}", response);
 
             if (response.getStatusCode() != HttpStatus.OK) {
@@ -389,13 +492,32 @@ public class CourseService extends SpringBaseService {
      * @return
      */
     public Favorite removeCourseAsFavorite(String asUserLogin, String courseId) {
+        return removeCourseAsFavorite("sis_login_id:" + asUserLogin, courseId, restTemplate);
+    }
+
+    /**
+     * Same as removeCourseAsFavorite(String, String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token instead
+     * of the shared admin token) - and without as_user_id masquerade, since /users/self/favorites/courses
+     * already targets the token owner directly.
+     * @param courseId Course id to remove
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public Favorite removeCourseAsFavorite(String courseId, RestTemplate restTemplateToUse) {
+        return removeCourseAsFavorite(null, courseId, restTemplateToUse);
+    }
+
+    private Favorite removeCourseAsFavorite(String asUserId, String courseId, RestTemplate restTemplateToUse) {
         URI uri = FAVORITES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        builder.queryParam("as_user_id", "sis_login_id:" + asUserLogin);
+        if (asUserId != null) {
+            builder.queryParam("as_user_id", asUserId);
+        }
 
         try {
-            ResponseEntity<Favorite> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, Favorite.class);
+            ResponseEntity<Favorite> response = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.DELETE, null, Favorite.class);
             log.debug("{}", response);
 
             if (response.getStatusCode() != HttpStatus.OK) {
@@ -419,7 +541,22 @@ public class CourseService extends SpringBaseService {
      * @return
      */
     public List<User> getUsersForCourseByType(String courseId, List<String> enrollmentTypes, List<String> enrollmentStates) {
-        return getUsersForCourseByType(courseId, enrollmentTypes, enrollmentStates, null);
+        return getUsersForCourseByType(courseId, enrollmentTypes, enrollmentStates, (List<String>) null);
+    }
+
+    /**
+     * Same as getUsersForCourseByType(String, List, List), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @param courseId
+     * @param enrollmentTypes
+     * @param enrollmentStates
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public List<User> getUsersForCourseByType(String courseId, List<String> enrollmentTypes, List<String> enrollmentStates,
+                                                RestTemplate restTemplateToUse) {
+        return getUsersForCourseByType(courseId, enrollmentTypes, enrollmentStates, null, restTemplateToUse);
     }
 
     /**
@@ -446,6 +583,23 @@ public class CourseService extends SpringBaseService {
      */
     public List<User> getUsersForCourseByType(String courseId, List<String> enrollmentTypes,
                                                                  List<String> enrollmentStates, List<String> includes) {
+        return getUsersForCourseByType(courseId, enrollmentTypes, enrollmentStates, includes, restTemplate);
+    }
+
+    /**
+     * Same as getUsersForCourseByType(String, List, List, List), but using the given RestTemplate
+     * (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @param courseId
+     * @param enrollmentTypes
+     * @param enrollmentStates
+     * @param includes
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public List<User> getUsersForCourseByType(String courseId, List<String> enrollmentTypes,
+                                                                 List<String> enrollmentStates, List<String> includes,
+                                                                 RestTemplate restTemplateToUse) {
         URI uri = COURSE_USERS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -468,7 +622,7 @@ public class CourseService extends SpringBaseService {
             }
         }
 
-        return doGet(builder.build().toUri(), User[].class);
+        return doGet(builder.build().toUri(), User[].class, restTemplateToUse);
     }
 
     /**
@@ -840,7 +994,7 @@ public class CourseService extends SpringBaseService {
     }
 
     /**
-     * Get the roster for a course, as seen by asUser.
+     * Get the roster for a course, as seen by asUser. Uses the default admin RestTemplate.
      * @see <a href="https://canvas.instructure.com/doc/api/file.masquerading.html">Canvas API Docs on Masquerading</a>
      *
      * @param courseId
@@ -849,6 +1003,22 @@ public class CourseService extends SpringBaseService {
      * @return
      */
     public List<User> getRosterForCourseAsUser(String courseId, String asUser, List<String> enrollmentStates) {
+        return getRosterForCourseAsUser(courseId, asUser, enrollmentStates, restTemplate);
+    }
+
+    /**
+     * Same as getRosterForCourseAsUser(String, String, List), but using the given RestTemplate
+     * (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @see <a href="https://canvas.instructure.com/doc/api/file.masquerading.html">Canvas API Docs on Masquerading</a>
+     *
+     * @param courseId
+     * @param asUser
+     * @param enrollmentStates
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public List<User> getRosterForCourseAsUser(String courseId, String asUser, List<String> enrollmentStates, RestTemplate restTemplateToUse) {
         URI uri = COURSE_USERS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -867,7 +1037,7 @@ public class CourseService extends SpringBaseService {
             }
         }
 
-        return doGet(builder.build().toUri(), User[].class);
+        return doGet(builder.build().toUri(), User[].class, restTemplateToUse);
     }
 
     /**

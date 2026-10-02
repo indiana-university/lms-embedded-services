@@ -52,13 +52,16 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 /**
@@ -429,6 +432,16 @@ public class CanvasDataServiceImpl {
             log.debug("Using strategy class {} to get fields", strategyClass.getName());
         }
 
+        // Columns are the same for every row of a given ResultSet, so compute this once rather than
+        // re-deriving it (or catching/discarding a SQLException) on every field, for every row. Lets a
+        // class declare a field with no corresponding column - e.g. one added for a query that doesn't
+        // select it yet - without blowing up the whole result set; that field is simply left unset.
+        ResultSetMetaData rsmd = rs.getMetaData();
+        Set<String> columnNames = new HashSet<>();
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            columnNames.add(rsmd.getColumnLabel(i).toLowerCase());
+        }
+
         while (rs.next()) {
             T obj = clazz.getDeclaredConstructor().newInstance();
 
@@ -440,6 +453,11 @@ public class CanvasDataServiceImpl {
                 if (strategyClass != null) {
                     Method invokeMethod = strategyClass.getMethod("translate", String.class);
                     fieldName = (String) invokeMethod.invoke(strategy, fieldName);
+                }
+
+                if (!columnNames.contains(fieldName.toLowerCase())) {
+                    log.trace("Column '{}' not present in result set; leaving field unset", fieldName);
+                    continue;
                 }
 
                 log.trace("Looking up field '{}'", fieldName);

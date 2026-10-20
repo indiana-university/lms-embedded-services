@@ -85,6 +85,42 @@ public class ModuleService extends SpringBaseService {
     }
 
     /**
+     * Get a single module in a course
+     * @param courseId Course id
+     * @param moduleId Module id
+     * @param studentId Optional - return module completion information for this student (requires teacher/TA/admin permissions)
+     * @param includes Optional additional information to include, per the Canvas API (eg "items", "content_details")
+     * @return Module, or null if it could not be retrieved
+     */
+    public Module getModule(String courseId, String moduleId, String studentId, String[] includes) {
+        URI uri = MODULES_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, moduleId);
+        log.debug("{}", uri);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+
+        if (includes != null) {
+            for (String include : includes) {
+                builder.queryParam("include[]", include);
+            }
+        }
+
+        if (studentId != null) {
+            builder.queryParam("student_id", studentId);
+        }
+
+        try {
+            ResponseEntity<Module> response = this.restTemplate.getForEntity(builder.build().toUri(), Module.class);
+            log.debug("{}", response);
+
+            return response.getBody();
+        } catch (HttpClientErrorException hcee) {
+            log.error("Error getting module " + moduleId + " for course " + courseId, hcee);
+        }
+
+        return null;
+    }
+
+    /**
      * Create a module in a course
      * @param courseId Course id
      * @param newModule Wrapper object used to create the module

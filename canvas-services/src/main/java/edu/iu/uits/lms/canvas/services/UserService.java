@@ -57,6 +57,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
@@ -115,6 +116,18 @@ public class UserService extends SpringBaseService {
     * @return The object (most likely a Map) stored at the requested scope
     */
    public Object getUserCustomData(UserCustomDataRequest userCustomDataRequest) {
+      return getUserCustomData(userCustomDataRequest, restTemplate);
+   }
+
+   /**
+    * Same as getUserCustomData(UserCustomDataRequest), but using the given RestTemplate (e.g.
+    * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token instead
+    * of the shared admin token).
+    * @param userCustomDataRequest
+    * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+    * @return The object (most likely a Map) stored at the requested scope
+    */
+   public Object getUserCustomData(UserCustomDataRequest userCustomDataRequest, RestTemplate restTemplateToUse) {
       String userPath = buildAlternateId(userCustomDataRequest.getUserId(), userCustomDataRequest.getField());
       URI uri = CUSTOM_DATA_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), userPath);
 
@@ -127,7 +140,7 @@ public class UserService extends SpringBaseService {
       log.debug("{}", builder.build().toUri());
 
       try {
-         ResponseEntity<Object> response = restTemplate.getForEntity(builder.build().toUri(), Object.class);
+         ResponseEntity<Object> response = restTemplateToUse.getForEntity(builder.build().toUri(), Object.class);
          log.debug("{}", response);
          return response.getBody();
       } catch (HttpClientErrorException hcee) {
@@ -144,6 +157,18 @@ public class UserService extends SpringBaseService {
     * @return
     */
    public Object setUserCustomData(UserCustomDataRequest userCustomDataRequest) {
+      return setUserCustomData(userCustomDataRequest, restTemplate);
+   }
+
+   /**
+    * Same as setUserCustomData(UserCustomDataRequest), but using the given RestTemplate (e.g.
+    * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token instead
+    * of the shared admin token).
+    * @param userCustomDataRequest
+    * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+    * @return
+    */
+   public Object setUserCustomData(UserCustomDataRequest userCustomDataRequest, RestTemplate restTemplateToUse) {
       String userPath = buildAlternateId(userCustomDataRequest.getUserId(), userCustomDataRequest.getField());
       URI uri = CUSTOM_DATA_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), userPath);
 
@@ -163,7 +188,7 @@ public class UserService extends SpringBaseService {
 
          HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
          log.debug("{}", requestEntity);
-         ResponseEntity<Object> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, Object.class);
+         ResponseEntity<Object> response = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.PUT, requestEntity, Object.class);
          log.debug("{}", response);
          return response.getBody();
 
@@ -181,6 +206,18 @@ public class UserService extends SpringBaseService {
     * @return
     */
    public Object deleteUserCustomData(UserCustomDataRequest userCustomDataRequest) {
+      return deleteUserCustomData(userCustomDataRequest, restTemplate);
+   }
+
+   /**
+    * Same as deleteUserCustomData(UserCustomDataRequest), but using the given RestTemplate (e.g.
+    * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token instead
+    * of the shared admin token).
+    * @param userCustomDataRequest
+    * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+    * @return
+    */
+   public Object deleteUserCustomData(UserCustomDataRequest userCustomDataRequest, RestTemplate restTemplateToUse) {
       String userPath = buildAlternateId(userCustomDataRequest.getUserId(), userCustomDataRequest.getField());
       URI uri = CUSTOM_DATA_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), userPath);
 
@@ -199,7 +236,7 @@ public class UserService extends SpringBaseService {
 
          HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
          log.debug("{}", requestEntity);
-         ResponseEntity<Object> response = restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, requestEntity, Object.class);
+         ResponseEntity<Object> response = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.DELETE, requestEntity, Object.class);
          log.debug("{}", response);
          return response.getBody();
 

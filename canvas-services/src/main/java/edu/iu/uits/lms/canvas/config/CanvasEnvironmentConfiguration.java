@@ -92,7 +92,12 @@ public class CanvasEnvironmentConfiguration {
         return restTemplate;
     }
 
-    private void configureJackson(RestTemplate restTemplate) {
+    /**
+     * Shared Jackson customization (used by this class's own RestTemplate beans and by
+     * {@code CanvasOAuth2ClientConfig.canvasRestTemplateAsUser()} in canvas-oauth2-client, which
+     * can't duplicate a private copy across modules).
+     */
+    public static void configureJackson(RestTemplate restTemplate) {
         restTemplate.getMessageConverters().replaceAll(converter -> {
             if (converter instanceof JacksonJsonHttpMessageConverter existing) {
                 JsonMapper.Builder builder = existing.getMapper().rebuild();

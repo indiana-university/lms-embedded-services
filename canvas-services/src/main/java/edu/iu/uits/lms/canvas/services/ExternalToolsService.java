@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
@@ -89,22 +90,44 @@ public class ExternalToolsService extends SpringBaseService {
    }
 
    /**
-    * Get all external tools for a course
+    * Get all external tools for a course, using the default admin RestTemplate.
     * @param courseId Course id
     * @return List of ExternalTools
     */
    public List<ExternalTool> getExternalTools(@NonNull String courseId) {
-      return getExternalTools(courseId, null, null);
+      return getExternalTools(courseId, restTemplate);
    }
 
    /**
-    * Get all external tools for a course
+    * Get all external tools for a course, using the given RestTemplate.
+    * @param courseId Course id
+    * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+    * @return List of ExternalTools
+    */
+   public List<ExternalTool> getExternalTools(@NonNull String courseId, RestTemplate restTemplateToUse) {
+      return getExternalTools(courseId, null, null, restTemplateToUse);
+   }
+
+   /**
+    * Get all external tools for a course, using the default admin RestTemplate.
     * @param courseId Course id
     * @param searchTerm Search term that will be used as a partial match for the tool name
     * @param placement Placement type that will be used as a filter for the results
     * @return List of ExternalTools matching the provided criteria
     */
    public List<ExternalTool> getExternalTools(@NonNull String courseId, String searchTerm, String placement) {
+      return getExternalTools(courseId, searchTerm, placement, restTemplate);
+   }
+
+   /**
+    * Get all external tools for a course, using the given RestTemplate.
+    * @param courseId Course id
+    * @param searchTerm Search term that will be used as a partial match for the tool name
+    * @param placement Placement type that will be used as a filter for the results
+    * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+    * @return List of ExternalTools matching the provided criteria
+    */
+   public List<ExternalTool> getExternalTools(@NonNull String courseId, String searchTerm, String placement, RestTemplate restTemplateToUse) {
       URI uri = EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
       UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -119,7 +142,7 @@ public class ExternalToolsService extends SpringBaseService {
 
       builder.queryParam("per_page", "100");
 
-      return doGet(builder.build().toUri(), ExternalTool[].class);
+      return doGet(builder.build().toUri(), ExternalTool[].class, restTemplateToUse);
    }
 
    /**
@@ -129,13 +152,24 @@ public class ExternalToolsService extends SpringBaseService {
     * @return
     */
    public ExternalTool deleteExternalTool(String courseId, String toolId) {
+      return deleteExternalTool(courseId, toolId, restTemplate);
+   }
+
+   /**
+    * Delete an external tool from a course, using the given RestTemplate.
+    * @param courseId Course where the tool is placed
+    * @param toolId External tool id to delete
+    * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+    * @return Tool that was deleted
+    */
+   public ExternalTool deleteExternalTool(String courseId, String toolId, RestTemplate restTemplateToUse) {
       URI uri = EXTERNAL_TOOLS_VIA_COURSES_URI_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
       UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
       builder.path("/" + toolId);
 
       try {
-         ResponseEntity<ExternalTool> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
+         ResponseEntity<ExternalTool> responseEntity = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.DELETE, null, ExternalTool.class);
          log.debug("{}", responseEntity);
 
          if (responseEntity.getStatusCode() != HttpStatus.OK) {

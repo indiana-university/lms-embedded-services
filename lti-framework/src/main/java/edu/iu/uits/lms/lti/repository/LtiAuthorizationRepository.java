@@ -4,7 +4,7 @@ package edu.iu.uits.lms.lti.repository;
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -62,4 +62,10 @@ public interface LtiAuthorizationRepository extends PagingAndSortingRepository<L
     List<LmsLtiAuthz> findByRegistrationsPrefixEnvActive(@Param("registrationIds") List<String> registrationIds,
                                                          @Param("registrationPrefix") String registrationPrefix,
                                                          @Param("env") String env);
+
+    @Query("""
+            FROM LmsLtiAuthz where clientId = :clientId
+            AND env = :env and active = true
+            """)
+    LmsLtiAuthz findByClientIdAndEnv(@Param("clientId") String clientId, @Param("env") String env);
 }

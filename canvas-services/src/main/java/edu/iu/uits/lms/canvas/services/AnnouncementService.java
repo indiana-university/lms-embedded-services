@@ -46,6 +46,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
@@ -113,6 +114,25 @@ public class AnnouncementService extends SpringBaseService {
      */
     public Announcement createAnnouncement(String courseId, Announcement announcement, boolean isPodcastEnabled,
                                            String asUser, String fileName, File file) {
+        return createAnnouncement(courseId, announcement, isPodcastEnabled, asUser, fileName, file, restTemplate);
+    }
+
+    /**
+     * Same as createAnnouncement(String, Announcement, boolean, String, String, File), but using
+     * the given RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's
+     * own Canvas OAuth2 token instead of the shared admin token). Pass null for asUser when
+     * restTemplateToUse is a per-user OAuth2 RestTemplate.
+     * @param courseId Course id where announcement will be created
+     * @param announcement nnouncement data to create
+     * @param isPodcastEnabled
+     * @param asUser optional - masquerade as this user when creating the announcement (admin-token calls only)
+     * @param fileName the name of your file (ie report.txt)
+     * @param file optional if you want to add an attachment to the announcement. Leave null if not
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return create a new announcement in Canvas for the given course
+     */
+    public Announcement createAnnouncement(String courseId, Announcement announcement, boolean isPodcastEnabled,
+                                           String asUser, String fileName, File file, RestTemplate restTemplateToUse) {
 
         URI uri = BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
@@ -160,7 +180,7 @@ public class AnnouncementService extends SpringBaseService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
 
         try {
-            ResponseEntity<Announcement> announcementsEntity = restTemplate.postForEntity(builder.build().toUri(), requestEntity, Announcement.class);
+            ResponseEntity<Announcement> announcementsEntity = restTemplateToUse.postForEntity(builder.build().toUri(), requestEntity, Announcement.class);
             HttpStatusCode responseStatus = announcementsEntity.getStatusCode();
 
             if (HttpStatus.OK.equals(responseStatus)) {

@@ -45,6 +45,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
@@ -70,6 +71,19 @@ public class ModuleService extends SpringBaseService {
      * @return List of Module items
      */
     public List<Module> getModules(String courseId, String searchTerm) {
+        return getModules(courseId, searchTerm, restTemplate);
+    }
+
+    /**
+     * Same as getModules(String, String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @param courseId Course id
+     * @param searchTerm Search term that matches on the module name (optional)
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return List of Module items
+     */
+    public List<Module> getModules(String courseId, String searchTerm, RestTemplate restTemplateToUse) {
         URI uri = MODULES_BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
         log.debug("{}", uri);
 
@@ -81,7 +95,7 @@ public class ModuleService extends SpringBaseService {
 
         builder.queryParam("per_page", "100");
 
-        return doGet(builder.build().toUri(), Module[].class);
+        return doGet(builder.build().toUri(), Module[].class, restTemplateToUse);
     }
 
     /**
@@ -130,6 +144,22 @@ public class ModuleService extends SpringBaseService {
      * @return Created Module
      */
     public Module createModule(String courseId, ModuleCreateWrapper newModule, String asUser) {
+        return createModule(courseId, newModule, asUser, restTemplate);
+    }
+
+    /**
+     * Same as createModule(String, ModuleCreateWrapper, String), but using the given RestTemplate
+     * (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token). Pass null for asUser when restTemplateToUse is a per-user
+     * OAuth2 RestTemplate - that token has no "become_user" privilege and Canvas may reject an
+     * as_user_id masquerade attempt on it.
+     * @param courseId Course id
+     * @param newModule Wrapper object used to create the module
+     * @param asUser optional - masquerade as this user when creating the module (admin-token calls only)
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return Created Module
+     */
+    public Module createModule(String courseId, ModuleCreateWrapper newModule, String asUser, RestTemplate restTemplateToUse) {
         Module savedModule = null;
 
         URI uri = MODULES_BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
@@ -146,7 +176,7 @@ public class ModuleService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<ModuleCreateWrapper> request = new HttpEntity<>(newModule, headers);
-            ResponseEntity<Module> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, request, Module.class);
+            ResponseEntity<Module> response = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.POST, request, Module.class);
             log.debug("{}", response);
 
             savedModule = response.getBody();
@@ -251,6 +281,23 @@ public class ModuleService extends SpringBaseService {
      * @return Created ModuleItem
      */
     public ModuleItem createModuleItem(String courseId, String moduleId, ModuleItemCreateWrapper newModuleItem, String asUser) {
+        return createModuleItem(courseId, moduleId, newModuleItem, asUser, restTemplate);
+    }
+
+    /**
+     * Same as createModuleItem(String, String, ModuleItemCreateWrapper, String), but using the
+     * given RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own
+     * Canvas OAuth2 token instead of the shared admin token). Pass null for asUser when
+     * restTemplateToUse is a per-user OAuth2 RestTemplate.
+     * @param courseId Course id
+     * @param moduleId Module id
+     * @param newModuleItem Wrapper object used to create the module item
+     * @param asUser optional - masquerade as this user when creating the module item (admin-token calls only)
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return Created ModuleItem
+     */
+    public ModuleItem createModuleItem(String courseId, String moduleId, ModuleItemCreateWrapper newModuleItem, String asUser,
+                                        RestTemplate restTemplateToUse) {
         ModuleItem savedModuleItem = null;
 
         URI uri = MODULE_ITEMS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId, moduleId);
@@ -267,7 +314,7 @@ public class ModuleService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<ModuleItemCreateWrapper> request = new HttpEntity<>(newModuleItem, headers);
-            ResponseEntity<ModuleItem> response = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, request, ModuleItem.class);
+            ResponseEntity<ModuleItem> response = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.POST, request, ModuleItem.class);
             log.debug("{}", response);
 
             savedModuleItem = response.getBody();

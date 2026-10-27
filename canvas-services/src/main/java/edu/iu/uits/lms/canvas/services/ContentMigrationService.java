@@ -44,6 +44,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 import tools.jackson.databind.ObjectMapper;
@@ -111,6 +112,23 @@ public class ContentMigrationService extends SpringBaseService {
     * @return content migration
     */
    public ContentMigration initiateContentMigration(String courseId, String idFieldName, ContentMigrationCreateWrapper wrapper) {
+      return initiateContentMigration(courseId, idFieldName, wrapper, restTemplate);
+   }
+
+   /**
+    * Same as initiateContentMigration(String, String, ContentMigrationCreateWrapper), but using the
+    * given RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own
+    * Canvas OAuth2 token instead of the shared admin token).
+    * @param courseId Course Id
+    * @param idFieldName Optional. Leave null if the id param given is the Canvas internal id. Otherwise,
+    *                    the Canvas Course API allows retrieving Course objects by identifiers other than the
+    *                    internal id. See {@link CanvasConstants} for API_FIELD options
+    * @param wrapper ContentMigrationCreateWrapper object used to create the content migration
+    * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+    * @return content migration
+    */
+   public ContentMigration initiateContentMigration(String courseId, String idFieldName, ContentMigrationCreateWrapper wrapper,
+                                                      RestTemplate restTemplateToUse) {
       String altCourseId = buildAlternateId(courseId, idFieldName);
       URI uri = CREATE_COURSE_MIGRATION.expand(canvasConfiguration.getBaseApiUrl(), altCourseId);
 
@@ -124,7 +142,7 @@ public class ContentMigrationService extends SpringBaseService {
       HttpEntity<ContentMigrationCreateWrapper> requestEntity = new HttpEntity<>(wrapper, headers);
 
       try {
-         ResponseEntity<ContentMigration> response = restTemplate.postForEntity(builder.build().toUri(), requestEntity, ContentMigration.class);
+         ResponseEntity<ContentMigration> response = restTemplateToUse.postForEntity(builder.build().toUri(), requestEntity, ContentMigration.class);
          contentMigration = response.getBody();
       } catch (HttpStatusCodeException rce) {
          log.error("Error performing content migration for course: " + courseId, rce);

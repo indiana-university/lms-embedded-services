@@ -783,6 +783,21 @@ public class CourseService extends SpringBaseService {
      * @param defaultViewType the value of what you to you want for the default view, e.g. modules
      */
     public void updateCourseFrontPage(String id, String defaultViewType) {
+        updateCourseFrontPage(id, defaultViewType, restTemplate);
+    }
+
+    /**
+     * Same as updateCourseFrontPage(String, String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token). Note: this call is NOT yet confirmed against IU's live
+     * Canvas Roles API - it goes through the general course-update endpoint, which this effort has
+     * not independently traced to a specific RoleOverride permission. Confirm before relying on
+     * this for a per-user OAuth2 conversion.
+     * @param id the identifier for the course you are updating
+     * @param defaultViewType the value of what you to you want for the default view, e.g. modules
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     */
+    public void updateCourseFrontPage(String id, String defaultViewType, RestTemplate restTemplateToUse) {
         if (id == null) {
             throw new IllegalArgumentException("Null id passed to updateCourseFrontPage.");
         }
@@ -794,7 +809,7 @@ public class CourseService extends SpringBaseService {
         builder.queryParam("course[default_view]", defaultViewType);
 
         try {
-            ResponseEntity<String> responseEntity = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.PUT, null, String.class);
+            ResponseEntity<String> responseEntity = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.PUT, null, String.class);
             log.debug("{}", responseEntity);
 
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
@@ -1227,6 +1242,21 @@ public class CourseService extends SpringBaseService {
      * @return a newly created WikiPage from Canvas
      */
     public WikiPage createWikiPage(String courseId, WikiPageCreateWrapper newWikiPage, String asUser) {
+        return createWikiPage(courseId, newWikiPage, asUser, restTemplate);
+    }
+
+    /**
+     * Same as createWikiPage(String, WikiPageCreateWrapper, String), but using the given
+     * RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own
+     * Canvas OAuth2 token instead of the shared admin token). Pass null for asUser when
+     * restTemplateToUse is a per-user OAuth2 RestTemplate.
+     * @param courseId Canvas course id
+     * @param newWikiPage Wiki page to create
+     * @param asUser optional - masquerade as this user when creating the Wiki Page (admin-token calls only)
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return a newly created WikiPage from Canvas
+     */
+    public WikiPage createWikiPage(String courseId, WikiPageCreateWrapper newWikiPage, String asUser, RestTemplate restTemplateToUse) {
         if (courseId == null) {
             throw new IllegalArgumentException("Null id passed to createWikiPage.");
         }
@@ -1247,7 +1277,7 @@ public class CourseService extends SpringBaseService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<WikiPageCreateWrapper> createNewWikiPageRequest = new HttpEntity<>(newWikiPage, headers);
-            HttpEntity<WikiPage> createNewWikiPageResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, createNewWikiPageRequest, WikiPage.class);
+            HttpEntity<WikiPage> createNewWikiPageResponse = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.POST, createNewWikiPageRequest, WikiPage.class);
             log.debug("{}", createNewWikiPageResponse);
 
             savedWikiPage = createNewWikiPageResponse.getBody();
@@ -1310,6 +1340,23 @@ public class CourseService extends SpringBaseService {
      * @return Syllabus body
      */
     public Course updateCourseSyllabus(String courseId, CourseSyllabusBodyWrapper modifiedCourseSyllabusBodyWrapper) {
+        return updateCourseSyllabus(courseId, modifiedCourseSyllabusBodyWrapper, restTemplate);
+    }
+
+    /**
+     * Same as updateCourseSyllabus(String, CourseSyllabusBodyWrapper), but using the given
+     * RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own
+     * Canvas OAuth2 token instead of the shared admin token). Note: this call is NOT yet confirmed
+     * against IU's live Canvas Roles API - it goes through the general course-update endpoint,
+     * which this effort has not independently traced to a specific RoleOverride permission.
+     * Confirm before relying on this for a per-user OAuth2 conversion.
+     * @param courseId Canvas course id
+     * @param modifiedCourseSyllabusBodyWrapper Syllabus body to use, wrapped
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return Syllabus body
+     */
+    public Course updateCourseSyllabus(String courseId, CourseSyllabusBodyWrapper modifiedCourseSyllabusBodyWrapper,
+                                        RestTemplate restTemplateToUse) {
         Course modifiedCourse = null;
 
         URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
@@ -1320,7 +1367,7 @@ public class CourseService extends SpringBaseService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<CourseSyllabusBodyWrapper> modifiedCourseSyllabusRequest = new HttpEntity<>(modifiedCourseSyllabusBodyWrapper, headers);
-            HttpEntity<Course> modifedCourseResponse = this.restTemplate.exchange(uri, HttpMethod.PUT, modifiedCourseSyllabusRequest, Course.class);
+            HttpEntity<Course> modifedCourseResponse = restTemplateToUse.exchange(uri, HttpMethod.PUT, modifiedCourseSyllabusRequest, Course.class);
             log.debug("{}", modifedCourseResponse);
 
             modifiedCourse = modifedCourseResponse.getBody();

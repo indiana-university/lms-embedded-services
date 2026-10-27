@@ -95,17 +95,7 @@ public class ExternalToolsService extends SpringBaseService {
     * @return List of ExternalTools
     */
    public List<ExternalTool> getExternalTools(@NonNull String courseId) {
-      return getExternalTools(courseId, restTemplate);
-   }
-
-   /**
-    * Get all external tools for a course, using the given RestTemplate.
-    * @param courseId Course id
-    * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
-    * @return List of ExternalTools
-    */
-   public List<ExternalTool> getExternalTools(@NonNull String courseId, RestTemplate restTemplateToUse) {
-      return getExternalTools(courseId, null, null, restTemplateToUse);
+      return getExternalTools(courseId, null, null, restTemplate);
    }
 
    /**

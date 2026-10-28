@@ -95,13 +95,32 @@ public class UserService extends SpringBaseService {
     * @return the file quota information for the given user (ie used, allowed, and available space) in bytes
     */
    public QuotaInfo getUserQuotaInfo(@NonNull String userId) {
+      return getUserQuotaInfo(userId, restTemplate, true);
+   }
+
+   /**
+    * Same as getUserQuotaInfo(String), but using the given RestTemplate (e.g. CanvasRestTemplateAsUser, to
+    * authorize the call as the caller's own Canvas OAuth2 token instead of the shared admin token). Does not
+    * masquerade with as_user_id - a per-user token already acts as its own user - so pass the caller's own id.
+    * @param userId If you wish to use an sis_login_id, prefix your user with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID}
+    *         plus a colon (ie sis_login_id:octest1)
+    * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+    * @return the file quota information for the given user (ie used, allowed, and available space) in bytes
+    */
+   public QuotaInfo getUserQuotaInfo(@NonNull String userId, RestTemplate restTemplateToUse) {
+      return getUserQuotaInfo(userId, restTemplateToUse, false);
+   }
+
+   private QuotaInfo getUserQuotaInfo(String userId, RestTemplate restTemplateToUse, boolean masquerade) {
       URI uri = QUOTA_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), userId);
 
       UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-      builder.queryParam("as_user_id", userId);
+      if (masquerade) {
+         builder.queryParam("as_user_id", userId);
+      }
 
       try {
-         return restTemplate.getForObject(builder.build().toUri(), QuotaInfo.class);
+         return restTemplateToUse.getForObject(builder.build().toUri(), QuotaInfo.class);
       } catch (HttpClientErrorException hcee) {
          log.error("Request to Canvas was not successful. Response code: "
                  + hcee.getStatusCode() + ", reason: " + hcee.getStatusText()

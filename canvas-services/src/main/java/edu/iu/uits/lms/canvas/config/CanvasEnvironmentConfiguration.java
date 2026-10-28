@@ -77,6 +77,20 @@ public class CanvasEnvironmentConfiguration {
     }
 
     /**
+     * Same as {@link #restTemplateNoBuffer()}, but sends no Canvas token. For the second step of a file upload
+     * made with a per-user token: the upload URL and params Canvas hands back from the first step are what
+     * authorize that request, so it needs neither the shared admin token nor the user's.
+     *
+     * @return a non-buffering RestTemplate with no authorization interceptor
+     */
+    @Bean(name = "restTemplateNoBufferNoAuth")
+    public RestTemplate restTemplateNoBufferNoAuth() {
+        RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
+        configureJackson(restTemplate);
+        return restTemplate;
+    }
+
+    /**
      * Creates a RestTemplate bean using HttpComponentsClientHttpRequestFactory with a CloseableHttpClient.
      * This RestTemplate is configured with a CanvasTokenAuthorizationInterceptor.
      * Unlike the default RestTemplate, this one can handle PATCH requests.

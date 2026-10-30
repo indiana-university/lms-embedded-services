@@ -46,6 +46,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
@@ -113,6 +114,18 @@ public class AnnouncementService extends SpringBaseService {
      */
     public Announcement createAnnouncement(String courseId, Announcement announcement, boolean isPodcastEnabled,
                                            String asUser, String fileName, File file) {
+        return createAnnouncement(courseId, announcement, isPodcastEnabled, asUser, fileName, file, restTemplate);
+    }
+
+    /**
+     * Same as createAnnouncement(String, Announcement, boolean, String, String, File), but using the given
+     * RestTemplate (e.g. CanvasRestTemplateAsUser, to post as the caller's own Canvas OAuth2 token instead of the
+     * shared admin token). Pass null for asUser with a per-user RestTemplate - the token already acts as its own
+     * user, so there's no one to masquerade as.
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     */
+    public Announcement createAnnouncement(String courseId, Announcement announcement, boolean isPodcastEnabled,
+                                           String asUser, String fileName, File file, RestTemplate restTemplateToUse) {
 
         URI uri = BASE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
@@ -160,7 +173,7 @@ public class AnnouncementService extends SpringBaseService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
 
         try {
-            ResponseEntity<Announcement> announcementsEntity = restTemplate.postForEntity(builder.build().toUri(), requestEntity, Announcement.class);
+            ResponseEntity<Announcement> announcementsEntity = restTemplateToUse.postForEntity(builder.build().toUri(), requestEntity, Announcement.class);
             HttpStatusCode responseStatus = announcementsEntity.getStatusCode();
 
             if (HttpStatus.OK.equals(responseStatus)) {

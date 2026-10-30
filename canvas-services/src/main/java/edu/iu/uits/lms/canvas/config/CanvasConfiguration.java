@@ -56,8 +56,13 @@ public class CanvasConfiguration {
 
     /**
      * Additional hostnames (beyond {@link #host}) that are trusted as targets for the file-upload
-     * follow-up requests (the {@code upload_url} and {@code Location} redirect Canvas returns),
-     * e.g. a storage provider's domain that Canvas uploads are proxied through.
+     * follow-up requests (the {@code upload_url} and {@code Location} redirect Canvas returns).
+     * Each entry is an exact host name, or {@code *.} plus a domain to trust any host under it.
+     * <p>
+     * Defaults to {@code *.inscloudgate.net}: hosted Canvas sends the file itself to its file storage
+     * service (inst-fs), at {@code inst-fs-<region>-<environment>.inscloudgate.net}, and Instructure
+     * doesn't publish which host each environment uses. Setting {@code canvas.trustedUploadHosts}
+     * replaces this default rather than adding to it, so include {@code *.inscloudgate.net} when overriding.
      */
-    private List<String> trustedUploadHosts = new ArrayList<>();
+    private List<String> trustedUploadHosts = new ArrayList<>(List.of("*.inscloudgate.net"));
 }

@@ -418,13 +418,25 @@ public class CourseService extends SpringBaseService {
      * @return the file quota information for the given course (ie used, allowed, and available space) in bytes
      */
     public QuotaInfo getCourseQuotaInfo(@NonNull String courseId) {
+        return getCourseQuotaInfo(courseId, restTemplate);
+    }
+
+    /**
+     * Same as getCourseQuotaInfo(String), but using the given RestTemplate (e.g. CanvasRestTemplateAsUser, to
+     * authorize the call as the caller's own Canvas OAuth2 token instead of the shared admin token). With a
+     * per-user token, Canvas only answers for a course where the caller can manage files.
+     * @param courseId
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return the file quota information for the given course (ie used, allowed, and available space) in bytes
+     */
+    public QuotaInfo getCourseQuotaInfo(@NonNull String courseId, RestTemplate restTemplateToUse) {
         URI uri = COURSE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
         builder.path("/files/quota");
 
         try {
-            ResponseEntity<QuotaInfo> courseQuotaInfoResponseEntity = this.restTemplate.getForEntity(builder.build().toUri(), QuotaInfo.class);
+            ResponseEntity<QuotaInfo> courseQuotaInfoResponseEntity = restTemplateToUse.getForEntity(builder.build().toUri(), QuotaInfo.class);
             log.debug("courseQuotaInfoResponseEntity: {}", courseQuotaInfoResponseEntity);
 
             if (courseQuotaInfoResponseEntity != null) {

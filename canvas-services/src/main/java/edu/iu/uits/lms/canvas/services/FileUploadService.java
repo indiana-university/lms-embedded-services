@@ -38,6 +38,8 @@ import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.model.CanvasFile;
 import edu.iu.uits.lms.canvas.model.CanvasFileUploadResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +51,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
@@ -74,6 +77,10 @@ public class FileUploadService extends SpringBaseService {
 
     private static final String CONVERSATIONS_FOLDER = "conversation attachments";
 
+    @Autowired
+    @Qualifier("restTemplateNoBufferNoAuth")
+    private RestTemplate restTemplateNoBufferNoAuth;
+
     /**
      *
      * @param courseId
@@ -88,7 +95,7 @@ public class FileUploadService extends SpringBaseService {
     public CanvasFile uploadCourseFile(String courseId, String fileName, long fileSize, String contentTypeString, String parentFolderPath,
                                        MultipartFile multipartFile, boolean overwriteDuplicate) {
         URI courseFileUri = COURSE_FILE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
-        CanvasFileUploadResponse response = initiateFileUpload(courseFileUri, fileName, fileSize, contentTypeString, parentFolderPath, overwriteDuplicate, null);
+        CanvasFileUploadResponse response = initiateFileUpload(courseFileUri, fileName, fileSize, contentTypeString, parentFolderPath, overwriteDuplicate, null, restTemplate);
 
         File file = null;
 
@@ -106,7 +113,7 @@ public class FileUploadService extends SpringBaseService {
             }
         }
 
-        return uploadFileToCanvas(response, file);
+        return uploadFileToCanvas(response, file, restTemplateNoBuffer, restTemplate);
     }
 
     /**
@@ -123,9 +130,31 @@ public class FileUploadService extends SpringBaseService {
     public CanvasFile uploadConversationFile(String userId, String fileName, long fileSize,
                                              String contentTypeString, File file, boolean overwriteDuplicate) {
         URI conversationFileUri = USER_FILE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), userId);
-        CanvasFileUploadResponse response = initiateFileUpload(conversationFileUri, fileName, fileSize, contentTypeString, CONVERSATIONS_FOLDER, overwriteDuplicate, userId);
+        CanvasFileUploadResponse response = initiateFileUpload(conversationFileUri, fileName, fileSize, contentTypeString, CONVERSATIONS_FOLDER, overwriteDuplicate, userId, restTemplate);
 
-        return uploadFileToCanvas(response, file);
+        return uploadFileToCanvas(response, file, restTemplateNoBuffer, restTemplate);
+    }
+
+    /**
+     * Same as uploadConversationFile(String, String, long, String, File, boolean), but uploads to the files of the
+     * user who owns restTemplateToUse's token (e.g. CanvasRestTemplateAsUser) instead of masquerading as another
+     * user with the shared admin token. Steps 1 and 3 of the upload are made with restTemplateToUse. Step 2 is
+     * made with no Canvas token at all, since the upload URL and params from step 1 are what authorize it.
+     *
+     * @param fileName
+     * @param fileSize
+     * @param contentTypeString
+     * @param file
+     * @param overwriteDuplicate true if you want to overwrite an existing file with the same name. If false, will modify the file name automatically
+     * @param restTemplateToUse the RestTemplate to make the Canvas API calls with (e.g. CanvasRestTemplateAsUser)
+     * @return upload a new file to Canvas to be used for conversations. Returns the created {@link CanvasFile}
+     */
+    public CanvasFile uploadConversationFile(String fileName, long fileSize, String contentTypeString, File file,
+                                             boolean overwriteDuplicate, RestTemplate restTemplateToUse) {
+        URI conversationFileUri = USER_FILE_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), "self");
+        CanvasFileUploadResponse response = initiateFileUpload(conversationFileUri, fileName, fileSize, contentTypeString, CONVERSATIONS_FOLDER, overwriteDuplicate, null, restTemplateToUse);
+
+        return uploadFileToCanvas(response, file, restTemplateNoBufferNoAuth, restTemplateToUse);
     }
 
     /**
@@ -137,10 +166,12 @@ public class FileUploadService extends SpringBaseService {
      * @param parentFolderPath
      * @param overwriteDuplicate
      * @param asUser only use if you are uploading to an individual user's files. Leave null otherwise.
+     * @param restTemplateToUse the RestTemplate to make the call with
      * @return The first step of a file upload we tell Canvas information about the file and are returned a {@link CanvasFileUploadResponse} that includes the location where
      * we should upload the actual file.
      */
-    private CanvasFileUploadResponse initiateFileUpload(URI expandedUri, String fileName, long fileSize, String contentType, String parentFolderPath, boolean overwriteDuplicate, String asUser) {
+    private CanvasFileUploadResponse initiateFileUpload(URI expandedUri, String fileName, long fileSize, String contentType, String parentFolderPath, boolean overwriteDuplicate, String asUser,
+                                                        RestTemplate restTemplateToUse) {
 
         String onDuplicate = overwriteDuplicate ? "overwrite" : "rename";
 
@@ -167,7 +198,7 @@ public class FileUploadService extends SpringBaseService {
         CanvasFileUploadResponse uploadResponse = null;
 
         try {
-            ResponseEntity<CanvasFileUploadResponse> response = restTemplate.postForEntity(builder.build().toUri(), requestEntity, CanvasFileUploadResponse.class);
+            ResponseEntity<CanvasFileUploadResponse> response = restTemplateToUse.postForEntity(builder.build().toUri(), requestEntity, CanvasFileUploadResponse.class);
             uploadResponse = response.getBody();
         } catch (HttpClientErrorException hcee) {
             log.error("Unable to initiate file upload.", hcee);
@@ -181,13 +212,13 @@ public class FileUploadService extends SpringBaseService {
     /**
      * The upload/verification URLs Canvas hands back in {@link CanvasFileUploadResponse#getUploadUrl()}
      * and the {@code Location} redirect header are attacker-influenceable (they originate from a
-     * remote HTTP response, not our own configuration), but {@link #restTemplate} and
-     * {@link #restTemplateNoBuffer} unconditionally attach the Canvas API bearer token to every
-     * request they make. Restrict those follow-up requests to hosts we actually trust so a
+     * remote HTTP response, not our own configuration), but {@link #restTemplate},
+     * {@link #restTemplateNoBuffer} and a per-user RestTemplate unconditionally attach a Canvas API
+     * bearer token to every request they make. Restrict those follow-up requests to hosts we actually trust so a
      * malicious/compromised response can't exfiltrate the token to an arbitrary host (SSRF).
      *
      * @param uriString the upload or verification URL returned by Canvas
-     * @throws SecurityException if the URL's host isn't the configured Canvas host or one of
+     * @throws SecurityException if the URL's host isn't the configured Canvas host or doesn't match one of
      * {@link CanvasConfiguration#getTrustedUploadHosts()}
      */
     private void validateTrustedHost(String uriString) {
@@ -200,7 +231,7 @@ public class FileUploadService extends SpringBaseService {
 
         boolean trusted = host != null
                 && (host.equalsIgnoreCase(canvasConfiguration.getHost())
-                        || canvasConfiguration.getTrustedUploadHosts().stream().anyMatch(host::equalsIgnoreCase));
+                        || canvasConfiguration.getTrustedUploadHosts().stream().anyMatch(pattern -> hostMatches(host, pattern)));
 
         if (!trusted) {
             throw new SecurityException("Refusing to send Canvas file upload request to untrusted host: " + host);
@@ -208,14 +239,38 @@ public class FileUploadService extends SpringBaseService {
     }
 
     /**
+     * @param host the host to check
+     * @param pattern an exact host name, or {@code *.} followed by a domain to match any host under that
+     *                domain (e.g. {@code *.inscloudgate.net} matches {@code inst-fs-iad-prod.inscloudgate.net},
+     *                but not {@code inscloudgate.net} itself or {@code evilinscloudgate.net})
+     * @return true if the host matches the pattern, ignoring case
+     */
+    static boolean hostMatches(String host, String pattern) {
+        if (pattern == null || pattern.isBlank()) {
+            return false;
+        }
+        String trimmedPattern = pattern.trim();
+        if (trimmedPattern.startsWith("*.")) {
+            String domainSuffix = trimmedPattern.substring(1);
+            return domainSuffix.length() > 1
+                    && host.length() > domainSuffix.length()
+                    && host.regionMatches(true, host.length() - domainSuffix.length(), domainSuffix, 0, domainSuffix.length());
+        }
+        return host.equalsIgnoreCase(trimmedPattern);
+    }
+
+    /**
      *
      * @param fileUploadResponse
      * @param file
+     * @param uploadRestTemplate the RestTemplate to upload the file content with (step 2)
+     * @param verifyRestTemplate the RestTemplate to confirm the upload with (step 3)
      * @throws RuntimeException if file upload to Canvas fails
      * @return This is the second step of the upload process that uploads the actual file content given the {@link CanvasFileUploadResponse}.
      * Use {@link #uploadCourseFile(String, String, long, String, String, MultipartFile, boolean)} to do the complete upload.
      */
-    private CanvasFile uploadFileToCanvas(CanvasFileUploadResponse fileUploadResponse, File file) {
+    private CanvasFile uploadFileToCanvas(CanvasFileUploadResponse fileUploadResponse, File file,
+                                          RestTemplate uploadRestTemplate, RestTemplate verifyRestTemplate) {
 
         /* The file upload process via the Canvas API has 3 steps:
            1) Tell Canvas about the upload and get a token. This phase will return a CanvasFileUploadResponse object
@@ -245,7 +300,7 @@ public class FileUploadService extends SpringBaseService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
 
         try {
-            ResponseEntity<Object> responseEntity = restTemplateNoBuffer.postForEntity(uri, requestEntity, Object.class);
+            ResponseEntity<Object> responseEntity = uploadRestTemplate.postForEntity(uri, requestEntity, Object.class);
             HttpStatusCode httpStatus = responseEntity.getStatusCode();
 
             if (httpStatus.equals(HttpStatus.OK)) {
@@ -256,7 +311,7 @@ public class FileUploadService extends SpringBaseService {
                 // if the status is 3XX or 201 we need to GET at the location to complete the upload.
                 String location = responseEntity.getHeaders().getFirst("location");
                 if (location != null) {
-                    canvasFile = verifyUpload(location);
+                    canvasFile = verifyUpload(location, verifyRestTemplate);
 
                 } else {
                     String exception = "No location returned by Canvas to complete upload despite status " + responseEntity.getStatusCode().value();
@@ -283,12 +338,12 @@ public class FileUploadService extends SpringBaseService {
         return canvasFile;
     }
 
-    private CanvasFile verifyUpload(String location) {
+    private CanvasFile verifyUpload(String location, RestTemplate restTemplateToUse) {
         CanvasFile canvasFile = null;
         validateTrustedHost(location);
 
         try {
-            HttpEntity<CanvasFile> fileUploadResponseEntity = this.restTemplate.getForEntity(location, CanvasFile.class);
+            HttpEntity<CanvasFile> fileUploadResponseEntity = restTemplateToUse.getForEntity(location, CanvasFile.class);
             log.debug("fileUploadResponseEntity: {}", fileUploadResponseEntity);
 
             canvasFile = fileUploadResponseEntity.getBody();

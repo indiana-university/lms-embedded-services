@@ -43,13 +43,24 @@
 <div layout:fragment="content">
     <h1 class="rvt-ts-26 rvt-text-bold rvt-m-bottom-md" th:text="${heading}">Connect your Canvas account to continue</h1>
     <p class="rvt-m-bottom-md" th:text="${instructions}">
-        This tool needs your permission to access Canvas on your behalf before it can continue.
-        This only needs to happen once - after you connect, every launch will use your own Canvas
-        permissions instead of asking again.
+        This tool needs your permission to access Canvas on your behalf. Selecting the “Connect your Canvas account”
+        button below will take you to the authorization page in Canvas. Once authorized, the tool will launch.
     </p>
     <a th:href="${authorizationUri}" target="_top" class="rvt-button rvt-button--full-width" th:text="${connectButtonText}">
         Connect your Canvas account
     </a>
+    <p>
+        <span id="sr-new-window" hidden>Opens in new window</span>
+        <a href="https://servicenow.iu.edu/kb?id=kb_article_view&sysparm_article=KB0027567" target="_blank" rel="noopener noreferrer" aria-describedby="sr-new-window">
+            Why am I seeing this page?
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" class="external-link rvt-m-left-xxs">
+                <g fill="currentColor">
+                    <path d="M10.75,15H2.25A1.25,1.25,0,0,1,1,13.75V5.25A1.25,1.25,0,0,1,2.25,4H6A1,1,0,0,1,6,6H3v7h7V10a1,1,0,0,1,2,0v3.75A1.25,1.25,0,0,1,10.75,15Z"></path>
+                    <path d="M14.71,1.29A1,1,0,0,0,13.87,1l-.12,0H9A1,1,0,0,0,9,3h2.59L7.29,7.29A1,1,0,1,0,8.71,8.71L13,4.41V7a1,1,0,0,0,2,0V2.25a1.17,1.17,0,0,0,0-.12A1,1,0,0,0,14.71,1.29Z"></path>
+                </g>
+            </svg>
+        </a>
+    </p>
 </div>
 </body>
 </html>

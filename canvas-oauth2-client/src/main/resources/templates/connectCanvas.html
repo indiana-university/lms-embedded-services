@@ -46,8 +46,9 @@
         This tool needs your permission to access Canvas on your behalf. Selecting the “Connect your Canvas account”
         button below will take you to the authorization page in Canvas. Once authorized, the tool will launch.
     </p>
-    <a th:href="${authorizationUri}" target="_top" class="rvt-button rvt-button--full-width" th:text="${connectButtonText}">
-        Connect your Canvas account
+    <a id="connect-canvas-button" th:href="${authorizationUri}" target="_top" class="rvt-button rvt-button--full-width">
+        <span class="rvt-button__content" th:text="${connectButtonText}">Connect your Canvas account</span>
+        <div class="rvt-loader rvt-loader--xs rvt-display-none" aria-label="Redirecting to Canvas"></div>
     </a>
     <p>
         <span id="sr-new-window" hidden>Opens in new window</span>
@@ -61,6 +62,38 @@
             </svg>
         </a>
     </p>
+    <script>
+        // Similar loading-button, but in plain JS since this
+        // layout doesn't load jQuery. It's a link, not a form button, so it can't be disabled -
+        // block repeat clicks instead.
+        (function () {
+            const button = document.getElementById("connect-canvas-button");
+            const loader = button.querySelector(".rvt-loader");
+
+            function setLoading(loading) {
+                button.classList.toggle("rvt-button--loading", loading);
+                button.setAttribute("aria-busy", loading);
+                button.setAttribute("aria-disabled", loading);
+                loader.classList.toggle("rvt-display-none", !loading);
+            }
+
+            button.addEventListener("click", function (event) {
+                if (button.classList.contains("rvt-button--loading")) {
+                    event.preventDefault();
+                    return;
+                }
+                setLoading(true);
+            });
+
+            // Reset if the user comes back to this page via the browser's back button
+            // (bfcache restores the page in its loading state otherwise)
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted) {
+                    setLoading(false);
+                }
+            });
+        }());
+    </script>
 </div>
 </body>
 </html>

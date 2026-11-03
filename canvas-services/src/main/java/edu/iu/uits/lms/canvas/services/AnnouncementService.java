@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.services;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -121,7 +121,8 @@ public class AnnouncementService extends SpringBaseService {
      * Same as createAnnouncement(String, Announcement, boolean, String, String, File), but using
      * the given RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's
      * own Canvas OAuth2 token instead of the shared admin token). Pass null for asUser when
-     * restTemplateToUse is a per-user OAuth2 RestTemplate.
+     * restTemplateToUse is a per-user OAuth2 RestTemplate - the token already acts as its own user,
+     * so there's no one to masquerade as.
      * @param courseId Course id where announcement will be created
      * @param announcement nnouncement data to create
      * @param isPodcastEnabled

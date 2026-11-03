@@ -4,7 +4,7 @@ package edu.iu.uits.lms.iuonly.services;
  * #%L
  * lms-canvas-iu-custom-services
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -48,7 +48,6 @@ import tools.jackson.databind.annotation.JsonNaming;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -450,9 +449,10 @@ public class CanvasDataServiceImpl {
                 String fieldName = field.getName();
 
                 // See if there's a strategy to use (snake case, camel case, etc
-                if (strategyClass != null) {
-                    Method invokeMethod = strategyClass.getMethod("translate", String.class);
-                    fieldName = (String) invokeMethod.invoke(strategy, fieldName);
+                // Jackson 3 made NamingBase.translate() protected, so go through the public nameForField(),
+                // which for the NamingBase strategies ignores config/field and just translates the name
+                if (strategy != null) {
+                    fieldName = strategy.nameForField(null, null, fieldName);
                 }
 
                 if (!columnNames.contains(fieldName.toLowerCase())) {

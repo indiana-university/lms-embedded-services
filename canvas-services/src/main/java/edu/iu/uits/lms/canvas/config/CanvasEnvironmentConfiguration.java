@@ -4,7 +4,7 @@ package edu.iu.uits.lms.canvas.config;
  * #%L
  * LMS Canvas Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -73,6 +73,20 @@ public class CanvasEnvironmentConfiguration {
         RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
         configureJackson(restTemplate);
         restTemplate.getInterceptors().add(new CanvasTokenAuthorizationInterceptor(canvasConfiguration.getToken()));
+        return restTemplate;
+    }
+
+    /**
+     * Same as {@link #restTemplateNoBuffer()}, but sends no Canvas token. For the second step of a file upload
+     * made with a per-user token: the upload URL and params Canvas hands back from the first step are what
+     * authorize that request, so it needs neither the shared admin token nor the user's.
+     *
+     * @return a non-buffering RestTemplate with no authorization interceptor
+     */
+    @Bean(name = "restTemplateNoBufferNoAuth")
+    public RestTemplate restTemplateNoBufferNoAuth() {
+        RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
+        configureJackson(restTemplate);
         return restTemplate;
     }
 

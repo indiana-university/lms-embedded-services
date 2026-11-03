@@ -8,18 +8,18 @@ package edu.iu.uits.lms.canvas.services;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -39,6 +39,7 @@ import edu.iu.uits.lms.canvas.model.CanvasFileUploadResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
@@ -60,10 +61,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -94,6 +98,10 @@ class FileUploadServiceTest {
     @MockitoBean
     @Qualifier("RestTemplateHttpComponent")
     protected RestTemplate restTemplateHttpComponent;
+
+    @MockitoBean
+    @Qualifier("restTemplateNoBufferNoAuth")
+    protected RestTemplate restTemplateNoBufferNoAuth;
 
     @MockitoBean
     protected CanvasConfiguration canvasConfiguration;
@@ -193,5 +201,99 @@ class FileUploadServiceTest {
 
         assertNotNull(result);
         assertEquals("1000", result.getId());
+    }
+
+    @Test
+    void uploadCourseFile_wildcardTrustedUploadHost_isAllowed() {
+        stubTrustedHost(List.of("*.inscloudgate.net"));
+        stubInitiateFileUpload("https://inst-fs-iad-beta.inscloudgate.net/files?token=abc");
+
+        CanvasFile expectedFile = new CanvasFile();
+        expectedFile.setId("1002");
+        when(restTemplateNoBuffer.postForEntity(eq("https://inst-fs-iad-beta.inscloudgate.net/files?token=abc"), any(), eq(Object.class)))
+                .thenReturn(ResponseEntity.ok(expectedFile));
+
+        MultipartFile multipartFile = new MockMultipartFile("file", "safe.txt", "text/plain", "hello".getBytes());
+
+        CanvasFile result = fileUploadService.uploadCourseFile("123", "safe.txt", 5L, "text/plain", "/", multipartFile, false);
+
+        assertEquals("1002", result.getId());
+    }
+
+    @Test
+    void uploadCourseFile_hostOnlyResemblingWildcardDomain_isRejected() {
+        stubTrustedHost(List.of("*.inscloudgate.net"));
+        stubInitiateFileUpload("https://evilinscloudgate.net/steal");
+
+        MultipartFile multipartFile = new MockMultipartFile("file", "safe.txt", "text/plain", "hello".getBytes());
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () ->
+                fileUploadService.uploadCourseFile("123", "safe.txt", 5L, "text/plain", "/", multipartFile, false));
+
+        assertInstanceOf(SecurityException.class, ex);
+        verify(restTemplateNoBuffer, never()).postForEntity(anyString(), any(), eq(Object.class));
+    }
+
+    @Test
+    void hostMatches_exactAndWildcardPatterns() {
+        assertTrue(FileUploadService.hostMatches("storage.trusted.example", "storage.trusted.example"));
+        assertTrue(FileUploadService.hostMatches("Storage.Trusted.Example", " storage.trusted.example "));
+        assertFalse(FileUploadService.hostMatches("other.trusted.example", "storage.trusted.example"));
+
+        assertTrue(FileUploadService.hostMatches("inst-fs-iad-prod.inscloudgate.net", "*.inscloudgate.net"));
+        assertTrue(FileUploadService.hostMatches("cdn.inst-fs-iad-prod.inscloudgate.net", "*.inscloudgate.net"));
+        assertTrue(FileUploadService.hostMatches("INST-FS-IAD-BETA.INSCLOUDGATE.NET", "*.inscloudgate.net"));
+        assertFalse(FileUploadService.hostMatches("inscloudgate.net", "*.inscloudgate.net"));
+        assertFalse(FileUploadService.hostMatches("evilinscloudgate.net", "*.inscloudgate.net"));
+        assertFalse(FileUploadService.hostMatches("inscloudgate.net.evil.example", "*.inscloudgate.net"));
+
+        assertFalse(FileUploadService.hostMatches("anything.example", "*."));
+        assertFalse(FileUploadService.hostMatches("anything.example", "*"));
+        assertFalse(FileUploadService.hostMatches("anything.example", ""));
+        assertFalse(FileUploadService.hostMatches("anything.example", null));
+    }
+
+    @Test
+    void trustedUploadHosts_defaultsToInstFsDomain() {
+        assertEquals(List.of("*.inscloudgate.net"), new CanvasConfiguration().getTrustedUploadHosts());
+    }
+
+    @Test
+    void uploadConversationFile_perUser_usesCallersTokenAndNoTokenForTheUpload() throws Exception {
+        stubTrustedHost(List.of());
+        RestTemplate restTemplateAsUser = mock(RestTemplate.class);
+
+        CanvasFileUploadResponse initiateResponse = new CanvasFileUploadResponse();
+        initiateResponse.setUploadUrl("https://canvas.example.edu/upload-target");
+        initiateResponse.setUploadParams(Map.of("key", "abc"));
+        URI selfFilesUri = URI.create(BASE_API_URL + "/users/self/files");
+        when(restTemplateAsUser.postForEntity(eq(selfFilesUri), any(HttpEntity.class), eq(CanvasFileUploadResponse.class)))
+                .thenReturn(ResponseEntity.ok(initiateResponse));
+
+        HttpHeaders redirectHeaders = new HttpHeaders();
+        redirectHeaders.add("Location", "https://canvas.example.edu/api/v1/files/1/create_success");
+        when(restTemplateNoBufferNoAuth.postForEntity(eq("https://canvas.example.edu/upload-target"), any(), eq(Object.class)))
+                .thenReturn(new ResponseEntity<>(null, redirectHeaders, HttpStatus.CREATED));
+
+        CanvasFile expectedFile = new CanvasFile();
+        expectedFile.setId("1001");
+        when(restTemplateAsUser.getForEntity("https://canvas.example.edu/api/v1/files/1/create_success", CanvasFile.class))
+                .thenReturn(ResponseEntity.ok(expectedFile));
+
+        File file = File.createTempFile("fileuploadservicetest-", ".txt");
+        try {
+            CanvasFile result = fileUploadService.uploadConversationFile("safe.txt", 5L, "text/plain", file, false, restTemplateAsUser);
+
+            assertNotNull(result);
+            assertEquals("1001", result.getId());
+        } finally {
+            file.delete();
+        }
+
+        ArgumentCaptor<HttpEntity> initiateCaptor = ArgumentCaptor.forClass(HttpEntity.class);
+        verify(restTemplateAsUser).postForEntity(eq(selfFilesUri), initiateCaptor.capture(), eq(CanvasFileUploadResponse.class));
+        assertFalse(((Map<?, ?>) initiateCaptor.getValue().getBody()).containsKey("as_user_id"),
+                "a per-user upload must not masquerade");
+        verifyNoInteractions(restTemplate, restTemplateNoBuffer);
     }
 }

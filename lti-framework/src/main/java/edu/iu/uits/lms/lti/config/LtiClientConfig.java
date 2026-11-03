@@ -4,22 +4,22 @@ package edu.iu.uits.lms.lti.config;
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -67,6 +67,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import uk.ac.ox.ctl.lti13.KeyPairService;
 import uk.ac.ox.ctl.lti13.SingleKeyPairService;
 import uk.ac.ox.ctl.lti13.TokenRetriever;
+import uk.ac.ox.ctl.lti13.ags.DeepLinkService;
+import uk.ac.ox.ctl.lti13.ags.LineItemService;
+import uk.ac.ox.ctl.lti13.ags.ResultService;
+import uk.ac.ox.ctl.lti13.ags.ScoreService;
 import uk.ac.ox.ctl.lti13.nrps.NamesRoleService;
 
 import javax.sql.DataSource;
@@ -128,6 +132,42 @@ public class LtiClientConfig implements ImportAware {
       KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
       TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
       return new NamesRoleService(clientRegistrationRepository(properties), tokenRetriever);
+   }
+
+   @Bean
+   public LineItemService lineItemService(OAuth2ClientProperties properties) throws JOSEException {
+      RSAKey jks = lti13Service.getJKS();
+      KeyPair keyPair = jks.toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
+      TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+      return new LineItemService(clientRegistrationRepository(properties), tokenRetriever);
+   }
+
+   @Bean
+   public ScoreService scoreService(OAuth2ClientProperties properties) throws JOSEException {
+      RSAKey jks = lti13Service.getJKS();
+      KeyPair keyPair = jks.toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
+      TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+      return new ScoreService(clientRegistrationRepository(properties), tokenRetriever);
+   }
+
+   @Bean
+   public ResultService resultService(OAuth2ClientProperties properties) throws JOSEException {
+      RSAKey jks = lti13Service.getJKS();
+      KeyPair keyPair = jks.toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
+      TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+      return new ResultService(clientRegistrationRepository(properties), tokenRetriever);
+   }
+
+   @Bean
+   public DeepLinkService deepLinkService(OAuth2ClientProperties properties) throws JOSEException {
+      RSAKey jks = lti13Service.getJKS();
+      KeyPair keyPair = jks.toKeyPair();
+      KeyPairService keyPairService = new SingleKeyPairService(keyPair, jks.getKeyID());
+//      TokenRetriever tokenRetriever = new TokenRetriever(keyPairService);
+      return new DeepLinkService(clientRegistrationRepository(properties), keyPairService, env, ltiAuthorizationService);
    }
 
    @Bean

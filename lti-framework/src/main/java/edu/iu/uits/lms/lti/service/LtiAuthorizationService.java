@@ -4,7 +4,7 @@ package edu.iu.uits.lms.lti.service;
  * #%L
  * LMS Canvas LTI Framework Services
  * %%
- * Copyright (C) 2015 - 2021 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -48,5 +48,9 @@ public class LtiAuthorizationService {
 
     public List<LmsLtiAuthz> findByRegistrationsPrefixesEnvActive(List<String> registrationIds, String registrationPrefix, String env) {
         return ltiAuthorizationRepository.findByRegistrationsPrefixEnvActive(registrationIds, registrationPrefix, env);
+    }
+
+    public LmsLtiAuthz findByClientId(String clientId, String env) {
+        return ltiAuthorizationRepository.findByClientIdAndEnv(clientId, env);
     }
 }

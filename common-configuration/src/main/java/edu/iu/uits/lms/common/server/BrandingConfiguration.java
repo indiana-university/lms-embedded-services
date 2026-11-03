@@ -4,7 +4,7 @@ package edu.iu.uits.lms.common.server;
  * #%L
  * lms-canvas-common-configuration
  * %%
- * Copyright (C) 2015 - 2024 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.GenericWebApplicationContext;
@@ -50,6 +51,7 @@ import java.util.List;
  * @since 6.0.3
  */
 @Configuration
+@ConditionalOnWebApplication
 @Slf4j
 public class BrandingConfiguration {
 

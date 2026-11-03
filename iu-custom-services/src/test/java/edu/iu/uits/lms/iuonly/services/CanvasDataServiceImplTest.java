@@ -41,6 +41,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -90,6 +92,13 @@ class CanvasDataServiceImplTest {
     static class TestRecord {
         private String id;
         private String optionalField;
+    }
+
+    @Data
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    static class SnakeCaseRecord {
+        private String strm;
+        private String iuSiteId;
     }
 
     @BeforeEach
@@ -155,5 +164,22 @@ class CanvasDataServiceImplTest {
 
         assertEquals("abc123", results.get(0).getId());
         assertEquals("present", results.get(0).getOptionalField());
+    }
+
+    @Test
+    void snakeCaseNamingStrategyMapsMultiWordFields() throws Exception {
+        // Jackson 3 made NamingBase.translate() protected, so looking it up reflectively via getMethod()
+        // threw NoSuchMethodException for any class annotated with a Jackson 3 @JsonNaming.
+        when(resultSetMetaData.getColumnCount()).thenReturn(2);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("strm");
+        when(resultSetMetaData.getColumnLabel(2)).thenReturn("iu_site_id");
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getObject("strm")).thenReturn("4258");
+        when(resultSet.getObject("iu_site_id")).thenReturn("FA25-BL-ABC-1234");
+
+        List<SnakeCaseRecord> results = service.getSqlResults("select strm, iu_site_id from foo", SnakeCaseRecord.class);
+
+        assertEquals("4258", results.get(0).getStrm());
+        assertEquals("FA25-BL-ABC-1234", results.get(0).getIuSiteId());
     }
 }

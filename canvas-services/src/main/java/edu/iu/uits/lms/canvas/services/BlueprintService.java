@@ -52,6 +52,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 import tools.jackson.databind.ObjectMapper;
@@ -101,9 +102,22 @@ public class BlueprintService extends SpringBaseService {
      * @return Associated courses
      */
     public List<BlueprintAssociatedCourse> getAssociatedCourses(String courseId, String templateId) {
+        return getAssociatedCourses(courseId, templateId, restTemplate);
+    }
+
+    /**
+     * Same as getAssociatedCourses(String, String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @param courseId Id of blueprint course
+     * @param templateId Id of template
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return Associated courses
+     */
+    public List<BlueprintAssociatedCourse> getAssociatedCourses(String courseId, String templateId, RestTemplate restTemplateToUse) {
         URI uri = GET_COURSES.expand(canvasConfiguration.getBaseApiUrl(), courseId, templateId);
         log.debug("uri: {}", uri);
-        return doGet(uri, BlueprintAssociatedCourse[].class);
+        return doGet(uri, BlueprintAssociatedCourse[].class, restTemplateToUse);
     }
 
     /**
@@ -201,6 +215,30 @@ public class BlueprintService extends SpringBaseService {
      */
     public BlueprintMigrationStatus performMigration(String courseId, String templateId, boolean copySettings,
                                                      boolean sendNotifications, String asUser, boolean publishAfterSync) {
+        return performMigration(courseId, templateId, copySettings, sendNotifications, asUser, publishAfterSync, restTemplate);
+    }
+
+    /**
+     * Same as performMigration(String, String, boolean, boolean, String, boolean), but using the
+     * given RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own
+     * Canvas OAuth2 token instead of the shared admin token).
+     * <p>
+     * Pass {@code null} for {@code asUser} when {@code restTemplateToUse} is backed by a per-user
+     * Canvas OAuth2 token - that token is already scoped to its owner and has no "become_user"
+     * privilege, so Canvas may reject an as_user_id masquerade attempt on it.
+     * @param courseId Blueprint course
+     * @param templateId Template to use
+     * @param copySettings set to true if you want course settings copied over to associated courses.
+     * @param sendNotifications set to true if you want Canvas to send a notification to the calling user when the sync completes.
+     * @param asUser optional - masquerade as this user when performing the migration. If you wish to use an sis_login_id,
+     * 	         prefix your asUser with {@link CanvasConstants#API_FIELD_SIS_LOGIN_ID} plus a colon (ie sis_login_id:octest1)
+     * @param publishAfterSync - set to true if the courses are to be published after sync
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return A BlueprintMigrationStatus object that contains the BlueprintMigration or a status message
+     */
+    public BlueprintMigrationStatus performMigration(String courseId, String templateId, boolean copySettings,
+                                                     boolean sendNotifications, String asUser, boolean publishAfterSync,
+                                                     RestTemplate restTemplateToUse) {
         URI uri = BEGIN_MIGRATION.expand(canvasConfiguration.getBaseApiUrl(), courseId, templateId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -219,7 +257,7 @@ public class BlueprintService extends SpringBaseService {
 
         BlueprintMigrationStatus status = new BlueprintMigrationStatus();
         try {
-            ResponseEntity<BlueprintMigration> response = restTemplate.postForEntity(builder.build().toUri(), null, BlueprintMigration.class);
+            ResponseEntity<BlueprintMigration> response = restTemplateToUse.postForEntity(builder.build().toUri(), null, BlueprintMigration.class);
             status.setBlueprintMigration(response.getBody());
         } catch (HttpStatusCodeException rce) {
             log.error("uh oh", rce);
@@ -239,8 +277,21 @@ public class BlueprintService extends SpringBaseService {
      * @return List of BlueprintMigrations
      */
     public List<BlueprintMigration> getMigrations(String courseId, String templateId) {
+        return getMigrations(courseId, templateId, restTemplate);
+    }
+
+    /**
+     * Same as getMigrations(String, String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @param courseId Blueprint course
+     * @param templateId Template to use
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return List of BlueprintMigrations
+     */
+    public List<BlueprintMigration> getMigrations(String courseId, String templateId, RestTemplate restTemplateToUse) {
         URI uri = BEGIN_MIGRATION.expand(canvasConfiguration.getBaseApiUrl(), courseId, templateId);
-        return doGet(uri, BlueprintMigration[].class);
+        return doGet(uri, BlueprintMigration[].class, restTemplateToUse);
     }
 
     /**
@@ -250,8 +301,21 @@ public class BlueprintService extends SpringBaseService {
      * @return List of BlueprintMigration objects
      */
     public List<BlueprintMigration> getSubscriptions(String courseId, String subscriptionId) {
+        return getSubscriptions(courseId, subscriptionId, restTemplate);
+    }
+
+    /**
+     * Same as getSubscriptions(String, String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @param courseId "Child" course
+     * @param subscriptionId Template to use
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return List of BlueprintMigration objects
+     */
+    public List<BlueprintMigration> getSubscriptions(String courseId, String subscriptionId, RestTemplate restTemplateToUse) {
         URI uri = SUBSCRIPTIONS.expand(canvasConfiguration.getBaseApiUrl(), courseId, subscriptionId);
-        return doGet(uri, BlueprintMigration[].class);
+        return doGet(uri, BlueprintMigration[].class, restTemplateToUse);
     }
 
     /**

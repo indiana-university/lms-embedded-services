@@ -70,17 +70,29 @@ public class SpringBaseService extends BaseService {
     protected CanvasConfiguration canvasConfiguration;
 
     /**
-     * Do a GET request, paginating through the entire dataset
+     * Do a GET request, paginating through the entire dataset, using the default admin RestTemplate.
      * @param uri
      * @param setType
      * @param <T>
      * @return
      */
     protected <T> List<T> doGet(URI uri, Class<T[]> setType) {
+        return doGet(uri, setType, restTemplate);
+    }
+
+    /**
+     * Do a GET request, paginating through the entire dataset, using the given RestTemplate.
+     * @param uri
+     * @param setType
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @param <T>
+     * @return
+     */
+    protected <T> List<T> doGet(URI uri, Class<T[]> setType, RestTemplate restTemplateToUse) {
         List<T> resultList = new ArrayList<T>();
         try {
             log.debug("{}", uri);
-            ResponseEntity<T[]> entity = restTemplate.getForEntity(uri, setType);
+            ResponseEntity<T[]> entity = restTemplateToUse.getForEntity(uri, setType);
 
             LinkHeaderParser lhp = new LinkHeaderParser(entity.getHeaders());
             resultList.addAll(Arrays.asList(entity.getBody()));
@@ -88,7 +100,7 @@ public class SpringBaseService extends BaseService {
                 String nextLink = lhp.getNext();
                 if (nextLink != null) {
                     try {
-                        resultList.addAll(doGet(new URI(nextLink), setType));
+                        resultList.addAll(doGet(new URI(nextLink), setType, restTemplateToUse));
                     } catch (URISyntaxException e) {
                         log.error("error parsing uri");
                     }
@@ -104,16 +116,28 @@ public class SpringBaseService extends BaseService {
     /**
      * In most situations, you will use doGet to paginate through a dataset. Use this method if Canvas is
      * returning a single element at the root level instead of a Collection of objects (see {@link CanvasEnrollmentTerms}
-     * for an example).
+     * for an example). Uses the default admin RestTemplate.
      * @param uri
      * @param setType
      * @param <T>
      * @return
      */
     protected <T> List<T> doGetSingle(URI uri, Class<T> setType) {
+        return doGetSingle(uri, setType, restTemplate);
+    }
+
+    /**
+     * Same as doGetSingle(URI, Class), but using the given RestTemplate.
+     * @param uri
+     * @param setType
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @param <T>
+     * @return
+     */
+    protected <T> List<T> doGetSingle(URI uri, Class<T> setType, RestTemplate restTemplateToUse) {
         List<T> resultList = new ArrayList<T>();
         try {
-            ResponseEntity<T> entity = restTemplate.getForEntity(uri, setType);
+            ResponseEntity<T> entity = restTemplateToUse.getForEntity(uri, setType);
 
             LinkHeaderParser lhp = new LinkHeaderParser(entity.getHeaders());
             resultList.add(entity.getBody());
@@ -121,7 +145,7 @@ public class SpringBaseService extends BaseService {
                 String nextLink = lhp.getNext();
                 if (nextLink != null) {
                     try {
-                        resultList.addAll(doGetSingle(new URI(nextLink), setType));
+                        resultList.addAll(doGetSingle(new URI(nextLink), setType, restTemplateToUse));
                     } catch (URISyntaxException e) {
                         log.error("error parsing uri");
                     }

@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<!--
+  #%L
+  LMS Canvas OAuth2 Client
+  %%
+  Copyright (C) 2015 - 2026 Indiana University
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  3. Neither the name of the Indiana University nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{oauth2Layout}">
+<head>
+    <title>Connect Canvas Account</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1 class="rvt-ts-26 rvt-text-bold rvt-m-bottom-md" th:text="${heading}">Connect your Canvas account to continue</h1>
+    <p class="rvt-m-bottom-md" th:text="${instructions}">
+        This tool needs your permission to access Canvas on your behalf. Selecting the “Connect your Canvas account”
+        button below will take you to the authorization page in Canvas. Once authorized, the tool will launch.
+    </p>
+    <a id="connect-canvas-button" th:href="${authorizationUri}" target="_top" class="rvt-button rvt-button--full-width">
+        <span class="rvt-button__content" th:text="${connectButtonText}">Connect your Canvas account</span>
+        <div class="rvt-loader rvt-loader--xs rvt-display-none" aria-label="Redirecting to Canvas"></div>
+    </a>
+    <p>
+        <span id="sr-new-window" hidden>Opens in new window</span>
+        <a href="https://servicenow.iu.edu/kb?id=kb_article_view&sysparm_article=KB0027567" target="_blank" rel="noopener noreferrer" aria-describedby="sr-new-window">
+            Why am I seeing this page?
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" class="external-link rvt-m-left-xxs">
+                <g fill="currentColor">
+                    <path d="M10.75,15H2.25A1.25,1.25,0,0,1,1,13.75V5.25A1.25,1.25,0,0,1,2.25,4H6A1,1,0,0,1,6,6H3v7h7V10a1,1,0,0,1,2,0v3.75A1.25,1.25,0,0,1,10.75,15Z"></path>
+                    <path d="M14.71,1.29A1,1,0,0,0,13.87,1l-.12,0H9A1,1,0,0,0,9,3h2.59L7.29,7.29A1,1,0,1,0,8.71,8.71L13,4.41V7a1,1,0,0,0,2,0V2.25a1.17,1.17,0,0,0,0-.12A1,1,0,0,0,14.71,1.29Z"></path>
+                </g>
+            </svg>
+        </a>
+    </p>
+    <script>
+        // Similar loading-button, but in plain JS since this
+        // layout doesn't load jQuery. It's a link, not a form button, so it can't be disabled -
+        // block repeat clicks instead.
+        (function () {
+            const button = document.getElementById("connect-canvas-button");
+            const loader = button.querySelector(".rvt-loader");
+
+            function setLoading(loading) {
+                button.classList.toggle("rvt-button--loading", loading);
+                button.setAttribute("aria-busy", loading);
+                button.setAttribute("aria-disabled", loading);
+                loader.classList.toggle("rvt-display-none", !loading);
+            }
+
+            button.addEventListener("click", function (event) {
+                if (button.classList.contains("rvt-button--loading")) {
+                    event.preventDefault();
+                    return;
+                }
+                setLoading(true);
+            });
+
+            // Reset if the user comes back to this page via the browser's back button
+            // (bfcache restores the page in its loading state otherwise)
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted) {
+                    setLoading(false);
+                }
+            });
+        }());
+    </script>
+</div>
+</body>
+</html>

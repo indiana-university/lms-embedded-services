@@ -47,6 +47,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
@@ -71,6 +72,20 @@ public class TermService extends SpringBaseService {
 	 */
    @Cacheable(value = CacheConstants.ENROLLMENT_TERMS_CACHE_NAME, cacheManager = "CanvasServicesCacheManager")
 	public List<CanvasTerm> getEnrollmentTerms() {
+		return getEnrollmentTerms(restTemplate);
+    }
+
+	/**
+	 * Same as getEnrollmentTerms(), but using the given RestTemplate (e.g. CanvasRestTemplateAsUser,
+	 * to authorize the call as the caller's own Canvas OAuth2 token instead of the shared admin
+	 * token). Deliberately NOT {@code @Cacheable} - the cached admin-token result is shared across
+	 * every caller regardless of identity, which is fine for the admin token (a single, consistent
+	 * view) but wrong to mix with a per-user token's result, so per-user calls always hit Canvas
+	 * directly instead of reading (or populating) that shared cache entry.
+	 * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+	 * @return List of CanvasTerm objects
+	 */
+	public List<CanvasTerm> getEnrollmentTerms(RestTemplate restTemplateToUse) {
 		URI uri = TERMS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), canvasConfiguration.getAccountId());
 		log.debug("{}", uri);
 
@@ -79,7 +94,7 @@ public class TermService extends SpringBaseService {
 		builder.queryParam("per_page", "50");
 		builder.queryParam("include[]", "overrides");
 
-		List<CanvasEnrollmentTerms> termsList =  doGetSingle(builder.build().toUri(), CanvasEnrollmentTerms.class);
+		List<CanvasEnrollmentTerms> termsList =  doGetSingle(builder.build().toUri(), CanvasEnrollmentTerms.class, restTemplateToUse);
 
 		List<CanvasTerm> terms = new ArrayList<>();
 

@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
@@ -69,6 +70,22 @@ public class DiscussionService extends SpringBaseService {
      * @return
      */
     public DiscussionTopic createDiscussionTopic(String courseId, DiscussionTopic newDiscussionTopic, String asUser) {
+        return createDiscussionTopic(courseId, newDiscussionTopic, asUser, restTemplate);
+    }
+
+    /**
+     * Same as createDiscussionTopic(String, DiscussionTopic, String), but using the given
+     * RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own
+     * Canvas OAuth2 token instead of the shared admin token). Pass null for asUser when
+     * restTemplateToUse is a per-user OAuth2 RestTemplate.
+     * @param courseId courseId to create discussion topic in
+     * @param newDiscussionTopic the discussion topic to create
+     * @param asUser optional - masquerade as this user when creating the discussion topic (admin-token calls only)
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return
+     */
+    public DiscussionTopic createDiscussionTopic(String courseId, DiscussionTopic newDiscussionTopic, String asUser,
+                                                  RestTemplate restTemplateToUse) {
         if (courseId == null || newDiscussionTopic == null) {
             throw new IllegalArgumentException("Null courseId or newDiscussionTopic passed to createDiscussionTopic.");
         }
@@ -91,7 +108,7 @@ public class DiscussionService extends SpringBaseService {
             newDiscussionTopic.setAnnouncement(false);
 
             HttpEntity<DiscussionTopic> newDiscussionTopicRequest = new HttpEntity<>(newDiscussionTopic, headers);
-            ResponseEntity<DiscussionTopic> newDiscussionTopicResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, newDiscussionTopicRequest, DiscussionTopic.class);
+            ResponseEntity<DiscussionTopic> newDiscussionTopicResponse = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.POST, newDiscussionTopicRequest, DiscussionTopic.class);
             log.debug("{}", newDiscussionTopicResponse);
 
             savedDiscussionTopic = newDiscussionTopicResponse.getBody();

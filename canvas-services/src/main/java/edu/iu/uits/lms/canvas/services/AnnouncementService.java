@@ -118,11 +118,19 @@ public class AnnouncementService extends SpringBaseService {
     }
 
     /**
-     * Same as createAnnouncement(String, Announcement, boolean, String, String, File), but using the given
-     * RestTemplate (e.g. CanvasRestTemplateAsUser, to post as the caller's own Canvas OAuth2 token instead of the
-     * shared admin token). Pass null for asUser with a per-user RestTemplate - the token already acts as its own
-     * user, so there's no one to masquerade as.
+     * Same as createAnnouncement(String, Announcement, boolean, String, String, File), but using
+     * the given RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's
+     * own Canvas OAuth2 token instead of the shared admin token). Pass null for asUser when
+     * restTemplateToUse is a per-user OAuth2 RestTemplate - the token already acts as its own user,
+     * so there's no one to masquerade as.
+     * @param courseId Course id where announcement will be created
+     * @param announcement nnouncement data to create
+     * @param isPodcastEnabled
+     * @param asUser optional - masquerade as this user when creating the announcement (admin-token calls only)
+     * @param fileName the name of your file (ie report.txt)
+     * @param file optional if you want to add an attachment to the announcement. Leave null if not
      * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return create a new announcement in Canvas for the given course
      */
     public Announcement createAnnouncement(String courseId, Announcement announcement, boolean isPodcastEnabled,
                                            String asUser, String fileName, File file, RestTemplate restTemplateToUse) {

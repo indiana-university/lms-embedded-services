@@ -50,6 +50,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 
@@ -170,6 +171,22 @@ public class AssignmentService extends SpringBaseService {
      * @return a newly created Assignment from Canvas
      */
     public Assignment createAssignment(String courseId, AssignmentCreateWrapper newAssignment, String asUser) {
+        return createAssignment(courseId, newAssignment, asUser, restTemplate);
+    }
+
+    /**
+     * Same as createAssignment(String, AssignmentCreateWrapper, String), but using the given
+     * RestTemplate (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own
+     * Canvas OAuth2 token instead of the shared admin token). Pass null for asUser when
+     * restTemplateToUse is a per-user OAuth2 RestTemplate.
+     * @param courseId Canvas course id
+     * @param newAssignment new Assignment
+     * @param asUser optional - masquerade as this user when creating the assignment (admin-token calls only)
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return a newly created Assignment from Canvas
+     */
+    public Assignment createAssignment(String courseId, AssignmentCreateWrapper newAssignment, String asUser,
+                                        RestTemplate restTemplateToUse) {
         if (courseId == null || newAssignment == null) {
             throw new IllegalArgumentException("Null courseId or newAssignment passed to createAssignment.");
         }
@@ -190,7 +207,7 @@ public class AssignmentService extends SpringBaseService {
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
             HttpEntity<AssignmentCreateWrapper> newAssignmentRequest = new HttpEntity<>(newAssignment, headers);
-            ResponseEntity<Assignment> newAssignmentResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, newAssignmentRequest, Assignment.class);
+            ResponseEntity<Assignment> newAssignmentResponse = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.POST, newAssignmentRequest, Assignment.class);
             log.debug("{}", newAssignmentResponse);
 
             savedAssignment = newAssignmentResponse.getBody();
@@ -208,10 +225,22 @@ public class AssignmentService extends SpringBaseService {
      * @return a list of Assignment Groups for the course
      */
     public List<AssignmentGroup> getAssignmentGroups(String courseId) {
+        return getAssignmentGroups(courseId, restTemplate);
+    }
+
+    /**
+     * Same as getAssignmentGroups(String), but using the given RestTemplate (e.g.
+     * CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token).
+     * @param courseId Canvas course Id
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return a list of Assignment Groups for the course
+     */
+    public List<AssignmentGroup> getAssignmentGroups(String courseId, RestTemplate restTemplateToUse) {
         URI uri = ASSIGNMENT_GROUPS_TEMPLATE.expand(canvasConfiguration.getBaseApiUrl(), courseId);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        return doGet(builder.build().toUri(), AssignmentGroup[].class);
+        return doGet(builder.build().toUri(), AssignmentGroup[].class, restTemplateToUse);
     }
 
     /**
@@ -223,6 +252,22 @@ public class AssignmentService extends SpringBaseService {
      * @return a newly created AssignmentGroup from Canvas
      */
     public AssignmentGroup createAssignmentGroup(String courseId, String assignmentGroupName, String asUser) {
+        return createAssignmentGroup(courseId, assignmentGroupName, asUser, restTemplate);
+    }
+
+    /**
+     * Same as createAssignmentGroup(String, String, String), but using the given RestTemplate
+     * (e.g. CanvasRestTemplateAsUser, to authorize the call as the caller's own Canvas OAuth2 token
+     * instead of the shared admin token). Pass null for asUser when restTemplateToUse is a per-user
+     * OAuth2 RestTemplate.
+     * @param courseId Canvas course id
+     * @param assignmentGroupName name for created assignment group
+     * @param asUser optional - masquerade as this user when creating the assignment group (admin-token calls only)
+     * @param restTemplateToUse the RestTemplate to make the call with (e.g. CanvasRestTemplateAsUser)
+     * @return a newly created AssignmentGroup from Canvas
+     */
+    public AssignmentGroup createAssignmentGroup(String courseId, String assignmentGroupName, String asUser,
+                                                  RestTemplate restTemplateToUse) {
         if (courseId == null || assignmentGroupName == null) {
             throw new IllegalArgumentException("Null courseId or name passed to createAssignmentGroup.");
         }
@@ -240,7 +285,7 @@ public class AssignmentService extends SpringBaseService {
         }
 
         try {
-            ResponseEntity<AssignmentGroup> createNewAssignmentGroupResponse = this.restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, null, AssignmentGroup.class);
+            ResponseEntity<AssignmentGroup> createNewAssignmentGroupResponse = restTemplateToUse.exchange(builder.build().toUri(), HttpMethod.POST, null, AssignmentGroup.class);
             log.debug("{}", createNewAssignmentGroupResponse);
 
             savedAssignmentGroup = createNewAssignmentGroupResponse.getBody();

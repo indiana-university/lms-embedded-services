@@ -33,10 +33,12 @@ package edu.iu.uits.lms.canvasoauth2.config;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.security.CanvasOAuth2TokenInterceptor;
 import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -53,7 +55,7 @@ class CanvasRestTemplateAsUserConfigTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
           .withUserConfiguration(CanvasRestTemplateAsUserConfig.class)
-          .withBean(OAuth2AuthorizedClientManager.class, () -> mock(OAuth2AuthorizedClientManager.class))
+          .withBean("canvasOAuth2AuthorizedClientManager", OAuth2AuthorizedClientManager.class, () -> mock(OAuth2AuthorizedClientManager.class))
           .withBean(CanvasOAuth2Registration.class, () -> new CanvasOAuth2Registration("test", "/jsrivet"));
 
     @Test
@@ -65,6 +67,27 @@ class CanvasRestTemplateAsUserConfigTest {
                   RestTemplate restTemplate = context.getBean("CanvasRestTemplateAsUser", RestTemplate.class);
                   assertTrue(restTemplate.getInterceptors().stream()
                         .anyMatch(interceptor -> interceptor.getClass().getSimpleName().equals("CanvasOAuth2TokenInterceptor")));
+              });
+    }
+
+    @Test
+    void usesCanvasClientManagerWhenToolDefinesItsOwn() {
+        // e.g. photoroster's crimsoncard client_credentials manager, whose bean name matches the
+        // parameter name an unqualified injection would fall back to
+        OAuth2AuthorizedClientManager canvasManager = mock(OAuth2AuthorizedClientManager.class);
+        new ApplicationContextRunner()
+              .withUserConfiguration(CanvasRestTemplateAsUserConfig.class)
+              .withBean(CanvasOAuth2Registration.class, () -> new CanvasOAuth2Registration("test", "/jsrivet"))
+              .withPropertyValues("canvas.oauth2.enabled=true")
+              .withBean("CanvasRestTemplate", RestTemplate.class, RestTemplate::new)
+              .withBean("canvasOAuth2AuthorizedClientManager", OAuth2AuthorizedClientManager.class, () -> canvasManager)
+              .withBean("authorizedClientManager", OAuth2AuthorizedClientManager.class, () -> mock(OAuth2AuthorizedClientManager.class))
+              .run(context -> {
+                  RestTemplate restTemplate = context.getBean("CanvasRestTemplateAsUser", RestTemplate.class);
+                  CanvasOAuth2TokenInterceptor interceptor = (CanvasOAuth2TokenInterceptor) restTemplate.getInterceptors().stream()
+                        .filter(CanvasOAuth2TokenInterceptor.class::isInstance)
+                        .findFirst().orElseThrow();
+                  assertSame(canvasManager, ReflectionTestUtils.getField(interceptor, "authorizedClientManager"));
               });
     }
 

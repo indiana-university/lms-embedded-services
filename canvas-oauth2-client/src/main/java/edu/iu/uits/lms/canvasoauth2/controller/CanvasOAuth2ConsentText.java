@@ -69,9 +69,9 @@ public class CanvasOAuth2ConsentText {
 
     private static final Map<String, String> DEFAULTS = Map.of(
             CONNECT_CANVAS_HEADING, "Connect your Canvas account to continue",
-            CONNECT_CANVAS_INSTRUCTIONS, "This tool needs your permission to access Canvas on your behalf "
-                    + "before it can continue. This only needs to happen once - after you connect, every "
-                    + "launch will use your own Canvas permissions instead of asking again.",
+            CONNECT_CANVAS_INSTRUCTIONS, "This tool needs your permission to access Canvas on your behalf. Selecting the "
+                    + "\"Connect your Canvas account\" button below will take you to the authorization page in Canvas. "
+                    + "Once authorized, the tool will launch.",
             CONNECT_CANVAS_CONNECT_BUTTON, "Connect your Canvas account",
             MISSING_CANVAS_USER_ID_HEADING, "Unable to connect your Canvas account",
             MISSING_CANVAS_USER_ID_INSTRUCTIONS, "This tool's Canvas integration isn't fully configured for "

@@ -66,7 +66,11 @@ public class CanvasRestTemplateAsUserConfig {
     */
    @Bean(name = "CanvasRestTemplateAsUser")
    @ConditionalOnProperty(prefix = "canvas.oauth2", name = "enabled", havingValue = "true")
-   public RestTemplate canvasRestTemplateAsUserOAuth2(OAuth2AuthorizedClientManager authorizedClientManager,
+   public RestTemplate canvasRestTemplateAsUserOAuth2(
+         // By name: a tool may define its own OAuth2AuthorizedClientManager for another provider (photoroster's
+         // crimsoncard client is literally named "authorizedClientManager"), and an unqualified by-type
+         // injection would then fail as ambiguous, or silently pick the tool's bean by parameter name.
+         @Qualifier("canvasOAuth2AuthorizedClientManager") OAuth2AuthorizedClientManager authorizedClientManager,
                                                         CanvasOAuth2Registration canvasOAuth2Registration) {
       RestTemplate restTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
       CanvasEnvironmentConfiguration.configureJackson(restTemplate);

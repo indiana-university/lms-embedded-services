@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.util.SerializationUtils;
 
 import java.util.Map;
 
@@ -95,5 +96,59 @@ public class CourseSessionServiceTest {
       courseSessionService.removeAttributeFromSession(session, courseId, KEY5);
       String result9 = courseSessionService.getAttributeFromSession(session, courseId, KEY5, String.class);
       Assertions.assertNull(result9);
+   }
+
+   @Test
+   public void removePersistsWhenSessionReturnsCopies() {
+      String courseId = "1234";
+      HttpSession session = new CopyOnReadSession();
+
+      courseSessionService.addAttributeToSession(session, courseId, KEY1, "ASDF");
+      courseSessionService.addAttributeToSession(session, courseId, KEY2, "QWERTY");
+
+      String removed = courseSessionService.removeAttributeFromSession(session, courseId, KEY1);
+
+      Assertions.assertEquals("ASDF", removed);
+      Assertions.assertNull(courseSessionService.getAttributeFromSession(session, courseId, KEY1, String.class));
+      Assertions.assertEquals("QWERTY", courseSessionService.getAttributeFromSession(session, courseId, KEY2, String.class));
+   }
+
+   @Test
+   public void removingLastKeyForCourseDropsTheCourseEntry() {
+      String courseId = "1234";
+      String otherCourseId = "9876";
+      HttpSession session = new CopyOnReadSession();
+
+      courseSessionService.addAttributeToSession(session, courseId, KEY1, "ASDF");
+      courseSessionService.addAttributeToSession(session, otherCourseId, KEY1, "FOOBAR");
+
+      courseSessionService.removeAttributeFromSession(session, courseId, KEY1);
+
+      Map<String, Map<String, Object>> courseMap = (Map<String, Map<String, Object>>) session.getAttribute("QWERTY");
+      Assertions.assertFalse(courseMap.containsKey(courseId));
+      Assertions.assertEquals("FOOBAR", courseSessionService.getAttributeFromSession(session, otherCourseId, KEY1, String.class));
+   }
+
+   @Test
+   public void removeOfMissingKeyReturnsNullAndLeavesSessionAlone() {
+      HttpSession session = new CopyOnReadSession();
+      Assertions.assertNull(courseSessionService.removeAttributeFromSession(session, "1234", KEY1));
+
+      courseSessionService.addAttributeToSession(session, "1234", KEY1, "ASDF");
+      Assertions.assertNull(courseSessionService.removeAttributeFromSession(session, "1234", KEY2));
+      Assertions.assertNull(courseSessionService.removeAttributeFromSession(session, "9876", KEY1));
+      Assertions.assertEquals("ASDF", courseSessionService.getAttributeFromSession(session, "1234", KEY1, String.class));
+   }
+
+   /**
+    * Mimics Spring Session's Redis-backed session: every getAttribute returns a freshly deserialized copy,
+    * so in-place mutations are lost unless setAttribute is called again.
+    */
+   private static class CopyOnReadSession extends MockHttpSession {
+      @Override
+      public Object getAttribute(String name) {
+         Object value = super.getAttribute(name);
+         return value instanceof java.io.Serializable serializable ? SerializationUtils.clone(serializable) : value;
+      }
    }
 }

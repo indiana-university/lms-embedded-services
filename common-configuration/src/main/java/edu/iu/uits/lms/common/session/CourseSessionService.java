@@ -97,8 +97,15 @@ public class CourseSessionService {
       Map<String, Map<String, Object>> courseMap = (Map<String, Map<String, Object>>) session.getAttribute(sessionKey);
       if (courseMap != null) {
          Map<String, Object> courseData = courseMap.get(courseId);
-         if (courseData != null) {
-            return (T)courseData.remove(key);
+         if (courseData != null && courseData.containsKey(key)) {
+            T removed = (T)courseData.remove(key);
+            if (courseData.isEmpty()) {
+               courseMap.remove(courseId);
+            }
+            // Session stores such as Spring Session (Redis) hand back a deserialized copy from getAttribute and
+            // only persist changes on setAttribute, so the modified map has to be written back explicitly.
+            session.setAttribute(sessionKey, courseMap);
+            return removed;
          }
       }
       return null;
